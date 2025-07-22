@@ -24,17 +24,3 @@ variable "backend_key" {
   type        = string
   default     = "managementgroups.terraform.tfstate"
 }
-# variable "tags" {
- # description = "Tags to assign to the Azure resources"
- # type        = map(string)
- # default     = {
- #   Name        = "ims-prd-avd-ne-rg-network"
- #   Environment = "prd"
- #   DateCreated = "2025-07-01"
- # }
-# }
-variable "tags" {
-  description = "Tags to assign to the Azure resource"
-  type        = map(string)
-  default     = {}
-}
