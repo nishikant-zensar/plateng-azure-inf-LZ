@@ -332,3 +332,48 @@ output "firewall_id" {
 output "firewall_policy_id" {
   value = azurerm_firewall_policy.fw_policy.id
 }
+
+# Route Table
+variable "subscription_id" {
+  description = "Azure Subscription ID"
+  type        = string
+}
+
+variable "resource_group_name" {
+  description = "Resource Group Name"
+  type        = string
+}
+
+variable "location" {
+  description = "Azure Region"
+  type        = string
+}
+
+variable "route_table_name" {
+  description = "Route Table Name"
+  type        = string
+}
+
+variable "propagate_gateway_routes" {
+  description = "Propagate Gateway Routes (true or false)"
+  type        = bool
+}
+
+provider "azurerm" {
+  features        = {}
+  subscription_id = var.subscription_id
+}
+
+resource "azurerm_route_table" "this" {
+  name                          = var.route_table_name
+  resource_group_name           = var.resource_group_name
+  location                      = var.location
+  disable_bgp_route_propagation = !var.propagate_gateway_routes
+  tags = {
+    environment = "managed-by-terraform"
+  }
+}
+
+output "route_table_id" {
+  value = azurerm_route_table.this.id
+}
