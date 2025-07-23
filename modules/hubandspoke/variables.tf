@@ -37,6 +37,17 @@ variable "subscription_id" {
   description = "The subscription ID to deploy the resource group"
   type        = string
 }
+
+variable "sub1_subscription_id" {
+  description = "Subscription ID for sub1"
+  type        = string
+}
+
+variable "sub2_subscription_id" {
+  description = "Subscription ID for sub2"
+  type        = string
+}
+
 variable "tags" {
   description = "Tags to assign to the Azure resource"
   type        = map(string)
