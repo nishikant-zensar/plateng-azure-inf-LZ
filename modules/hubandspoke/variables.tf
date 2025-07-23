@@ -33,6 +33,10 @@ variable "backend_key" {
  #   DateCreated = "2025-07-01"
  # }
 # }
+variable "subscription_id" {
+  description = "The subscription ID to deploy the resource group"
+  type        = string
+}
 variable "tags" {
   description = "Tags to assign to the Azure resource"
   type        = map(string)
