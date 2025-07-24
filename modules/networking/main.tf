@@ -377,3 +377,93 @@ resource "azurerm_route_table" "this" {
 output "route_table_id" {
   value = azurerm_route_table.this.id
 }
+
+# Terraform script to create Azure DNS Private Resolver
+
+provider "azurerm" {
+  features {}
+}
+
+variable "subscription_id" {
+  description = "Azure Subscription ID"
+  type        = string
+}
+
+variable "resource_group_name" {
+  description = "Resource Group Name"
+  type        = string
+}
+
+variable "location" {
+  description = "Azure Region"
+  type        = string
+}
+
+variable "dns_private_resolver_name" {
+  description = "DNS Private Resolver Name"
+  type        = string
+}
+
+variable "virtual_network_id" {
+  description = "Virtual Network ID"
+  type        = string
+}
+
+resource "azurerm_dns_resolver" "example" {
+  name                = var.dns_private_resolver_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
+
+  virtual_network_id  = var.virtual_network_id
+
+  tags = {
+    Environment = "Terraform"
+  }
+}
+resource "azurerm_dns_resolver_inbound_endpoint" "example_inbound" {
+  name                = var.inbound_endpoint_name
+  dns_resolver_id     = azurerm_dns_resolver.example.id
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  subnet_id           = var.subnet_id
+
+  # IP address assignment is handled automatically by Azure.
+  # To use a static IP, specify the "ip_configurations" block.
+  # Example for static/private IP assignment:
+  ip_configurations {
+     private_ip_allocation_method = "Static"
+     private_ip_address           = "10.0.0.4"
+   }
+}
+
+resource "azurerm_dns_resolver_outbound_endpoint" "example_outbound" {
+  name                = var.outbound_endpoint_name
+  dns_resolver_id     = azurerm_dns_resolver.example.id
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  subnet_id           = var.outbound_subnet_id
+}
+
+resource "azurerm_dns_resolver_forwarding_ruleset" "example_ruleset" {
+  name                = var.dns_forwarding_ruleset_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  dns_resolver_id     = var.dns_resolver_id
+
+  outbound_endpoint_ids = var.outbound_endpoint_ids
+
+  tags = {
+    Environment = "Terraform"
+  }
+}
+
+resource "azurerm_dns_resolver_forwarding_rule" "example_rule" {
+  name                    = var.dns_forwarding_rule_name
+  dns_forwarding_ruleset_id = var.dns_forwarding_ruleset_id
+  domain_name             = var.domain_name
+  enabled                 = var.rule_state == "Enabled" ? true : false
+  target_dns_servers {
+    ip_address = var.destination_dns_ip
+    port       = 53
+  }
+}
