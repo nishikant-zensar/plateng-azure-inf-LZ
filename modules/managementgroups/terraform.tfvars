@@ -1,2 +1,5 @@
-sub1_subscription_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-sub2_subscription_id = "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
+# sub1_subscription_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+# sub2_subscription_id = "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
+backend_resource_group_name= "ims-prd-lz-ne-rg-terraformstate"
+backend_storage_account_name = "imslandingznstr"
+backend_container_name= "tfstate"
