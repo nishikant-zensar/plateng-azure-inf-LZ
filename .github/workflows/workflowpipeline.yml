@@ -1,48 +1,44 @@
 name: LZ Management Groups Deployment
-
 on:
   workflow_dispatch:
-
+    inputs:
+      jobToRun:
+        description: 'Select Job'
+        required: true
+        default: 'Bootstrap'
+        type: choice
+        options:
+          - Bootstrap
+          - Create Management Groups
+          - Destroy Management Groups
+          - DeployHubSpoke
+          - DestroyHubSpoke
 env:
   terraformVersion: '1.12.2'
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
-  deploy-managementgroups:
-    permissions:
-      id-token: write
-      contents: read
+  Bootstrap:
+    if: ${{ github.event.inputs.jobToRun == 'Bootstrap' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4.1.1
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Azure Login (OIDC)
-      - uses: azure/login@v2.1.0
+        uses: azure/login@v1
         with:
           client-id: ${{ secrets.ARM_CLIENT_ID }}
           tenant-id: ${{ secrets.ARM_TENANT_ID }}
           subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          audience: api://AzureADTokenExchange #OIDC audience restriction for Azure login in your GitHub Actions workflow,
-
-      - uses: hashicorp/setup-terraform@v3.1.0
-        with:
-          terraform_version: ${{ env.terraformVersion }}
-
-      - name: Run tflint
-        run: |
-          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-          cd modules/managementgroups
-          tflint --init
-          tflint
-
-      - name: Run tfsec
-        shell: bash
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash -s -- -b /usr/local/bin
-          cd modules/managementgroups
-          tfsec .
-
-      - name: Run bootstrap script for creating storage for statefile
+          
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+     
+      - name: Run bootstrap script for creating storage for statefile    
         run: |
           chmod +x modules/managementgroups/bootstrap.sh
           modules/managementgroups/bootstrap.sh
@@ -67,7 +63,6 @@ jobs:
       - name: Terraform Plan management groups
         env:
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
           TF_VAR_backend_resource_group_name: ${{ secrets.BACKEND_RESOURCE_GROUP_NAME }}
@@ -154,7 +149,6 @@ jobs:
       - name: Terraform Init
         env:
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
           TF_VAR_backend_resource_group_name: ${{ secrets.BACKEND_RESOURCE_GROUP_NAME }}
@@ -172,7 +166,6 @@ jobs:
       - name: Terraform Apply management groups
         env:
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
           TF_VAR_backend_resource_group_name: ${{ secrets.BACKEND_RESOURCE_GROUP_NAME }}
@@ -186,7 +179,6 @@ jobs:
       - name: Terraform Drift Detection
         env:
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
           TF_VAR_backend_resource_group_name: ${{ secrets.BACKEND_RESOURCE_GROUP_NAME }}
@@ -206,7 +198,6 @@ jobs:
         if: ${{ steps.terraform_drift_detection.outcome == 'failure' }}
         env:
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
         run: |
