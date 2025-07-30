@@ -16,6 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
 
+      - name: Azure Login (OIDC)
       - uses: azure/login@v2.1.0
         with:
           client-id: ${{ secrets.ARM_CLIENT_ID }}
