@@ -26,6 +26,7 @@ terraform {
 resource "azurerm_management_group" "TescoIMSRootMG" {
   name         = "IMS-Root"       # Unique name for the management group
   display_name = "IMS-Root"       # Friendly display name
+  parent_management_group_id = var.root_management_group_id
 }
 
 ##############################
