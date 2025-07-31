@@ -17,9 +17,9 @@ terraform {
   }
 }
 
-provider "azurerm" {
-  features {}
-}
+# provider "azurerm" {
+#  features {}
+# }
 
 ####################################
 # Create the Top Management Group  #
