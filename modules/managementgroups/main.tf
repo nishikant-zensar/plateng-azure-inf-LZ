@@ -1,12 +1,4 @@
 terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 4.0"
-    }
-  }
-  required_version = ">= 1.0"
-
   backend "azurerm" {
     resource_group_name  = "ims-prd-lz-ne-rg-terraformstate"
     storage_account_name = "imslandingznstr"
@@ -15,6 +7,13 @@ terraform {
     use_oidc_auth        = true
     use_azuread_auth     = true
   }
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0"
+    }
+  }
+  required_version = ">= 1.0"  
 }
 
 # provider "azurerm" {
