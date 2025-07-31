@@ -42,3 +42,140 @@ jobs:
         run: |
           chmod +x modules/managementgroups/bootstrap.sh
           modules/managementgroups/bootstrap.sh
+jobs:
+  Create Management Groups:
+    if: ${{ github.event.inputs.jobToRun == 'Create Management Groups' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.ARM_CLIENT_ID }}
+          tenant-id: ${{ secrets.ARM_TENANT_ID }}
+          subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init and Plan management groups
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          TF_VAR_backend_resource_group_name: ${{ secrets.BACKEND_RESOURCE_GROUP_NAME }}
+          TF_VAR_backend_storage_account_name: ${{ secrets.BACKEND_STORAGE_ACCOUNT_NAME }}
+          TF_VAR_backend_container_name: ${{ secrets.BACKEND_CONTAINER_NAME }}
+          TF_VAR_backend_key: managementgroups.terraform.tfstate
+        run: |
+          cd modules/managementgroups
+          terraform init -reconfigure \
+            -backend-config="resource_group_name=${TF_VAR_backend_resource_group_name}" \
+            -backend-config="storage_account_name=${TF_VAR_backend_storage_account_name}" \
+            -backend-config="container_name=${TF_VAR_backend_container_name}" \
+            -backend-config="key=${TF_VAR_backend_key}"
+
+      - name: Terraform Plan management groups
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          TF_VAR_backend_resource_group_name: ${{ secrets.BACKEND_RESOURCE_GROUP_NAME }}
+          TF_VAR_backend_storage_account_name: ${{ secrets.BACKEND_STORAGE_ACCOUNT_NAME }}
+          TF_VAR_backend_container_name: ${{ secrets.BACKEND_CONTAINER_NAME }}
+          TF_VAR_backend_key: managementgroups.terraform.tfstate
+        run: |
+          cd modules/managementgroups
+          terraform plan -out=tfplan
+          terraform show -no-color tfplan > plan.txt  
+
+      - name: Upload .terraform.lock.hcl
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-workspace
+          path: /home/runner/work/plateng-azure-inf-LZ/plateng-azure-inf-LZ/modules/managementgroups/.terraform.lock.hcl
+          include-hidden-files: true
+
+      - name: Upload plan.txt artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: plan-txt-artifact
+          path: modules/managementgroups/plan.txt
+
+      - name: Upload tfplan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-artifact
+          path: modules/managementgroups/tfplan
+
+
+  apply-managementgroups:
+    # needs: manual-approval
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - uses: azure/login@v2.1.0
+        with:
+          client-id: ${{ secrets.ARM_CLIENT_ID }}
+          tenant-id: ${{ secrets.ARM_TENANT_ID }}
+          subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          audience: api://AzureADTokenExchange
+
+      - uses: hashicorp/setup-terraform@v3.1.0
+        with:
+          terraform_version: ${{ env.terraformVersion }}
+
+      - name: Download tfplan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan-artifact
+          path: modules/managementgroups
+
+      - name: Download plan.txt artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: plan-txt-artifact
+          path: modules/managementgroups
+
+      - name: Download lock file artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-workspace
+          path: modules/managementgroups
+
+      - name: Terraform Init
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          TF_VAR_backend_resource_group_name: ${{ secrets.BACKEND_RESOURCE_GROUP_NAME }}
+          TF_VAR_backend_storage_account_name: ${{ secrets.BACKEND_STORAGE_ACCOUNT_NAME }}
+          TF_VAR_backend_container_name: ${{ secrets.BACKEND_CONTAINER_NAME }}
+          TF_VAR_backend_key: managementgroups.terraform.tfstate
+        run: |
+          cd modules/managementgroups
+          terraform init -reconfigure \
+            -backend-config="resource_group_name=${TF_VAR_backend_resource_group_name}" \
+            -backend-config="storage_account_name=${TF_VAR_backend_storage_account_name}" \
+            -backend-config="container_name=${TF_VAR_backend_container_name}" \
+            -backend-config="key=${TF_VAR_backend_key}"          
+
+      - name: Terraform Apply management groups
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          TF_VAR_backend_resource_group_name: ${{ secrets.BACKEND_RESOURCE_GROUP_NAME }}
+          TF_VAR_backend_storage_account_name: ${{ secrets.BACKEND_STORAGE_ACCOUNT_NAME }}
+          TF_VAR_backend_container_name: ${{ secrets.BACKEND_CONTAINER_NAME }}
+          TF_VAR_backend_key: managementgroups.terraform.tfstate
+        run: |
+          cd modules/managementgroups
+          terraform apply -auto-approve tfplan
