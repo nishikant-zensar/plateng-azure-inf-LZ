@@ -110,7 +110,6 @@ jobs:
           name: tfplan-artifact
           path: modules/managementgroups/tfplan
 
-
   apply-managementgroups:
     # needs: manual-approval
     runs-on: ubuntu-latest
