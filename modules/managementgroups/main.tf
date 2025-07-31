@@ -131,33 +131,3 @@ resource "azurerm_management_group" "ims-env-prd" {
     azurerm_management_group.ims-root-environments
   ]
 }
-
-##############################################
-# Associate subscriptions to respective MG's #
-##############################################
-# 1. Associate the Connectivity subscription with "ims-platform-prd" MG
-resource "azurerm_management_group_subscription_association" "ims-platform-prd-Connectivity" {
-  management_group_id = azurerm_management_group.ims-platform-prd.id
-  subscription_id     = "/subscriptions/eca8a48a-2dc4-45da-908c-94bf6100016c"
-  depends_on = [
-    azurerm_management_group.ims-platform-prd
-  ]
-}
-
-# 2. Associate the Management subscription with "ims-platform-prd" MG
-resource "azurerm_management_group_subscription_association" "ims-platform-prd-management" {
-  management_group_id = azurerm_management_group.ims-platform-prd.id
-  subscription_id     = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36"
-  depends_on = [
-    azurerm_management_group.ims-platform-prd
-  ]
-}
-
-# 3. Associate AVD Production subscription with "ims-env-prd" MG
-resource "azurerm_management_group_subscription_association" "ims-env-prd-avd" {
-  management_group_id = azurerm_management_group.ims-env-prd.id
-  subscription_id     = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef"
-  depends_on = [
-    azurerm_management_group.ims-env-prd
-  ]
-}
