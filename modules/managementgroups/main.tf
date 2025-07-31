@@ -8,10 +8,10 @@ terraform {
   required_version = ">= 1.0"
 
   backend "azurerm" {
-    resource_group_name  = var.backend_resource_group_name
-    storage_account_name = var.backend_storage_account_name
+    resource_group_name  = "ims-prd-lz-ne-rg-terraformstate"
+    storage_account_name = "imslandingznstr"
     container_name       = "tfstate"
-    key                  = var.backend_key # Path to the state file in the container
+    key                  = "managementgroups.terraform.tfstate" # Path to the state file in the container
     use_oidc_auth        = true
     use_azuread_auth     = true
   }
