@@ -42,7 +42,7 @@ jobs:
         run: |
           chmod +x modules/managementgroups/bootstrap.sh
           modules/managementgroups/bootstrap.sh
-jobs:
+
   Create Management Groups:
     if: ${{ github.event.inputs.jobToRun == 'Create Management Groups' }}
     runs-on: ubuntu-latest
