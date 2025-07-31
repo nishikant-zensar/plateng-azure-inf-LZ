@@ -14,7 +14,7 @@ on:
           - DeployHubSpoke
           - DestroyHubSpoke
 env:
-  terraformVersion: '1.12.2'
+  terraformVersion: '1.8.0'
 
 permissions:
   id-token: write
