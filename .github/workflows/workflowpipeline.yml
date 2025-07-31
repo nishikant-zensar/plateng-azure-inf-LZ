@@ -9,8 +9,8 @@ on:
         type: choice
         options:
           - Bootstrap
-          - Create Management Groups
-          - Destroy Management Groups
+          - CreateManagementGroups
+          - DestroyManagementGroups
           - DeployHubSpoke
           - DestroyHubSpoke
 env:
@@ -43,8 +43,8 @@ jobs:
           chmod +x modules/managementgroups/bootstrap.sh
           modules/managementgroups/bootstrap.sh
 
-  Create Management Groups:
-    if: ${{ github.event.inputs.jobToRun == 'Create Management Groups' }}
+  CreateManagementGroups:
+    if: ${{ github.event.inputs.jobToRun == 'CreateManagementGroups' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
