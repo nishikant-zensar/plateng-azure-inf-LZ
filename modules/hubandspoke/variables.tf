@@ -53,3 +53,8 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+variable "location" {
+  description = "Location for resource creation"
+  type        = string
+  default     = "northeurope"
+}
