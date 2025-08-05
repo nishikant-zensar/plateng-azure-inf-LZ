@@ -10,78 +10,14 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
-variable "resource_group_name" {
-  description = "Resource Group Name"
-  type        = string
-}
+#####################################################
+# Create Public IP's for Gateway and Firewall
+#####################################################
+# 1. Create "ims-prd-conn-ne-pip-vpng-01" Public IP for VPN Gateway
 
-variable "location" {
-  description = "Azure Region"
-  type        = string
-}
-
-variable "public_ip_name" {
-  description = "Name of the Public IP"
-  type        = string
-}
-
-variable "ip_version" {
-  description = "IP Version (IPv4 or IPv6)"
-  type        = string
-  default     = "IPv4"
-}
-
-variable "sku" {
-  description = "SKU (Basic or Standard)"
-  type        = string
-  default     = "Standard"
-}
-
-variable "zones" {
-  description = "List of Availability Zones"
-  type        = list(string)
-  default     = []
-}
-
-variable "tier" {
-  description = "Tier (Regional or Global)"
-  type        = string
-  default     = "Regional"
-}
-
-variable "allocation_method" {
-  description = "IP Address Assignment (Static or Dynamic)"
-  type        = string
-  default     = "Static"
-}
-
-variable "routing_preference" {
-  description = "Routing Preference (Internet or Microsoft)"
-  type        = string
-  default     = "Internet"
-}
-
-variable "idle_timeout_in_minutes" {
-  description = "Idle timeout in minutes"
-  type        = number
-  default     = 4
-}
-
-variable "domain_name_label" {
-  description = "Domain name label (for DNS)"
-  type        = string
-  default     = null
-}
-
-variable "ddos_protection_mode" {
-  description = "DDoS Protection Mode (Enabled, Disabled, or null for inherited)"
-  type        = string
-  default     = null
-}
-
-resource "azurerm_public_ip" "this" {
-  name                = var.public_ip_name
-  resource_group_name = var.resource_group_name
+resource "azurerm_public_ip" "pipvpng01" {
+  name                = ims-prd-conn-ne-pip-vpng-01
+  resource_group_name = "ims-prd-conn-ne-rg-network"
   location            = var.location
   sku                 = var.sku
   allocation_method   = var.allocation_method
@@ -90,13 +26,68 @@ resource "azurerm_public_ip" "this" {
   tier                = var.tier
   domain_name_label   = var.domain_name_label
   idle_timeout_in_minutes = var.idle_timeout_in_minutes
-  public_ip_prefix_id = null
 
   # Routing Preference (Internet, Microsoft), only valid for Standard SKU with IPv4
   routing_preference = var.routing_preference
 
   # DDoS protection is only available for Standard SKU
-  ddos_protection_mode = var.ddos_protection_mode
+  # ddos_protection_mode = var.ddos_protection_mode
+  tags = {
+    Name          = "ims-prd-conn-ne-pip-vpng-01"
+    Environment   = "prd"
+    DateCreated   = "2025-08-01"
+  }
+}
+# 2. Create "ims-prd-conn-ne-pip-vpng-02" Public IP for VPN Gateway
+
+resource "azurerm_public_ip" "pipvpng02" {
+  name                = ims-prd-conn-ne-pip-vpng-02
+  resource_group_name = "ims-prd-conn-ne-rg-network"
+  location            = var.location
+  sku                 = var.sku
+  allocation_method   = var.allocation_method
+  ip_version          = var.ip_version
+  zones               = var.zones
+  tier                = var.tier
+  domain_name_label   = var.domain_name_label
+  idle_timeout_in_minutes = var.idle_timeout_in_minutes
+
+  # Routing Preference (Internet, Microsoft), only valid for Standard SKU with IPv4
+  routing_preference = var.routing_preference
+
+  # DDoS protection is only available for Standard SKU
+  # ddos_protection_mode = var.ddos_protection_mode
+  tags = {
+    Name          = "ims-prd-conn-ne-pip-vpng-02"
+    Environment   = "prd"
+    DateCreated   = "2025-08-01"
+  }
+}
+
+# 3. Create "ims-prd-conn-ne-pip-afw-01" Public IP for VPN Gateway
+
+resource "azurerm_public_ip" "pipafw01" {
+  name                = ims-prd-conn-ne-pip-afw-01
+  resource_group_name = "ims-prd-conn-ne-rg-network"
+  location            = var.location
+  sku                 = var.sku
+  allocation_method   = var.allocation_method
+  ip_version          = var.ip_version
+  zones               = var.zones
+  tier                = var.tier
+  domain_name_label   = var.domain_name_label
+  idle_timeout_in_minutes = var.idle_timeout_in_minutes
+
+  # Routing Preference (Internet, Microsoft), only valid for Standard SKU with IPv4
+  routing_preference = var.routing_preference
+
+  # DDoS protection is only available for Standard SKU
+  # ddos_protection_mode = var.ddos_protection_mode
+  tags = {
+    Name          = "ims-prd-conn-ne-pip-afw-01"
+    Environment   = "prd"
+    DateCreated   = "2025-08-01"
+  }
 }
 
 # VPN Gateway

@@ -137,7 +137,7 @@ resource "azurerm_resource_group" "avdpsnl" {
   }
 }
 ####################################################################
-# 1- Create "ims-prd-conn-ne-vnet-hub-01" connectivity-hub-vnet
+# Create "ims-prd-conn-ne-vnet-hub-01" connectivity-hub-vnet
 ####################################################################
 resource "azurerm_virtual_network" "hubvnet" {
   provider            = azurerm.ims-prd-connectivity
@@ -162,7 +162,7 @@ resource "azurerm_virtual_network" "hubvnet" {
 }
 
 ################################################################
-# Create subnets
+# Create subnets in hubvnet
 ################################################################
 # 1. Create "AzureFirewallSubnet" subnet for Firewall traffic at hub vNet
 resource "azurerm_subnet" "AzureFirewallSubnet" {
@@ -176,3 +176,155 @@ resource "azurerm_subnet" "AzureFirewallSubnet" {
     azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01
     ]
  }
+ # 2. Create "AzureFirewallManagementSubnet" subnet for Firewall Management traffic at hub vNet
+resource "azurerm_subnet" "AzureFirewallManagementSubnet" {
+  provider             = azurerm.ims-prd-connectivity
+  resource_group_name  = azurerm_resource_group.conn.name
+  virtual_network_name = azurerm_virtual_network.hubvnet.name
+  name                 = "AzureFirewallManagementSubnet"
+  address_prefixes     = ["192.168.1.64/26"]
+
+  depends_on = [
+    azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01
+    ]
+}
+# 3. Create "GatewaySubnet" subnet for Gateway traffic at hub vNet
+resource "azurerm_subnet" "GatewaySubnet" {
+  provider             = azurerm.ims-prd-connectivity
+  resource_group_name  = azurerm_resource_group.conn.name
+  virtual_network_name = azurerm_virtual_network.hubvnet.name
+  name                 = "GatewaySubnet"
+  address_prefixes     = ["192.168.0.0/26"]
+
+  depends_on = [
+    azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01
+    ]
+  }
+  # 4. Create "ims-prd-conn-ne-snet-dnsprin" subnet for inbound DNS private resolution traffic at hub vNet
+resource "azurerm_subnet" "ims-prd-conn-ne-snet-dnsprin" {
+  provider             = azurerm.ims-prd-connectivity
+  resource_group_name  = azurerm_resource_group.conn.name
+  virtual_network_name = azurerm_virtual_network.hubvnet.name
+  name                 = "ims-prd-conn-ne-snet-dnsprin"
+  address_prefixes     = ["192.168.0.128/26"]
+
+  depends_on = [
+    azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01
+  ]
+}
+# 5. Create "ims-prd-conn-ne-snet-dnsprout" subnet for outbound DNS private resolution traffic at hub vNet
+resource "azurerm_subnet" "ims-prd-conn-ne-snet-dnsprout" {
+  provider             = azurerm.ims-prd-connectivity
+  resource_group_name  = azurerm_resource_group.conn.name
+  virtual_network_name = azurerm_virtual_network.hubvnet.name
+  name                 = "ims-prd-conn-ne-snet-dnsprout"
+  address_prefixes     = ["192.168.0.192/26"]
+
+  depends_on = [
+    azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01
+  ]
+}
+# 6. Create "ims-prd-conn-ne-snet-pep" Private endpoint subnet at hub vNet
+resource "azurerm_subnet" "ims-prd-conn-ne-snet-pep" {
+  provider             = azurerm.ims-prd-connectivity
+  resource_group_name  = azurerm_resource_group.conn.name
+  virtual_network_name = azurerm_virtual_network.hubvnet.name
+  name                 = "ims-prd-conn-ne-snet-pep"
+  address_prefixes     = ["192.168.1.0/26"]
+  
+  depends_on = [
+    azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01
+    ]
+}
+####################################################
+# Create "ims-prd-mgmt-ne-vnet-01" management vNet
+####################################################
+resource "azurerm_virtual_network" "mgmtvnet" {
+  provider            = azurerm.ims-prd-management
+  resource_group_name = azurerm_resource_group.mgmt.name
+  name                = "ims-prd-mgmt-ne-vnet-01"
+  location            = var.location
+  address_space       = ["192.168.4.0/22"]
+
+  encryption {
+    enforcement = "AllowUnencrypted"
+  }
+
+  tags = {
+    Name        = "ims-prd-mgmt-ne-vnet-01"
+    Environment = "prd"
+    DateCreated = "2025-08-01"
+  }
+
+  depends_on = [
+    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
+  ]
+}
+################################################################
+# Create Subnets in mgmt vnet
+################################################################
+# 1. Create "ims-prd-mgmt-ne-snet-security" subnet for mgmt security traffic at mgmt vNet
+resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-security" {
+  provider             = azurerm.ims-prd-management
+  resource_group_name  = azurerm_resource_group.mgmt.name
+  virtual_network_name = azurerm_virtual_network.mgmtvnet.name
+  name                 = "ims-prd-mgmt-ne-snet-security"
+  address_prefixes     = ["192.168.4.0/26"]
+
+  depends_on = [
+    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
+  ]
+}
+# 2. Create "ims-prd-mgmt-ne-snet-system" subnet for mgmt system traffic at mgmt vNet
+resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-system" {
+  provider             = azurerm.ims-prd-management
+  resource_group_name  = azurerm_resource_group.mgmt.name
+  virtual_network_name = azurerm_virtual_network.mgmtvnet.name
+  name                 = "ims-prd-mgmt-ne-snet-system"
+  address_prefixes     = ["192.168.4.64/26"]
+
+  depends_on = [
+    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
+  ]
+}
+# 3. Create "ims-prd-mgmt-ne-snet-keyvault" subnet for mgmt keyvault traffic at mgmt vNet
+resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-keyvault" {
+  provider             = azurerm.ims-prd-management
+  resource_group_name  = azurerm_resource_group.mgmt.name
+  virtual_network_name = azurerm_virtual_network.mgmtvnet.name
+  name                 = "ims-prd-mgmt-ne-snet-keyvault"
+  address_prefixes     = ["192.168.4.128/26"]
+
+  depends_on = [
+    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
+  ]
+}
+# 4. Create "ims-prd-mgmt-ne-snet-pep" subnet for mgmt private endpoint traffic at mgmt vNet
+resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-pep" {
+  provider             = azurerm.ims-prd-management
+  resource_group_name  = azurerm_resource_group.mgmt.name
+  virtual_network_name = azurerm_virtual_network.mgmtvnet.name
+  name                 = "ims-prd-mgmt-ne-snet-pep"
+  address_prefixes     = ["192.168.4.192/26"]
+
+  depends_on = [
+    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
+  ]
+}
+# Task 1: Peering between Hub and Mgmt vNet
+resource "azurerm_virtual_network_peering" "hub_to_mgmt" {
+  name                      = "ims-prd-conn-ne-vnet-hub-01-TO-ims-prd-mgmt-ne-vnet-01"
+  resource_group_name       = "ims-prd-conn-ne-rg-network"
+  virtual_network_name      = "ims-prd-conn-ne-vnet-hub-01"
+  remote_virtual_network_id = azurerm_virtual_network.ims-prd-mgmt-ne-vnet-01.id
+
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  allow_gateway_transit        = true
+  use_remote_gateways          = false
+
+  depends_on = [
+    azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01,
+    azurerm_virtual_network.ims-prd-mgmt-ne-vnet-01
+  ]
+}
