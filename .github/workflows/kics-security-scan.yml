@@ -38,8 +38,8 @@ jobs:
         fail_on: 'high,medium'
         enable_comments: true
         exclude_paths: '.git,node_modules,*.md,*.txt,tools,kics-results'
-        platform_type: 'CloudFormation'
-        cloud_provider: 'aws'
+        platform_type: 'Terraform'
+        cloud_provider: 'azure'
         verbose: true
         ignore_on_exit: 'results'
         
