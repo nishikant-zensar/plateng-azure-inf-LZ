@@ -19,7 +19,7 @@ terraform {
 # Public IP
 
 provider "azurerm" {
-  features        = {}
+  features {}
 }
 
 #####################################################
