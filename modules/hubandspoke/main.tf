@@ -354,6 +354,7 @@ resource "azurerm_virtual_network_peering" "hub_to_mgmt" {
   resource_group_name       = "ims-prd-conn-ne-rg-network"
   virtual_network_name      = "ims-prd-conn-ne-vnet-hub-01"
   remote_virtual_network_id = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-mgmt-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-mgmt-ne-vnet-01"
+  provider                  = azurerm.ims-prd-connectivity
 
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
@@ -368,6 +369,7 @@ resource "azurerm_virtual_network_peering" "hub_to_avd" {
   resource_group_name       = "ims-prd-conn-ne-rg-network"
   virtual_network_name      = "ims-prd-conn-ne-vnet-hub-01"
   remote_virtual_network_id = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef/resourceGroups/ims-prd-avd-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-avd-ne-vnet-01"
+  provider                  = azurerm.ims-prd-connectivity
 
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
