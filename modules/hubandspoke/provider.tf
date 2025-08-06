@@ -21,3 +21,6 @@ provider "azurerm" {
   client_id       = "74925104-cd8b-47e5-b29a-83a75a2f4ca6"
   features {}
 }
+provider "azurerm" {
+│   resource_provider_registrations = "none"
+│ }
