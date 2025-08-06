@@ -24,10 +24,6 @@ variable "backend_key" {
   type        = string
   default     = "hubspoke.terraform.tfstate"
 }
-variable "subscription_id" {
-  description = "The subscription ID to deploy the resource group"
-  type        = string
-}
 variable "location" {
   description = "Location for resource creation"
   type        = string
