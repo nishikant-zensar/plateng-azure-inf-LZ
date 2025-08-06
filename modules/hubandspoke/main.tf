@@ -18,7 +18,6 @@ terraform {
 
 provider "azurerm" {
   features        = {}
-  subscription_id = var.subscription_id
 }
 # Create Network RG in Connectivity, Managemnet and AVD MG
 # 1. Resource Group in ims-prd-connectivity (Connectivity subscription) 
