@@ -184,6 +184,7 @@ resource "azurerm_subnet" "AzureFirewallSubnet" {
   virtual_network_name = azurerm_virtual_network.hubvnet.name
   name                 = "AzureFirewallSubnet"
   address_prefixes     = ["192.168.0.64/26"]
+}
 
  # 2. Create "AzureFirewallManagementSubnet" subnet for Firewall Management traffic at hub vNet
 resource "azurerm_subnet" "AzureFirewallManagementSubnet" {
