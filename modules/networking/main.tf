@@ -28,7 +28,7 @@ provider "azurerm" {
 # 1. Create "ims-prd-conn-ne-pip-vpng-01" Public IP for VPN Gateway
 
 resource "azurerm_public_ip" "pipvpng01" {
-  name                = ims-prd-conn-ne-pip-vpng-01
+  name                = "ims-prd-conn-ne-pip-vpng-01"
   resource_group_name = "ims-prd-conn-ne-rg-network"
   location            = var.location
   sku                 = var.sku
@@ -53,7 +53,7 @@ resource "azurerm_public_ip" "pipvpng01" {
 # 2. Create "ims-prd-conn-ne-pip-vpng-02" Public IP for VPN Gateway
 
 resource "azurerm_public_ip" "pipvpng02" {
-  name                = ims-prd-conn-ne-pip-vpng-02
+  name                = "ims-prd-conn-ne-pip-vpng-02"
   resource_group_name = "ims-prd-conn-ne-rg-network"
   location            = var.location
   sku                 = var.sku
@@ -79,7 +79,7 @@ resource "azurerm_public_ip" "pipvpng02" {
 # 3. Create "ims-prd-conn-ne-pip-afw-01" Public IP for VPN Gateway
 
 resource "azurerm_public_ip" "pipafw01" {
-  name                = ims-prd-conn-ne-pip-afw-01
+  name                = "ims-prd-conn-ne-pip-afw-01"
   resource_group_name = "ims-prd-conn-ne-rg-network"
   location            = var.location
   sku                 = var.sku
@@ -134,7 +134,7 @@ resource "azurerm_virtual_network_gateway" "vpn_gw" {
   subscription        = var.connectivity_subscription_id
   name                = "ims-prd-conn-ne-vpng-01"
   location            = var.location
-  resource_group_name = data.azurerm_resource_group.vpn.name
+  resource_group_name = data.azurerm_virtual_network.vnethub.resource_group_name
 
   type     = "Vpn"
   vpn_type = "RouteBased"
@@ -171,7 +171,7 @@ resource "azurerm_virtual_network_gateway" "vpn_gw" {
 resource "azurerm_local_network_gateway" "aws_lgw1" {
   name                = "ims-prd-conn-ne-lgw-aws-01"
   location            = var.location
-  resource_group_name = data.azurerm_resource_group.vpn.name
+  resource_group_name = data.azurerm_virtual_network.vnethub.resource_group_name
   gateway_address     = "46.137.123.146"
   address_space       = [
     "10.0.0.0/14"
@@ -182,7 +182,7 @@ resource "azurerm_local_network_gateway" "aws_lgw1" {
 resource "azurerm_local_network_gateway" "aws_lgw2" {
   name                = "ims-prd-conn-ne-lgw-aws-02"
   location            = var.location
-  resource_group_name = data.azurerm_resource_group.vpn.name
+  resource_group_name = data.azurerm_virtual_network.vnethub.resource_group_name
   gateway_address     = "52.213.177.71"
   address_space       = [
     "10.0.0.0/14"
