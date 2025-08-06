@@ -38,9 +38,11 @@ resource "azurerm_firewall" "fw" {
 
 output "firewall_id" {
   value = azurerm_firewall.fw.id
+  description = "Azure Firewall ID"
 }
 output "firewall_policy_id" {
   value = azurerm_firewall_policy.fw_policy.id
+  description = "Firewall Policy ID"
 }
 
 # DNAT Rule Collection
