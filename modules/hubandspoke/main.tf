@@ -353,17 +353,13 @@ resource "azurerm_virtual_network_peering" "hub_to_mgmt" {
   name                      = "ims-prd-conn-ne-vnet-hub-01-TO-ims-prd-mgmt-ne-vnet-01"
   resource_group_name       = "ims-prd-conn-ne-rg-network"
   virtual_network_name      = "ims-prd-conn-ne-vnet-hub-01"
-  remote_virtual_network_id = azurerm_virtual_network.ims-prd-mgmt-ne-vnet-01.id
+  remote_virtual_network_id = "ims-prd-mgmt-ne-vnet-01"
 
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
   allow_gateway_transit        = true
   use_remote_gateways          = false
 
-  depends_on = [
-    azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01,
-    azurerm_virtual_network.ims-prd-mgmt-ne-vnet-01
-  ]
 }
 
 # Task 2: Peering between Hub and AVD vNet
@@ -371,15 +367,11 @@ resource "azurerm_virtual_network_peering" "hub_to_avd" {
   name                      = "ims-prd-conn-ne-vnet-hub-01-TO-ims-prd-avd-ne-vnet-01"
   resource_group_name       = "ims-prd-conn-ne-rg-network"
   virtual_network_name      = "ims-prd-conn-ne-vnet-hub-01"
-  remote_virtual_network_id = azurerm_virtual_network.ims-prd-avd-ne-vnet-01.id
+  remote_virtual_network_id = "ims-prd-avd-ne-vnet-01"
 
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
   allow_gateway_transit        = true
   use_remote_gateways          = false
 
-  depends_on = [
-    azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01,
-    azurerm_virtual_network.ims-prd-avd-ne-vnet-01
-  ]
 }
