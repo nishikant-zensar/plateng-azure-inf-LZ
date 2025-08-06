@@ -45,7 +45,7 @@ output "firewall_policy_id" {
   description = "Firewall Policy ID"
 }
 
-# DNAT Rule Collection
+# Firewall Rule Collection
 resource "azurerm_firewall_policy_rule_collection_group" "coreplat_group" {
   name                = "ims-prd-conn-ne-afwprcg-coreplat"
   resource_group_name = var.resource_group_name
