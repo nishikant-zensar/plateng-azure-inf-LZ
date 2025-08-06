@@ -45,7 +45,6 @@ output "firewall_policy_id" {
 
 # DNAT Rule Collection
 resource "azurerm_firewall_policy_rule_collection_group" "coreplat_group" {
-   {
   name                = "coreplat-policy"
   resource_group_name = var.resource_group_name
   location            = var.location

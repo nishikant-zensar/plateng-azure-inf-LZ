@@ -1231,8 +1231,8 @@ resource "azurerm_subnet_network_security_group_association" "ims-prd-conn-ne-dn
 # 3b. Associate "ims-prd-conn-ne-snet-dnsprout" subnet with "ims-prd-conn-ne-rt-dnsprout" route table/UDR
 resource "azurerm_subnet_route_table_association" "ims-prd-conn-ne-dnsprout-rt" {
   provider       = azurerm.ims-prd-connectivity
-  subnet_id      = ims-prd-conn-ne-snet-dnsprout"
-  route_table_id = 'ims-prd-conn-ne-rt-dnsprout"
+  subnet_id      = "ims-prd-conn-ne-snet-dnsprout"
+  route_table_id = "ims-prd-conn-ne-rt-dnsprout"
 }
 # 4. Associate "ims-prd-conn-ne-snet-pep" subnet with "ims-prd-conn-ne-nsg-pep" nsg
 resource "azurerm_subnet_network_security_group_association" "ims-prd-conn-ne-pep-nsg" {
