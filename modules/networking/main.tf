@@ -90,42 +90,44 @@ resource "azurerm_public_ip" "pipafw01" {
   }
 }
 
-# VPN Gateway
+#####################################################
+# Create Virtual Private Gateway and Local Network Gateways
+#####################################################
+# 1. Create ims-prd-conn-ne-vpng-01 VPN Gateway
 
 provider "azurerm" {
-  features = {}
-  # If you use multiple subscriptions, specify subscription_id here.
-  # subscription_id = "SUBSCRIPTION_ID_FOR_ims-prd-connectivity"
+  features {}
+  # Optionally set subscription_id if needed
+  # subscription_id = "<your-subscription-id>"
 }
 
-data "azurerm_resource_group" "vpn" {
-  name = "ims-prd-conn-ne-rg-network"
-}
+# Data sources for existing resources
 
-data "azurerm_virtual_network" "hub_vnet" {
+data "azurerm_virtual_network" "vnethub" {
   name                = "ims-prd-conn-ne-vnet-hub-01"
-  resource_group_name = data.azurerm_resource_group.vpn.name
+  resource_group_name = "ims-prd-conn-ne-rg-network"
 }
 
 data "azurerm_subnet" "gateway_subnet" {
   name                 = "GatewaySubnet"
-  virtual_network_name = data.azurerm_virtual_network.hub_vnet.name
-  resource_group_name  = data.azurerm_resource_group.vpn.name
+  virtual_network_name = data.azurerm_virtual_network.vnethub.name
+  resource_group_name  = data.azurerm_virtual_network.vnethub.resource_group_name
 }
 
 data "azurerm_public_ip" "pip1" {
   name                = "ims-prd-conn-ne-pip-vpng-01"
-  resource_group_name = data.azurerm_resource_group.vpn.name
+  resource_group_name = "ims-prd-conn-ne-rg-network"
 }
 
 data "azurerm_public_ip" "pip2" {
   name                = "ims-prd-conn-ne-pip-vpng-02"
-  resource_group_name = data.azurerm_resource_group.vpn.name
+  resource_group_name = "ims-prd-conn-ne-rg-network"
 }
 
 resource "azurerm_virtual_network_gateway" "vpn_gw" {
+  subscription        = var.connectivity_subscription_id
   name                = "ims-prd-conn-ne-vpng-01"
-  location            = data.azurerm_resource_group.vpn.location
+  location            = var.location
   resource_group_name = data.azurerm_resource_group.vpn.name
 
   type     = "Vpn"
@@ -136,325 +138,94 @@ resource "azurerm_virtual_network_gateway" "vpn_gw" {
   active_active = true
 
   ip_configuration {
-    name                          = "vnetGatewayConfig1"
-    public_ip_address_id          = data.azurerm_public_ip.pip1.id
+    name                          = "vpng-ipconfig1"
+    public_ip_address_id          = data.azurerm_public_ip.pip1.name
     private_ip_address_allocation = "Dynamic"
     subnet_id                     = data.azurerm_subnet.gateway_subnet.id
   }
 
   ip_configuration {
-    name                          = "vnetGatewayConfig2"
-    public_ip_address_id          = data.azurerm_public_ip.pip2.id
+    name                          = "vpng-ipconfig2"
+    public_ip_address_id          = data.azurerm_public_ip.pip2.name
     private_ip_address_allocation = "Dynamic"
     subnet_id                     = data.azurerm_subnet.gateway_subnet.id
   }
 
   enable_bgp = false
   # Key Vault Access, Managed Identity, and Authentication Information (preview) not enabled.
-}
-
-# Azure Firewall
-
-# Variables
-variable "subscription_id" {
-  description = "Azure Subscription ID"
-  type        = string
-}
-
-variable "resource_group_name" {
-  description = "Resource Group Name"
-  type        = string
-}
-
-variable "location" {
-  description = "Azure Region"
-  type        = string
-}
-
-variable "firewall_name" {
-  description = "Azure Firewall Name"
-  type        = string
-}
-
-variable "availability_zones" {
-  description = "List of Availability Zones"
-  type        = list(string)
-  default     = []
-}
-
-variable "firewall_sku_name" {
-  description = "Firewall SKU (AZFW_VNet or AZFW_Hub)"
-  type        = string
-}
-
-variable "firewall_sku_tier" {
-  description = "Firewall SKU Tier (Standard, Premium, or Basic)"
-  type        = string
-}
-
-variable "policy_name" {
-  description = "Firewall Policy Name"
-  type        = string
-}
-
-variable "policy_location" {
-  description = "Firewall Policy Region"
-  type        = string
-}
-
-variable "policy_sku" {
-  description = "Firewall Policy Tier (Standard or Premium)"
-  type        = string
-}
-
-variable "vnet_name" {
-  description = "Virtual Network Name"
-  type        = string
-}
-
-variable "address_space" {
-  description = "Address space for VNet"
-  type        = list(string)
-}
-
-variable "subnet_name" {
-  description = "Subnet Name"
-  type        = string
-  default     = "AzureFirewallSubnet"
-}
-
-variable "subnet_prefix" {
-  description = "Address prefix for firewall subnet"
-  type        = string
-}
-
-variable "public_ip_name" {
-  description = "Name of the Public IP for Firewall"
-  type        = string
-}
-
-variable "enable_threat_intel" {
-  description = "Enable Threat Intelligence mode (Off, Alert, Deny)"
-  type        = string
-  default     = "Alert"
-}
-
-variable "idps_mode" {
-  description = "IDPS mode (Off, Alert, Deny)"
-  type        = string
-  default     = "Alert"
-}
-
-# Provider
-provider "azurerm" {
-  features = {}
-  subscription_id = var.subscription_id
-}
-
-# Resource Group (Data)
-data "azurerm_resource_group" "fw_rg" {
-  name = var.resource_group_name
-}
-
-# Public IP (Data)
-data "azurerm_public_ip" "firewall_pip" {
-  name                = var.public_ip_name
-  resource_group_name = var.resource_group_name
-}
-
-# Virtual Network
-resource "azurerm_virtual_network" "fw_vnet" {
-  name                = var.vnet_name
-  address_space       = var.address_space
-  location            = var.location
-  resource_group_name = var.resource_group_name
-}
-
-# Subnet
-resource "azurerm_subnet" "fw_subnet" {
-  name                 = var.subnet_name
-  resource_group_name  = var.resource_group_name
-  virtual_network_name = azurerm_virtual_network.fw_vnet.name
-  address_prefixes     = [var.subnet_prefix]
-  delegation {
-    name = "AzureFirewallSubnet"
-    service_delegation {
-      name = "Microsoft.Network/azureFirewalls"
-      actions = [
-        "Microsoft.Network/virtualNetworks/subnets/action"
-      ]
-    }
-  }
-}
-
-# Firewall Policy
-resource "azurerm_firewall_policy" "fw_policy" {
-  name                = var.policy_name
-  location            = var.policy_location
-  resource_group_name = var.resource_group_name
-  sku                 = var.policy_sku
-
-  threat_intelligence_mode = var.enable_threat_intel
-  intrusion_detection {
-    mode = var.idps_mode
-  }
-}
-
-# Azure Firewall
-resource "azurerm_firewall" "fw" {
-  name                = var.firewall_name
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  sku_name            = var.firewall_sku_name
-  sku_tier            = var.firewall_sku_tier
-  firewall_policy_id  = azurerm_firewall_policy.fw_policy.id
-  zones               = var.availability_zones
-
-  ip_configuration {
-    name                 = "configuration"
-    subnet_id            = azurerm_subnet.fw_subnet.id
-    public_ip_address_id = data.azurerm_public_ip.firewall_pip.id
-  }
-}
-
-output "firewall_id" {
-  value = azurerm_firewall.fw.id
-}
-output "firewall_policy_id" {
-  value = azurerm_firewall_policy.fw_policy.id
-}
-
-# Route Table
-variable "subscription_id" {
-  description = "Azure Subscription ID"
-  type        = string
-}
-
-variable "resource_group_name" {
-  description = "Resource Group Name"
-  type        = string
-}
-
-variable "location" {
-  description = "Azure Region"
-  type        = string
-}
-
-variable "route_table_name" {
-  description = "Route Table Name"
-  type        = string
-}
-
-variable "propagate_gateway_routes" {
-  description = "Propagate Gateway Routes (true or false)"
-  type        = bool
-}
-
-provider "azurerm" {
-  features        = {}
-  subscription_id = var.subscription_id
-}
-
-resource "azurerm_route_table" "this" {
-  name                          = var.route_table_name
-  resource_group_name           = var.resource_group_name
-  location                      = var.location
-  disable_bgp_route_propagation = !var.propagate_gateway_routes
+  
   tags = {
-    environment = "managed-by-terraform"
+    Name          = "ims-prd-conn-ne-vpng-01"
+    Environment   = "prd"
+    DateCreated   = "2025-08-01"
   }
 }
+# 2. Create Local Network Gateway 1 on VPN Gateway
 
-output "route_table_id" {
-  value = azurerm_route_table.this.id
-}
-
-# Terraform script to create Azure DNS Private Resolver
-
-provider "azurerm" {
-  features {}
-}
-
-variable "subscription_id" {
-  description = "Azure Subscription ID"
-  type        = string
-}
-
-variable "resource_group_name" {
-  description = "Resource Group Name"
-  type        = string
-}
-
-variable "location" {
-  description = "Azure Region"
-  type        = string
-}
-
-variable "dns_private_resolver_name" {
-  description = "DNS Private Resolver Name"
-  type        = string
-}
-
-variable "virtual_network_id" {
-  description = "Virtual Network ID"
-  type        = string
-}
-
-resource "azurerm_dns_resolver" "example" {
-  name                = var.dns_private_resolver_name
-  resource_group_name = var.resource_group_name
+resource "azurerm_local_network_gateway" "aws_lgw1" {
+  name                = "ims-prd-conn-ne-lgw-aws-01"
   location            = var.location
+  resource_group_name = data.azurerm_resource_group.vpn.name
+  gateway_address     = "46.137.123.146"
+  address_space       = [
+    "10.0.0.0/14"
+  ]
+}
 
-  virtual_network_id  = var.virtual_network_id
+# 3. Create Local Network Gateway 2 on VPN Gateway
+resource "azurerm_local_network_gateway" "aws_lgw2" {
+  name                = "ims-prd-conn-ne-lgw-aws-02"
+  location            = var.location
+  resource_group_name = data.azurerm_resource_group.vpn.name
+  gateway_address     = "52.213.177.71"
+  address_space       = [
+    "10.0.0.0/14"
+  ]
+}
+
+# 4. Create Gateway Connection 1 on VPN Gateway
+
+resource "azurerm_virtual_network_gateway_connection" "s2s_connection1" {
+  name                            = "ims-prd-conn-ne-vnc-01"
+  location                        = var.location
+  resource_group_name             = data.azurerm_resource_group.vpn.name
+  type                            = "IPsec"
+  virtual_network_gateway_id      = azurerm_virtual_network_gateway.vpn_gw.name
+  local_network_gateway_id        = azurerm_local_network_gateway.aws_lgw1.name
+  connection_protocol             = "IKEv2"
+  shared_key                      = "<your-shared-key>" # Replace with your actual pre-shared key
+  dpd_timeout_seconds             = 45
+  use_policy_based_traffic_selectors = true
+
+  # IPsec/IKE policy is default (no custom policy block)
+  # NAT Rules not configured
 
   tags = {
-    Environment = "Terraform"
-  }
+    Name          = "ims-prd-conn-ne-vnc-01"
+    Environment   = "prd"
+    DateCreated   = "2025-08-01"
 }
-resource "azurerm_dns_resolver_inbound_endpoint" "example_inbound" {
-  name                = var.inbound_endpoint_name
-  dns_resolver_id     = azurerm_dns_resolver.example.id
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  subnet_id           = var.subnet_id
-
-  # IP address assignment is handled automatically by Azure.
-  # To use a static IP, specify the "ip_configurations" block.
-  # Example for static/private IP assignment:
-  ip_configurations {
-     private_ip_allocation_method = "Static"
-     private_ip_address           = "10.0.0.4"
-   }
 }
+# 5. Create Gateway Connection 2 on VPN Gateway
 
-resource "azurerm_dns_resolver_outbound_endpoint" "example_outbound" {
-  name                = var.outbound_endpoint_name
-  dns_resolver_id     = azurerm_dns_resolver.example.id
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  subnet_id           = var.outbound_subnet_id
-}
+resource "azurerm_virtual_network_gateway_connection" "s2s_connection2" {
+  name                            = "ims-prd-conn-ne-vnc-02"
+  location                        = var.location
+  resource_group_name             = data.azurerm_resource_group.vpn.name
+  type                            = "IPsec"
+  virtual_network_gateway_id      = azurerm_virtual_network_gateway.vpn_gw.name
+  local_network_gateway_id        = azurerm_local_network_gateway.aws_lgw2.name
+  connection_protocol             = "IKEv2"
+  shared_key                      = "<your-shared-key>" # Replace with your actual pre-shared key
+  dpd_timeout_seconds             = 45
+  use_policy_based_traffic_selectors = true
 
-resource "azurerm_dns_resolver_forwarding_ruleset" "example_ruleset" {
-  name                = var.dns_forwarding_ruleset_name
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  dns_resolver_id     = var.dns_resolver_id
-
-  outbound_endpoint_ids = var.outbound_endpoint_ids
+  # IPsec/IKE policy is default (no custom policy block)
+  # NAT Rules not configured
 
   tags = {
-    Environment = "Terraform"
-  }
+    Name          = "ims-prd-conn-ne-vnc-02"
+    Environment   = "prd"
+    DateCreated   = "2025-08-01"
 }
-
-resource "azurerm_dns_resolver_forwarding_rule" "example_rule" {
-  name                    = var.dns_forwarding_rule_name
-  dns_forwarding_ruleset_id = var.dns_forwarding_ruleset_id
-  domain_name             = var.domain_name
-  enabled                 = var.rule_state == "Enabled" ? true : false
-  target_dns_servers {
-    ip_address = var.destination_dns_ip
-    port       = 53
-  }
 }

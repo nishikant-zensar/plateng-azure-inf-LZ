@@ -311,6 +311,76 @@ resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-pep" {
     azurerm_resource_group.ims-prd-mgmt-ne-rg-network
   ]
 }
+
+##################################################
+# Create "ims-prd-avd-ne-vnet-01" avd vNet
+##################################################
+resource "azurerm_virtual_network" "avdvnet" {
+  provider            = azurerm.ims-prd-avd
+  resource_group_name = azurerm_resource_group.avd.name
+  name                = "ims-prd-avd-ne-vnet-01"
+  location            = var.location
+  address_space       = ["192.168.8.0/22"]
+
+  encryption {
+    enforcement = "AllowUnencrypted"
+  }
+
+  tags = {
+    Name          = "ims-prd-avd-ne-vnet-01"
+    Environment   = "prd"
+    DateCreated   = "2025-08-01"
+  }
+
+  depends_on = [
+    azurerm_resource_group.ims-prd-avd-ne-rg-network
+  ]
+}
+
+################################################################
+# Create Subnets in avd vnet
+################################################################
+# 1. Create "ims-prd-avd-ne-snet-pool" subnet for avd pool traffic at avd vNet
+resource "azurerm_subnet" "ims-prd-avd-ne-snet-pool" {
+  provider             = azurerm.ims-prd-avd
+  resource_group_name  = azurerm_resource_group.avd.name
+  virtual_network_name = azurerm_virtual_network.avdvnet.name
+  name                 = "ims-prd-avd-ne-snet-pool"
+  address_prefixes     = ["192.168.8.0/24"]
+
+  depends_on = [
+    azurerm_resource_group.ims-prd-avd-ne-rg-network
+  ]
+}
+
+# 2. Create "ims-prd-avd-ne-snet-personal" subnet for avd personal traffic at avd vNet
+resource "azurerm_subnet" "ims-prd-avd-ne-snet-personal" {
+  provider             = azurerm.ims-prd-avd
+  resource_group_name  = azurerm_resource_group.avd.name
+  virtual_network_name = azurerm_virtual_network.avdvnet.name
+  name                 = "ims-prd-avd-ne-snet-personal"
+  address_prefixes     = ["192.168.9.0/24"]
+
+  depends_on = [
+    azurerm_resource_group.ims-prd-avd-ne-rg-network
+  ]
+}
+
+# 3. Create "ims-prd-avd-ne-snet-pep" subnet for avd private endpoint traffic at avd vNet
+resource "azurerm_subnet" "ims-prd-avd-ne-snet-pep" {
+  provider             = azurerm.ims-prd-avd
+  resource_group_name  = azurerm_resource_group.avd.name
+  virtual_network_name = azurerm_virtual_network.avdvnet.name
+  name                 = "ims-prd-avd-ne-snet-pep"
+  address_prefixes     = ["192.168.11.128/26"]
+
+  depends_on = [
+    azurerm_resource_group.ims-prd-avd-ne-rg-network
+  ]
+}
+################################################################
+# Peering Between vNets
+################################################################
 # Task 1: Peering between Hub and Mgmt vNet
 resource "azurerm_virtual_network_peering" "hub_to_mgmt" {
   name                      = "ims-prd-conn-ne-vnet-hub-01-TO-ims-prd-mgmt-ne-vnet-01"
@@ -326,5 +396,23 @@ resource "azurerm_virtual_network_peering" "hub_to_mgmt" {
   depends_on = [
     azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01,
     azurerm_virtual_network.ims-prd-mgmt-ne-vnet-01
+  ]
+}
+
+# Task 2: Peering between Hub and AVD vNet
+resource "azurerm_virtual_network_peering" "hub_to_avd" {
+  name                      = "ims-prd-conn-ne-vnet-hub-01-TO-ims-prd-avd-ne-vnet-01"
+  resource_group_name       = "ims-prd-conn-ne-rg-network"
+  virtual_network_name      = "ims-prd-conn-ne-vnet-hub-01"
+  remote_virtual_network_id = azurerm_virtual_network.ims-prd-avd-ne-vnet-01.id
+
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  allow_gateway_transit        = true
+  use_remote_gateways          = false
+
+  depends_on = [
+    azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01,
+    azurerm_virtual_network.ims-prd-avd-ne-vnet-01
   ]
 }

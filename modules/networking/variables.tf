@@ -1,3 +1,20 @@
+variable "connectivity_subscription_id" {
+  description = "The Azure subscription ID for Connectivity"
+  type        = string
+  default     = "/subscriptions/eca8a48a-2dc4-45da-908c-94bf6100016c"
+}
+
+variable "management_subscription_id" {
+  description = "The Azure subscription ID for Management"
+  type        = string
+  default     = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36"
+}
+
+variable "avd_prd_subscription_id" {
+  description = "The Azure subscription ID for AVD Production"
+  type        = string
+  default     = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef"
+}
 variable "resource_group_name" {
   description = "Resource Group Name"
   type        = string
