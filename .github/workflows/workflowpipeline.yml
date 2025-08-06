@@ -1,4 +1,4 @@
-name: LZ Management Groups Deployment
+name: Landing Zone Deployment
 on:
   workflow_dispatch:
     inputs:
