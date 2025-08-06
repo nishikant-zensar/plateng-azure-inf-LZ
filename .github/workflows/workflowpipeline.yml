@@ -123,6 +123,7 @@ jobs:
         run: |
           cd modules/managementgroups
           terraform apply -auto-approve tfplan
+
   DeployHubSpoke:
     if: ${{ github.event.inputs.jobToRun == 'DeployHubSpoke' }}
     runs-on: ubuntu-latest
@@ -203,7 +204,7 @@ jobs:
           cd modules/hubandspoke
           terraform apply -auto-approve tfplan
     
-    DeployNetworking:
+  DeployNetworking:
     if: ${{ github.event.inputs.jobToRun == 'DeployNetworking' }}
     runs-on: ubuntu-latest
     steps:
