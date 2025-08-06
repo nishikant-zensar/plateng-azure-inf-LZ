@@ -17,7 +17,7 @@ terraform {
 }
 
 provider "azurerm" {
-  features        = {}
+  features {}
 }
 # Create Network RG in Connectivity, Managemnet and AVD MG
 # 1. Resource Group in ims-prd-connectivity (Connectivity subscription) 
@@ -167,10 +167,6 @@ resource "azurerm_virtual_network" "hubvnet" {
     enforcement = "AllowUnencrypted" 
   }
 
-  depends_on = [
-    azurerm_resource_group.ims-prd-conn-ne-rg-network
-  ]
-
   tags = {
     Name        = "ims-prd-conn-ne-vnet-hub-01"
     Environment = "prd"
@@ -189,10 +185,6 @@ resource "azurerm_subnet" "AzureFirewallSubnet" {
   name                 = "AzureFirewallSubnet"
   address_prefixes     = ["192.168.0.64/26"]
 
-  depends_on = [
-    azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01
-    ]
- }
  # 2. Create "AzureFirewallManagementSubnet" subnet for Firewall Management traffic at hub vNet
 resource "azurerm_subnet" "AzureFirewallManagementSubnet" {
   provider             = azurerm.ims-prd-connectivity
@@ -201,9 +193,6 @@ resource "azurerm_subnet" "AzureFirewallManagementSubnet" {
   name                 = "AzureFirewallManagementSubnet"
   address_prefixes     = ["192.168.1.64/26"]
 
-  depends_on = [
-    azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01
-    ]
 }
 # 3. Create "GatewaySubnet" subnet for Gateway traffic at hub vNet
 resource "azurerm_subnet" "GatewaySubnet" {
@@ -213,9 +202,6 @@ resource "azurerm_subnet" "GatewaySubnet" {
   name                 = "GatewaySubnet"
   address_prefixes     = ["192.168.0.0/26"]
 
-  depends_on = [
-    azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01
-    ]
   }
   # 4. Create "ims-prd-conn-ne-snet-dnsprin" subnet for inbound DNS private resolution traffic at hub vNet
 resource "azurerm_subnet" "ims-prd-conn-ne-snet-dnsprin" {
@@ -225,9 +211,6 @@ resource "azurerm_subnet" "ims-prd-conn-ne-snet-dnsprin" {
   name                 = "ims-prd-conn-ne-snet-dnsprin"
   address_prefixes     = ["192.168.0.128/26"]
 
-  depends_on = [
-    azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01
-  ]
 }
 # 5. Create "ims-prd-conn-ne-snet-dnsprout" subnet for outbound DNS private resolution traffic at hub vNet
 resource "azurerm_subnet" "ims-prd-conn-ne-snet-dnsprout" {
@@ -237,9 +220,6 @@ resource "azurerm_subnet" "ims-prd-conn-ne-snet-dnsprout" {
   name                 = "ims-prd-conn-ne-snet-dnsprout"
   address_prefixes     = ["192.168.0.192/26"]
 
-  depends_on = [
-    azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01
-  ]
 }
 # 6. Create "ims-prd-conn-ne-snet-pep" Private endpoint subnet at hub vNet
 resource "azurerm_subnet" "ims-prd-conn-ne-snet-pep" {
@@ -248,10 +228,7 @@ resource "azurerm_subnet" "ims-prd-conn-ne-snet-pep" {
   virtual_network_name = azurerm_virtual_network.hubvnet.name
   name                 = "ims-prd-conn-ne-snet-pep"
   address_prefixes     = ["192.168.1.0/26"]
-  
-  depends_on = [
-    azurerm_virtual_network.ims-prd-conn-ne-vnet-hub-01
-    ]
+
 }
 ####################################################
 # Create "ims-prd-mgmt-ne-vnet-01" management vNet
@@ -273,9 +250,6 @@ resource "azurerm_virtual_network" "mgmtvnet" {
     DateCreated = "2025-08-01"
   }
 
-  depends_on = [
-    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
-  ]
 }
 ################################################################
 # Create Subnets in mgmt vnet
@@ -288,9 +262,6 @@ resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-security" {
   name                 = "ims-prd-mgmt-ne-snet-security"
   address_prefixes     = ["192.168.4.0/26"]
 
-  depends_on = [
-    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
-  ]
 }
 # 2. Create "ims-prd-mgmt-ne-snet-system" subnet for mgmt system traffic at mgmt vNet
 resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-system" {
@@ -300,9 +271,6 @@ resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-system" {
   name                 = "ims-prd-mgmt-ne-snet-system"
   address_prefixes     = ["192.168.4.64/26"]
 
-  depends_on = [
-    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
-  ]
 }
 # 3. Create "ims-prd-mgmt-ne-snet-keyvault" subnet for mgmt keyvault traffic at mgmt vNet
 resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-keyvault" {
@@ -312,9 +280,6 @@ resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-keyvault" {
   name                 = "ims-prd-mgmt-ne-snet-keyvault"
   address_prefixes     = ["192.168.4.128/26"]
 
-  depends_on = [
-    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
-  ]
 }
 # 4. Create "ims-prd-mgmt-ne-snet-pep" subnet for mgmt private endpoint traffic at mgmt vNet
 resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-pep" {
@@ -324,9 +289,6 @@ resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-pep" {
   name                 = "ims-prd-mgmt-ne-snet-pep"
   address_prefixes     = ["192.168.4.192/26"]
 
-  depends_on = [
-    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
-  ]
 }
 
 ##################################################
@@ -348,10 +310,6 @@ resource "azurerm_virtual_network" "avdvnet" {
     Environment   = "prd"
     DateCreated   = "2025-08-01"
   }
-
-  depends_on = [
-    azurerm_resource_group.ims-prd-avd-ne-rg-network
-  ]
 }
 
 ################################################################
@@ -365,9 +323,6 @@ resource "azurerm_subnet" "ims-prd-avd-ne-snet-pool" {
   name                 = "ims-prd-avd-ne-snet-pool"
   address_prefixes     = ["192.168.8.0/24"]
 
-  depends_on = [
-    azurerm_resource_group.ims-prd-avd-ne-rg-network
-  ]
 }
 
 # 2. Create "ims-prd-avd-ne-snet-personal" subnet for avd personal traffic at avd vNet
@@ -378,9 +333,6 @@ resource "azurerm_subnet" "ims-prd-avd-ne-snet-personal" {
   name                 = "ims-prd-avd-ne-snet-personal"
   address_prefixes     = ["192.168.9.0/24"]
 
-  depends_on = [
-    azurerm_resource_group.ims-prd-avd-ne-rg-network
-  ]
 }
 
 # 3. Create "ims-prd-avd-ne-snet-pep" subnet for avd private endpoint traffic at avd vNet
@@ -391,9 +343,6 @@ resource "azurerm_subnet" "ims-prd-avd-ne-snet-pep" {
   name                 = "ims-prd-avd-ne-snet-pep"
   address_prefixes     = ["192.168.11.128/26"]
 
-  depends_on = [
-    azurerm_resource_group.ims-prd-avd-ne-rg-network
-  ]
 }
 ################################################################
 # Peering Between vNets
