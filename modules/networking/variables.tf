@@ -26,11 +26,6 @@ variable "location" {
   default     = "northeurope"
 }
 
-variable "public_ip_name" {
-  description = "Name of the Public IP"
-  type        = string
-}
-
 variable "ip_version" {
   description = "IP Version (IPv4 or IPv6)"
   type        = string
