@@ -20,11 +20,6 @@ variable "rgkv" {
   default     = "ims-prd-mgmt-ne-rg-keyvault"
 }
 
-variable "location" {
-  description = "Azure Region"
-  type        = string
-}
-
 variable "availability_zones" {
   description = "List of Availability Zones"
   type        = list(string)
