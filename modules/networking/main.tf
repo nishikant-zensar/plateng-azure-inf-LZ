@@ -107,12 +107,6 @@ resource "azurerm_public_ip" "pipafw01" {
 #####################################################
 # 1. Create ims-prd-conn-ne-vpng-01 VPN Gateway
 
-provider "azurerm" {
-  features {}
-  # Optionally set subscription_id if needed
-  # subscription_id = "<your-subscription-id>"
-}
-
 # Data sources for existing resources
 
 data "azurerm_virtual_network" "vnethub" {

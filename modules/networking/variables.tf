@@ -45,7 +45,7 @@ variable "sku" {
 
 variable "zones" {
   description = "List of Availability Zones"
-  type        = list(string)
+  type        = string
   default     = "zone-redundant"
 }
 
