@@ -1198,3 +1198,129 @@ resource "azurerm_route_table" "ims-prd-avd-ne-rt-personal" {
     azurerm_resource_group.ims-prd-avd-ne-rg-network
   ]
 }
+
+################################################################
+# Associate subnets with required NSG and UDR on Hub vNets
+################################################################
+# 1. Associate "GatewaySubnet" with "ims-prd-conn-ne-rt-vpng" route table/UDR
+resource "azurerm_subnet_route_table_association" "ims-prd-conn-ne-vpng-rt" {
+  provider       = azurerm.ims-prd-connectivity
+  subnet_id      = "GatewaySubnet"
+  route_table_id = "ims-prd-conn-ne-rt-vpng"
+}
+
+# 2a. Associate "ims-prd-conn-ne-snet-dnsprin" subnet with "ims-prd-conn-ne-nsg-dnsprin" nsg
+resource "azurerm_subnet_network_security_group_association" "ims-prd-conn-ne-dnsprin-nsg" {
+  provider                  = azurerm.ims-prd-connectivity
+  subnet_id                 = "ims-prd-conn-ne-snet-dnsprin"
+  network_security_group_id = "ims-prd-conn-ne-nsg-dnsprin"
+}
+
+# 2b. Associate "ims-prd-conn-ne-snet-dnsprin" subnet with "ims-prd-conn-ne-rt-dnsprin" route table/UDR
+resource "azurerm_subnet_route_table_association" "ims-prd-conn-ne-dnsprin-rt" {
+  provider       = azurerm.ims-prd-connectivity
+  subnet_id      = "ims-prd-conn-ne-snet-dnsprin"
+  route_table_id = "ims-prd-conn-ne-rt-dnsprin"
+}
+# 3a. Associate "ims-prd-conn-ne-snet-dnsprout" subnet with "ims-prd-conn-ne-nsg-dnsprout" nsg
+resource "azurerm_subnet_network_security_group_association" "ims-prd-conn-ne-dnsprout-nsg" {
+  provider                  = azurerm.ims-prd-connectivity
+  subnet_id                 = "ims-prd-conn-ne-snet-dnsprout"
+  network_security_group_id = "ims-prd-conn-ne-nsg-dnsprout"
+}
+# 3b. Associate "ims-prd-conn-ne-snet-dnsprout" subnet with "ims-prd-conn-ne-rt-dnsprout" route table/UDR
+resource "azurerm_subnet_route_table_association" "ims-prd-conn-ne-dnsprout-rt" {
+  provider       = azurerm.ims-prd-connectivity
+  subnet_id      = ims-prd-conn-ne-snet-dnsprout"
+  route_table_id = 'ims-prd-conn-ne-rt-dnsprout"
+}
+# 4. Associate "ims-prd-conn-ne-snet-pep" subnet with "ims-prd-conn-ne-nsg-pep" nsg
+resource "azurerm_subnet_network_security_group_association" "ims-prd-conn-ne-pep-nsg" {
+  provider                  = azurerm.ims-prd-connectivity
+  subnet_id                 = "ims-prd-conn-ne-snet-pep"
+  network_security_group_id = "ims-prd-conn-ne-nsg-pep"
+}
+
+################################################################
+# Associate subnets with required NSG and UDR on Mgmt vNets
+################################################################
+# 1a. Associate "ims-prd-mgmt-ne-snet-security" subnet with "ims-prd-mgmt-ne-snet-nsg-security" nsg
+resource "azurerm_subnet_network_security_group_association" "ims-prd-mgmt-ne-snet-security-nsg" {
+  provider                  = azurerm.ims-prd-management
+  subnet_id                 = "ims-prd-mgmt-ne-snet-security"
+  network_security_group_id = "ims-prd-mgmt-ne-nsg-security"
+  
+}
+# 1b. Associate "ims-prd-mgmt-ne-snet-security" subnet with "ims-prd-mgmt-ne-snet-rt-security" route table/UDR
+resource "azurerm_subnet_route_table_association" "ims-prd-mgmt-ne-snet-security-rt" {
+  provider       = azurerm.ims-prd-management
+  subnet_id      = "ims-prd-mgmt-ne-snet-security"
+  route_table_id = "ims-prd-mgmt-ne-rt-security"
+  
+}
+# 2a. Associate "ims-prd-mgmt-ne-snet-system" subnet with "ims-prd-mgmt-ne-snet-nsg-system" nsg
+resource "azurerm_subnet_network_security_group_association" "ims-prd-mgmt-ne-snet-system-nsg" {
+  provider                  = azurerm.ims-prd-management
+  subnet_id                 = "ims-prd-mgmt-ne-snet-system"
+  network_security_group_id = "ims-prd-mgmt-ne-nsg-system"
+   
+}
+# 2b. Associate "ims-prd-mgmt-ne-snet-system" subnet with "ims-prd-mgmt-ne-snet-rt-system" route table/UDR
+resource "azurerm_subnet_route_table_association" "ims-prd-mgmt-ne-snet-system-rt" {
+  provider       = azurerm.ims-prd-management
+  subnet_id      = "ims-prd-mgmt-ne-snet-system"
+  route_table_id = "ims-prd-mgmt-ne-rt-system"
+  
+}
+# 3a. Associate "ims-prd-mgmt-ne-snet-keyvault" subnet with "ims-prd-mgmt-ne-snet-nsg-keyvault" nsg
+resource "azurerm_subnet_network_security_group_association" "ims-prd-mgmt-ne-snet-keyvault-nsg" {
+  provider                  = azurerm.ims-prd-management
+  subnet_id                 = "ims-prd-mgmt-ne-snet-keyvault"
+  network_security_group_id = "ims-prd-mgmt-ne-nsg-keyvault"
+
+}
+# 3b. Associate "ims-prd-mgmt-ne-snet-keyvault" subnet with "ims-prd-mgmt-ne-snet-rt-keyvault" route table/UDR
+resource "azurerm_subnet_route_table_association" "ims-prd-mgmt-ne-snet-keyvault-rt" {
+  provider       = azurerm.ims-prd-management
+  subnet_id      = "ims-prd-mgmt-ne-snet-keyvault"
+  route_table_id = "ims-prd-mgmt-ne-rt-keyvault"
+
+}
+################################################################
+# Associate subnets with required NSG and UDR on Avd vNets
+################################################################
+# 1a. Associate "ims-prd-avd-ne-snet-pool" subnet with "ims-prd-avd-ne-snet-nsg-pool" nsg
+resource "azurerm_subnet_network_security_group_association" "ims-prd-avd-ne-snet-pool-nsg" {
+  provider                  = azurerm.ims-prd-avd
+  subnet_id                 = "ims-prd-avd-ne-snet-pool"
+  network_security_group_id = "ims-prd-avd-ne-nsg-pool"
+
+}
+# 1b. Associate "ims-prd-avd-ne-snet-pool" subnet with "ims-prd-avd-ne-snet-rt-pool" route table/UDR
+resource "azurerm_subnet_route_table_association" "ims-prd-avd-ne-snet-pool-rt" {
+  provider       = azurerm.ims-prd-avd
+  subnet_id      = "ims-prd-avd-ne-snet-pool"
+  route_table_id = "ims-prd-avd-ne-rt-pool"
+
+}
+# 2a. Associate "ims-prd-avd-ne-snet-personal" subnet with "ims-prd-avd-ne-snet-nsg-personal" nsg
+resource "azurerm_subnet_network_security_group_association" "ims-prd-avd-ne-snet-personal-nsg" {
+  provider                  = azurerm.ims-prd-avd
+  subnet_id                 = "ims-prd-avd-ne-snet-personal"
+  network_security_group_id = "ims-prd-avd-ne-nsg-personal"
+
+}
+# 2b. Associate "ims-prd-avd-ne-snet-personal" subnet with "ims-prd-avd-ne-snet-rt-personal" route table/UDR
+resource "azurerm_subnet_route_table_association" "ims-prd-avd-ne-snet-personal-rt" {
+  provider       = azurerm.ims-prd-avd
+  subnet_id      = "ims-prd-avd-ne-snet-personal"
+  route_table_id = "ims-prd-avd-ne-rt-personal"
+
+}
+# 3. Associate "ims-prd-avd-ne-snet-pep" subnet with "ims-prd-avd-ne-snet-nsg-pep" nsg
+resource "azurerm_subnet_network_security_group_association" "ims-prd-avd-ne-snet-pep-nsg" {
+  provider                  = azurerm.ims-prd-avd
+  subnet_id                 = "ims-prd-avd-ne-snet-pep"
+  network_security_group_id = "ims-prd-avd-ne-nsg-pep"
+
+}

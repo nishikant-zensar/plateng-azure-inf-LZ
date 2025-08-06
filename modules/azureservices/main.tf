@@ -43,6 +43,69 @@ output "firewall_policy_id" {
   value = azurerm_firewall_policy.fw_policy.id
 }
 
+# DNAT Rule Collection
+resource "azurerm_firewall_policy_rule_collection_group" "coreplat_group" {
+   {
+  name                = "coreplat-policy"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  name               = "ims-prd-conn-ne-afwprcg-coreplat"
+  priority           = 100
+
+  nat_rule_collection {
+    name     = "ims-prd-conn-ne-afwprc-coreplat-dnat"
+    priority = 100
+    action   = "Allow"
+
+  }
+  network_rule_collection {
+    name     = "ims-prd-conn-ne-afwprc-coreplat-net"
+    priority = 200
+    action   = "Allow"
+
+    rule {
+      name                  = "ims-prd-conn-ne-afwpr-awsdns-out"
+      source_addresses      = ["192.168.0.192/26"]
+      destination_addresses = ["10.0.0.0/8"]
+      protocols             = ["TCP", "UDP"]
+      destination_ports     = ["53"]
+      description           = "Enables Azure DNS Private Resolver to forward DNS queries to IMS AWS for conditional forwarding. We should restrict the 10.0.0.0/8 address to a longer prefix once we know what the IP address(es) of the AWS DNS Servers are."
+    }
+
+    rule {
+      name                  = "ims-prd-conn-ne-afwpr-dns-in"
+      source_addresses      = ["10.0.0.0/8", "192.168.4.0/22", "192.168.8.0/22"]
+      destination_addresses = ["192.168.0.132"]
+      protocols             = ["TCP", "UDP"]
+      destination_ports     = ["53"]
+      description           = "Enable DNS queries to Azure DNS Private Resolver"
+    }
+
+    rule {
+      name                  = "ims-prd-conn-ne-afwpr-ziatcp-out"
+      source_addresses      = ["192.168.8.0/22"]
+      destination_addresses = ["147.161.224.0/23,170.85.58.0/23,165.225.80.0/22,147.161.166.0/23,136.226.166.0/23,136.226.168.0/23,147.161.140.0/23,147.161.142.0/23,147.161.144.0/23,136.226.190.0/23,147.161.236.0/23,165.225.196.0/23,165.225.198.0/23,170.85.84.0/23,194.9.112.0/23,194.9.106.0/23,194.9.108.0/23,194.9.110.0/23,194.9.114.0/23"]
+      protocols             = ["TCP"]
+      destination_ports     = ["80, 443, 9400, 9480, 9443"]
+      description           = "Probably best creating an IP Group with these zscaler IPs, rather than adding them to this rule individually, as it's easier to manage if the IPs change in future."
+    }
+
+    rule {
+      name                  = "ims-prd-conn-ne-afwpr-ziaudp-out"
+      source_addresses      = ["192.168.8.0/22"]
+      destination_addresses = ["147.161.224.0/23,170.85.58.0/23,165.225.80.0/22,147.161.166.0/23,136.226.166.0/23,136.226.168.0/23,147.161.140.0/23,147.161.142.0/23,147.161.144.0/23,136.226.190.0/23,147.161.236.0/23,165.225.196.0/23,165.225.198.0/23,170.85.84.0/23,194.9.112.0/23,194.9.106.0/23,194.9.108.0/23,194.9.110.0/23,194.9.114.0/23"]
+      protocols             = ["UDP"]
+      destination_ports     = ["80, 443"]
+      description           = "Probably best creating an IP Group with these zscaler IPs, rather than adding them to this rule individually, as it's easier to manage if the IPs change in future."
+    }
+  }
+  application_rule_collection {
+    name     = "ims-prd-conn-ne-afwprc-coreplat-app"
+    priority = 300
+    action   = "Allow"
+  }
+}
+
 #####################################################################
 # Create Azure DNS Private Resolver with Inbound & Outbound Endpoints
 #####################################################################
