@@ -15,10 +15,6 @@ variable "avd_prd_subscription_id" {
   type        = string
   default     = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef"
 }
-variable "resource_group_name" {
-  description = "Resource Group Name"
-  type        = string
-}
 
 variable "location" {
   description = "Azure Region"
