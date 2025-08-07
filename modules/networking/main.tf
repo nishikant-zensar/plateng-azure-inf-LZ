@@ -29,7 +29,7 @@ terraform {
 
 resource "azurerm_public_ip" "pipvpng01" {
   name                = "ims-prd-conn-ne-pip-vpng-01"
-  resource_group_name = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network"
+  resource_group_name = var.vnet_resource_group
   location            = var.location
   sku                 = var.sku
   allocation_method   = var.allocation_method
@@ -54,7 +54,7 @@ resource "azurerm_public_ip" "pipvpng01" {
 
 resource "azurerm_public_ip" "pipvpng02" {
   name                = "ims-prd-conn-ne-pip-vpng-02"
-  resource_group_name = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network"
+  resource_group_name = var.vnet_resource_group
   location            = var.location
   sku                 = var.sku
   allocation_method   = var.allocation_method
@@ -80,7 +80,7 @@ resource "azurerm_public_ip" "pipvpng02" {
 
 resource "azurerm_public_ip" "pipafw01" {
   name                = "ims-prd-conn-ne-pip-afw-01"
-  resource_group_name = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network"
+  resource_group_name = var.vnet_resource_group
   location            = var.location
   sku                 = var.sku
   allocation_method   = var.allocation_method
@@ -111,7 +111,7 @@ resource "azurerm_virtual_network_gateway" "vpn_gw" {
   # subscription        = var.connectivity_subscription_id
   name                = "ims-prd-conn-ne-vpng-01"
   location            = var.location
-  resource_group_name = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network"
+  resource_group_name = var.vnet_resource_group
 
   type     = "Vpn"
   vpn_type = "RouteBased"
@@ -148,8 +148,7 @@ resource "azurerm_virtual_network_gateway" "vpn_gw" {
 resource "azurerm_local_network_gateway" "aws_lgw1" {
   name                = "ims-prd-conn-ne-lgw-aws-01"
   location            = var.location
-  resource_group_name = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network"
-  gateway_address     = "46.137.123.146"
+  resource_group_name = var.vnet_resource_group
   address_space       = [
     "10.0.0.0/14"
   ]
@@ -159,7 +158,7 @@ resource "azurerm_local_network_gateway" "aws_lgw1" {
 resource "azurerm_local_network_gateway" "aws_lgw2" {
   name                = "ims-prd-conn-ne-lgw-aws-02"
   location            = var.location
-  resource_group_name = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network"
+  resource_group_name = var.vnet_resource_group
   gateway_address     = "52.213.177.71"
   address_space       = [
     "10.0.0.0/14"
@@ -171,7 +170,7 @@ resource "azurerm_local_network_gateway" "aws_lgw2" {
 resource "azurerm_virtual_network_gateway_connection" "s2s_connection1" {
   name                            = "ims-prd-conn-ne-vnc-01"
   location                        = var.location
-  resource_group_name             = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network"
+  resource_group_name             = var.vnet_resource_group
   type                            = "IPsec"
   virtual_network_gateway_id      = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworkGateways/ims-prd-conn-ne-vpng-01"
   local_network_gateway_id        = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/localNetworkGateways/ims-prd-conn-ne-lgw-aws-01"
@@ -194,7 +193,7 @@ resource "azurerm_virtual_network_gateway_connection" "s2s_connection1" {
 resource "azurerm_virtual_network_gateway_connection" "s2s_connection2" {
   name                            = "ims-prd-conn-ne-vnc-02"
   location                        = var.location
-  resource_group_name             = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network"
+  resource_group_name             = var.vnet_resource_group
   type                            = "IPsec"
   virtual_network_gateway_id      = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworkGateways/ims-prd-conn-ne-vpng-01"
   local_network_gateway_id        = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/localNetworkGateways/ims-prd-conn-ne-lgw-aws-02"
