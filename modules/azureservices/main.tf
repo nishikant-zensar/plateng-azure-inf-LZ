@@ -212,11 +212,11 @@ provider "azurerm" {
 }
 
 # Data sources for existing resources
-data "azurerm_virtual_network" "vnet" {
-  name                = "ims-prd-mgmt-ne-vnet-01"
-  provider = azurerm.ims-prd-management
+# data "azurerm_virtual_network" "vnet" {
+#  name                = "ims-prd-mgmt-ne-vnet-01"
 #  resource_group_name = "ims-prd-mgmt-ne-rg-keyvault"
- }
+#  provider = azurerm.ims-prd-management
+#}
 
 data "azurerm_resource_group" "mgmtsub" {
   name     = "ims-prd-mgmt-ne-rg-keyvault"
