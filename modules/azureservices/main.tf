@@ -279,7 +279,7 @@ resource "azurerm_private_endpoint" "kvpep" {
   resource_group_name = data.azurerm_resource_group.mgmtsub.name
   location            = var.location
   name                = "ims-prd-mgmt-ne-pep-kv-10"
-  subnet_id           = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-mgmt-ne-rg-keyvault/providers/Microsoft.Network/virtualNetworks/ims-prd-mgmt-ne-vnet-01/subnets/ims-prd-mgmt-ne-snet-keyvault"
+  subnet_id           = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-mgmt-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-mgmt-ne-vnet-01/subnets/ims-prd-mgmt-ne-snet-keyvault"
 
   private_service_connection {
     name                           = "kv-priv-conn"
@@ -297,7 +297,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "dnslink" {
   name                  = "kv-dnslink"
   resource_group_name   = data.azurerm_resource_group.mgmtsub.name
   private_dns_zone_name = "privatelink.vaultcore.azure.net"
-  virtual_network_id    = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-mgmt-ne-rg-keyvault/providers/Microsoft.Network/virtualNetworks/ims-prd-mgmt-ne-vnet-01"
+  virtual_network_id    = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-mgmt-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-mgmt-ne-vnet-01"
 }
 
 resource "azurerm_private_dns_a_record" "kv_record" {
