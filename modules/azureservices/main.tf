@@ -18,10 +18,10 @@ terraform {
 #####################################################
 # Create Azure Firewall and Firewall Policies
 #####################################################
-provider "azurerm" {
-  features {}
-  subscription_id = var.subscription_id
-}
+#provider "azurerm" {
+#  features {}
+#  subscription_id = var.subscription_id
+# }
 
 # 1. Create Azure Firewall Policy
 resource "azurerm_firewall_policy" "fw_policy" {
