@@ -10,7 +10,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 3.0.0"
+      version = ">=4.0.0"
     }
   }
   required_version = ">= 1.0"  
@@ -41,7 +41,7 @@ resource "azurerm_firewall" "fw" {
   name                = "ims-prd-conn-ne-afw-01"
   location            = var.location
   resource_group_name = var.resource_group_name
-  # sku_name            = ["Premium"]
+  sku_name            = "AZFW_VNet"
   sku_tier            = "Premium"
   firewall_policy_id  = azurerm_firewall_policy.fw_policy.id
   zones               = ["1"]
@@ -287,6 +287,7 @@ resource "azurerm_private_dns_a_record" "kv_record" {
   zone_name           = data.azurerm_private_dns_zone.dnszone.name
   resource_group_name = var.rgkv
   records             = [azurerm_private_endpoint.kvpep.private_service_connection[0].private_ip_address]
+  ttl                 = 300
 }
 
 #####################################################################
