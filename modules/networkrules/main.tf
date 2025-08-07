@@ -1,6 +1,23 @@
 ###################
 # Create nsg on hub vnet
 ###################
+terraform {
+  backend "azurerm" {
+    resource_group_name  = "ims-prd-lz-ne-rg-terraformstate"
+    storage_account_name = "imslandingznstr"
+    container_name       = "tfstate"
+    key                  = "netrules.terraform.tfstate" # Path to the state file in the container
+    use_oidc_auth        = true
+    use_azuread_auth     = true
+  }
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.36"
+    }
+  }
+  required_version = ">= 1.9, < 2.0"  
+}
 #1. Create a nsg to associate with "ims-prd-conn-ne-snet-dnsprin" subnet in hub vNet 
   resource "azurerm_network_security_group" "ims-prd-conn-ne-nsg-dnsprin" {
   provider            = azurerm.ims-prd-connectivity
