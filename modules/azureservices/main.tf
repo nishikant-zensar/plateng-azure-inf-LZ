@@ -28,7 +28,7 @@ resource "azurerm_firewall_policy" "fw_policy" {
   name                = "ims-prd-conn-ne-afwp-01"
   location            = var.location
   resource_group_name = var.resource_group_name
-  sku                 = var.policy_sku
+  tier               = "Premium"
 
   threat_intelligence_mode = var.enable_threat_intel
   intrusion_detection {
@@ -41,10 +41,10 @@ resource "azurerm_firewall" "fw" {
   name                = "ims-prd-conn-ne-afw-01"
   location            = var.location
   resource_group_name = var.resource_group_name
-  sku_name            = var.firewall_sku_name
-  sku_tier            = var.firewall_sku_tier
+  sku_name            = "Premium"
+  sku_tier            = "Premium"
   firewall_policy_id  = azurerm_firewall_policy.fw_policy.id
-  zones               = var.availability_zones
+  zones               = ["1"]
 
   ip_configuration {
     name                 = "firewallipconfig"

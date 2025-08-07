@@ -27,20 +27,15 @@ variable "availability_zones" {
   default     = []
 }
 
-variable "firewall_sku_name" {
-  description = "Firewall SKU (AZFW_VNet or AZFW_Hub)"
-  type        = string
-}
+# variable "firewall_sku_name" {
+#  description = "Firewall SKU (AZFW_VNet or AZFW_Hub)"
+#  type        = string
+# }
 
-variable "firewall_sku_tier" {
-  description = "Firewall SKU Tier (Standard, Premium, or Basic)"
-  type        = string
-}
-
-variable "policy_name" {
-  description = "Firewall Policy Name"
-  type        = string
-}
+# variable "firewall_sku_tier" {
+#  description = "Firewall SKU Tier (Standard, Premium, or Basic)"
+#  type        = string
+# }
 
 variable "location" {
   description = "Firewall Policy Region"
@@ -48,10 +43,10 @@ variable "location" {
   default     = "northeurope"
 }
 
-variable "policy_sku" {
-  description = "Firewall Policy Tier (Standard or Premium)"
-  type        = string
-}
+#variable "policy_sku" {
+#  description = "Firewall Policy Tier (Standard or Premium)"
+#  type        = string
+# }
 
 variable "vnet" {
   description = "Virtual Network Name"
