@@ -24,7 +24,7 @@ resource "azurerm_firewall_policy" "fw_policy" {
   name                = "ims-prd-conn-ne-afwp-01"
   location            = var.location
   resource_group_name = var.resource_group_name
-  # tier               = ["Premium"]
+  sku             = "Premium"
 
   threat_intelligence_mode = var.enable_threat_intel
   intrusion_detection {
@@ -310,7 +310,7 @@ resource "azurerm_private_dns_a_record" "kv_record" {
 #####################################################################
 resource "azurerm_log_analytics_workspace" "log_analytics" {
   # subscription        = ["b63f4e55-499d-4984-9375-f17853ff6e36"]
-  resource_group_name = data.azurerm_resource_group.mgmtsub.name
+  resource_group_name = data.azurerm_resource_group.mgmtsub2.name
   name                = "ims-prd-mgmt-ne-log-analytics-01"
   location            = var.location
   
