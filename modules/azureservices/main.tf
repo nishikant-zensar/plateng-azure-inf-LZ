@@ -146,7 +146,7 @@ resource "azurerm_private_dns_resolver_inbound_endpoint" "inboundep" {
   # subnet_id           = var.dnspinsubnet
 
   ip_configurations {
-    subnet_id                     = var.dnspinsubnet
+    subnet_id                     = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01/subnets/ims-prd-conn-ne-snet-dnsprin"
     private_ip_allocation_method  = "Static"
     private_ip_address            = "192.168.0.132"
   }
@@ -163,7 +163,7 @@ resource "azurerm_private_dns_resolver_outbound_endpoint" "outboundep" {
   private_dns_resolver_id     = azurerm_private_dns_resolver.dnspr.id
   # resource_group_name = var.resource_group_name
   location            = var.location
-  subnet_id           = var.dnspoutsubnet
+  subnet_id           = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01/subnets/ims-prd-conn-ne-snet-dnsprout"
 
   tags = {
     Name          = "ims-prd-conn-ne-out-dnspr"
@@ -203,10 +203,29 @@ resource "azurerm_private_dns_resolver_forwarding_rule" "dnsfr" {
 #####################################################################
 # Create Azure Key Vault
 #####################################################################
+
+provider "azurerm" {
+  features{}
+  alias           = "ims-prd-management"
+  subscription_id = "b63f4e55-499d-4984-9375-f17853ff6e36"
+  tenant_id       = "684d2402-0ea6-442d-9ad7-4ef26b925ec5"
+  client_id       = "74925104-cd8b-47e5-b29a-83a75a2f4ca6"
+}
+
 # Data sources for existing resources
 data "azurerm_virtual_network" "vnet" {
   name                = "ims-prd-mgmt-ne-vnet-01"
   resource_group_name = "ims-prd-mgmt-ne-rg-keyvault"
+}
+
+data "azurerm_resource_group" "mgmtsub" {
+  name     = "ims-prd-mgmt-ne-rg-keyvault"
+  provider = azurerm.ims-prd-management
+}
+
+data "azurerm_resource_group" "mgmtsub2" {
+  name     = "ims-prd-mgmt-ne-rg-network"
+  provider = azurerm.ims-prd-management
 }
 
 data "azurerm_subnet" "subnet" {
@@ -225,7 +244,7 @@ resource "azurerm_key_vault" "kv" {
   # subscription                = ["b63f4e55-499d-4984-9375-f17853ff6e36"]
   name                        = "ims-prd-mgmt-ne-kv-01"
   location                    = var.location
-  resource_group_name         = "ims-prd-mgmt-ne-rg-keyvault"
+  resource_group_name         = data.mgmtsub.name
   sku_name                    = "premium"
   tenant_id                   = "684d2402-0ea6-442d-9ad7-4ef26b925ec5"
   # soft_delete_enabled         = true
@@ -255,7 +274,7 @@ resource "azurerm_key_vault" "kv" {
 # Private Endpoint
 resource "azurerm_private_endpoint" "kvpep" {
   # subscription        = var.sub1
-  resource_group_name = "ims-prd-mgmt-ne-rg-keyvault"
+  resource_group_name = data.mgmtsub.name
   location            = var.location
   name                = "ims-prd-mgmt-ne-pep-kv-01"
   subnet_id           = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-mgmt-ne-rg-keyvault/providers/Microsoft.Network/virtualNetworks/ims-prd-mgmt-ne-vnet-01/subnets/ims-prd-mgmt-ne-snet-keyvault"
@@ -273,15 +292,15 @@ resource "azurerm_private_endpoint" "kvpep" {
 # Private DNS zone association
 resource "azurerm_private_dns_zone_virtual_network_link" "dnslink" {
   name                  = "kv-dnslink"
-  resource_group_name   = "ims-prd-mgmt-ne-rg-keyvault"
+  resource_group_name   = data.mgmtsub.name
   private_dns_zone_name = "privatelink.vaultcore.azure.net"
-  virtual_network_id    = var.vnetkv
+  virtual_network_id    = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-mgmt-ne-rg-keyvault/providers/Microsoft.Network/virtualNetworks/ims-prd-mgmt-ne-vnet-01"
 }
 
 resource "azurerm_private_dns_a_record" "kv_record" {
   name                = azurerm_key_vault.kv.name
   zone_name           = "privatelink.vaultcore.azure.net"
-  resource_group_name = "ims-prd-mgmt-ne-rg-keyvault"
+  resource_group_name = data.mgmtsub.name
   records             = [azurerm_private_endpoint.kvpep.private_service_connection[0].private_ip_address]
   ttl                 = 300
 }
@@ -291,7 +310,7 @@ resource "azurerm_private_dns_a_record" "kv_record" {
 #####################################################################
 resource "azurerm_log_analytics_workspace" "log_analytics" {
   # subscription        = ["b63f4e55-499d-4984-9375-f17853ff6e36"]
-  resource_group_name = "ims-prd-mgmt-ne-rg-network"
+  resource_group_name = data.mgmtsub.name
   name                = "ims-prd-mgmt-ne-log-analytics-01"
   location            = var.location
   
