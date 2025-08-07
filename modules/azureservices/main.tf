@@ -243,7 +243,7 @@ data "azurerm_resource_group" "mgmtsub2" {
 resource "azurerm_key_vault" "kv" {
   provider                    = azurerm.ims-prd-management
   # subscription                = ["b63f4e55-499d-4984-9375-f17853ff6e36"]
-  name                        = "ims-prd-mgmt-ne-kv-01"
+  name                        = "ims-prd-mgmt-ne-kv-10"
   location                    = var.location
   resource_group_name         = data.azurerm_resource_group.mgmtsub.name
   sku_name                    = "premium"
@@ -266,7 +266,7 @@ resource "azurerm_key_vault" "kv" {
   enabled_for_template_deployment = true
 
   tags = {
-    Name          = "ims-prd-mgmt-ne-kv-01"
+    Name          = "ims-prd-mgmt-ne-kv-10"
     Environment   = "prd"
     DateCreated   = "2025-08-01"
   }
