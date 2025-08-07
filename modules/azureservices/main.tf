@@ -41,7 +41,7 @@ resource "azurerm_firewall" "fw" {
   name                = "ims-prd-conn-ne-afw-01"
   location            = var.location
   resource_group_name = var.resource_group_name
-  sku_name            = "Premium"
+  # sku_name            = ["Premium"]
   sku_tier            = "Premium"
   firewall_policy_id  = azurerm_firewall_policy.fw_policy.id
   zones               = ["1"]
@@ -104,7 +104,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "coreplat_group" {
       source_addresses      = ["192.168.8.0/22"]
       destination_addresses = ["147.161.224.0/23,170.85.58.0/23,165.225.80.0/22,147.161.166.0/23,136.226.166.0/23,136.226.168.0/23,147.161.140.0/23,147.161.142.0/23,147.161.144.0/23,136.226.190.0/23,147.161.236.0/23,165.225.196.0/23,165.225.198.0/23,170.85.84.0/23,194.9.112.0/23,194.9.106.0/23,194.9.108.0/23,194.9.110.0/23,194.9.114.0/23"]
       protocols             = ["TCP"]
-      destination_ports     = ["80, 443, 9400, 9480, 9443"]
+      destination_ports     = ["80", "443", "9400", "9480", "9443"]
       description           = "Probably best creating an IP Group with these zscaler IPs, rather than adding them to this rule individually, as it's easier to manage if the IPs change in future."
     }
 
@@ -113,7 +113,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "coreplat_group" {
       source_addresses      = ["192.168.8.0/22"]
       destination_addresses = ["147.161.224.0/23,170.85.58.0/23,165.225.80.0/22,147.161.166.0/23,136.226.166.0/23,136.226.168.0/23,147.161.140.0/23,147.161.142.0/23,147.161.144.0/23,136.226.190.0/23,147.161.236.0/23,165.225.196.0/23,165.225.198.0/23,170.85.84.0/23,194.9.112.0/23,194.9.106.0/23,194.9.108.0/23,194.9.110.0/23,194.9.114.0/23"]
       protocols             = ["UDP"]
-      destination_ports     = ["80, 443"]
+      destination_ports     = ["80", "443"]
       description           = "Probably best creating an IP Group with these zscaler IPs, rather than adding them to this rule individually, as it's easier to manage if the IPs change in future."
     }
   }
@@ -258,10 +258,11 @@ resource "azurerm_key_vault" "kv" {
 
 # Private Endpoint
 resource "azurerm_private_endpoint" "kvpep" {
-  subscription        = var.sub1
+  # subscription        = var.sub1
   resource_group_name = var.rgkv
   location            = var.location
   name                = "ims-prd-mgmt-ne-pep-kv-01"
+  subnet_id           = var.kvsubnet
 
   private_service_connection {
     name                           = "kv-priv-conn"
@@ -269,8 +270,8 @@ resource "azurerm_private_endpoint" "kvpep" {
     is_manual_connection           = false
     subresource_names              = ["vault"]
   }
-  virtual_network_id    = var.vnetkv
-  subnet_id           = var.kvsubnet
+  # virtual_network_id    = var.vnetkv
+  
 }
 
 # Private DNS zone association
@@ -285,7 +286,7 @@ resource "azurerm_private_dns_a_record" "kv_record" {
   name                = azurerm_key_vault.kv.name
   zone_name           = data.azurerm_private_dns_zone.dnszone.name
   resource_group_name = var.rgkv
-  records             = [azurerm_private_endpoint.kv_pep.private_service_connection[0].private_ip_address]
+  records             = [azurerm_private_endpoint.kvpep.private_service_connection[0].private_ip_address]
 }
 
 #####################################################################
