@@ -278,7 +278,7 @@ resource "azurerm_private_endpoint" "kvpep" {
   # subscription        = var.sub1
   resource_group_name = data.azurerm_resource_group.mgmtsub.name
   location            = var.location
-  name                = "ims-prd-mgmt-ne-pep-kv-01"
+  name                = "ims-prd-mgmt-ne-pep-kv-10"
   subnet_id           = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-mgmt-ne-rg-keyvault/providers/Microsoft.Network/virtualNetworks/ims-prd-mgmt-ne-vnet-01/subnets/ims-prd-mgmt-ne-snet-keyvault"
 
   private_service_connection {
