@@ -65,11 +65,6 @@ variable "vnetkv" {
   default     = "ims-prd-mgmt-ne-vnet-01"
 }
 
-variable "address_space" {
-  description = "Address space for VNet"
-  type        = list(string)
-}
-
 variable "fw_subnet" {
   description = "Subnet Name"
   type        = string
