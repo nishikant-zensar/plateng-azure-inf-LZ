@@ -18,9 +18,9 @@ terraform {
 
 # Public IP
 
-provider "azurerm" {
-  features {}
-}
+# provider "azurerm" {
+#  features {}
+# }
 
 #####################################################
 # Create Public IP's for Gateway and Firewall
