@@ -1222,7 +1222,7 @@ resource "azurerm_route_table" "ims-prd-avd-ne-rt-personal" {
 resource "azurerm_subnet_route_table_association" "ims-prd-conn-ne-vpng-rt" {
   provider       = azurerm.ims-prd-connectivity
   subnet_id      = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01/subnets/GatewaySubnet"
-  route_table_id = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01/routeTables/ims-prd-conn-ne-rt-vpng"
+  route_table_id = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-conn-ne-rt-vpng"
 }
 
 # 2a. Associate "ims-prd-conn-ne-snet-dnsprin" subnet with "ims-prd-conn-ne-nsg-dnsprin" nsg
