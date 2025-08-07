@@ -83,10 +83,10 @@ variable "kvsubnet" {
   default     = "ims-prd-mgmt-ne-snet-keyvault"
 }
 
-variable "subnet_prefix" {
-  description = "Address prefix for firewall subnet"
-  type        = string
-}
+#variable "subnet_prefix" {
+#  description = "Address prefix for firewall subnet"
+#  type        = string
+# }
 
 variable "public_ip" {
   description = "Name of the Public IP for Firewall"
