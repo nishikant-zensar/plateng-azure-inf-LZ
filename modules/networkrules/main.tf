@@ -1228,33 +1228,33 @@ resource "azurerm_subnet_route_table_association" "ims-prd-conn-ne-vpng-rt" {
 # 2a. Associate "ims-prd-conn-ne-snet-dnsprin" subnet with "ims-prd-conn-ne-nsg-dnsprin" nsg
 resource "azurerm_subnet_network_security_group_association" "ims-prd-conn-ne-dnsprin-nsg" {
   provider                  = azurerm.ims-prd-connectivity
-  subnet_id                 = "ims-prd-conn-ne-snet-dnsprin"
-  network_security_group_id = "ims-prd-conn-ne-nsg-dnsprin"
+  subnet_id                 = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01/subnets/ims-prd-conn-ne-snet-dnsprin"
+  network_security_group_id = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-conn-ne-nsg-dnsprin"
 }
 
 # 2b. Associate "ims-prd-conn-ne-snet-dnsprin" subnet with "ims-prd-conn-ne-rt-dnsprin" route table/UDR
 resource "azurerm_subnet_route_table_association" "ims-prd-conn-ne-dnsprin-rt" {
   provider       = azurerm.ims-prd-connectivity
-  subnet_id      = "ims-prd-conn-ne-snet-dnsprin"
-  route_table_id = "ims-prd-conn-ne-rt-dnsprin"
+  subnet_id      = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01/subnets/ims-prd-conn-ne-snet-dnsprin"
+  route_table_id = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-conn-ne-rt-dnsprin"
 }
 # 3a. Associate "ims-prd-conn-ne-snet-dnsprout" subnet with "ims-prd-conn-ne-nsg-dnsprout" nsg
 resource "azurerm_subnet_network_security_group_association" "ims-prd-conn-ne-dnsprout-nsg" {
   provider                  = azurerm.ims-prd-connectivity
-  subnet_id                 = "ims-prd-conn-ne-snet-dnsprout"
-  network_security_group_id = "ims-prd-conn-ne-nsg-dnsprout"
+  subnet_id                 = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01/subnets/ims-prd-conn-ne-snet-dnsprout"
+  network_security_group_id = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-conn-ne-nsg-dnsprout"
 }
 # 3b. Associate "ims-prd-conn-ne-snet-dnsprout" subnet with "ims-prd-conn-ne-rt-dnsprout" route table/UDR
 resource "azurerm_subnet_route_table_association" "ims-prd-conn-ne-dnsprout-rt" {
   provider       = azurerm.ims-prd-connectivity
-  subnet_id      = "ims-prd-conn-ne-snet-dnsprout"
-  route_table_id = "ims-prd-conn-ne-rt-dnsprout"
+  subnet_id      = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01/subnets/ims-prd-conn-ne-snet-dnsprout"
+  route_table_id = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-conn-ne-rt-dnsprout"
 }
 # 4. Associate "ims-prd-conn-ne-snet-pep" subnet with "ims-prd-conn-ne-nsg-pep" nsg
 resource "azurerm_subnet_network_security_group_association" "ims-prd-conn-ne-pep-nsg" {
   provider                  = azurerm.ims-prd-connectivity
-  subnet_id                 = "ims-prd-conn-ne-snet-pep"
-  network_security_group_id = "ims-prd-conn-ne-nsg-pep"
+  subnet_id                 = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01/subnets/ims-prd-conn-ne-snet-pep"
+  network_security_group_id = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-conn-ne-nsg-pep"
 }
 
 ################################################################
@@ -1263,43 +1263,43 @@ resource "azurerm_subnet_network_security_group_association" "ims-prd-conn-ne-pe
 # 1a. Associate "ims-prd-mgmt-ne-snet-security" subnet with "ims-prd-mgmt-ne-snet-nsg-security" nsg
 resource "azurerm_subnet_network_security_group_association" "ims-prd-mgmt-ne-snet-security-nsg" {
   provider                  = azurerm.ims-prd-management
-  subnet_id                 = "ims-prd-mgmt-ne-snet-security"
-  network_security_group_id = "ims-prd-mgmt-ne-nsg-security"
+  subnet_id                 = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-mgmt-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-mgmt-ne-vnet-01/subnets/ims-prd-mgmt-ne-snet-security"
+  network_security_group_id = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-mgmt-ne-nsg-security"
   
 }
 # 1b. Associate "ims-prd-mgmt-ne-snet-security" subnet with "ims-prd-mgmt-ne-snet-rt-security" route table/UDR
 resource "azurerm_subnet_route_table_association" "ims-prd-mgmt-ne-snet-security-rt" {
   provider       = azurerm.ims-prd-management
-  subnet_id      = "ims-prd-mgmt-ne-snet-security"
-  route_table_id = "ims-prd-mgmt-ne-rt-security"
+  subnet_id      = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-mgmt-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-mgmt-ne-vnet-01/subnets/ims-prd-mgmt-ne-snet-security"
+  route_table_id = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-mgmt-ne-rt-security"
   
 }
 # 2a. Associate "ims-prd-mgmt-ne-snet-system" subnet with "ims-prd-mgmt-ne-snet-nsg-system" nsg
 resource "azurerm_subnet_network_security_group_association" "ims-prd-mgmt-ne-snet-system-nsg" {
   provider                  = azurerm.ims-prd-management
-  subnet_id                 = "ims-prd-mgmt-ne-snet-system"
-  network_security_group_id = "ims-prd-mgmt-ne-nsg-system"
+  subnet_id                 = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-mgmt-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-mgmt-ne-vnet-01/subnets/ims-prd-mgmt-ne-snet-system"
+  network_security_group_id = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-mgmt-ne-nsg-system"
    
 }
 # 2b. Associate "ims-prd-mgmt-ne-snet-system" subnet with "ims-prd-mgmt-ne-snet-rt-system" route table/UDR
 resource "azurerm_subnet_route_table_association" "ims-prd-mgmt-ne-snet-system-rt" {
   provider       = azurerm.ims-prd-management
-  subnet_id      = "ims-prd-mgmt-ne-snet-system"
-  route_table_id = "ims-prd-mgmt-ne-rt-system"
+  subnet_id      = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-mgmt-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-mgmt-ne-vnet-01/subnets/ims-prd-mgmt-ne-snet-system"
+  route_table_id = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-mgmt-ne-rt-system"
   
 }
 # 3a. Associate "ims-prd-mgmt-ne-snet-keyvault" subnet with "ims-prd-mgmt-ne-snet-nsg-keyvault" nsg
 resource "azurerm_subnet_network_security_group_association" "ims-prd-mgmt-ne-snet-keyvault-nsg" {
   provider                  = azurerm.ims-prd-management
-  subnet_id                 = "ims-prd-mgmt-ne-snet-keyvault"
-  network_security_group_id = "ims-prd-mgmt-ne-nsg-keyvault"
+  subnet_id                 = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-mgmt-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-mgmt-ne-vnet-01/subnets/ims-prd-mgmt-ne-snet-keyvault"
+  network_security_group_id = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-mgmt-ne-nsg-keyvault"
 
 }
 # 3b. Associate "ims-prd-mgmt-ne-snet-keyvault" subnet with "ims-prd-mgmt-ne-snet-rt-keyvault" route table/UDR
 resource "azurerm_subnet_route_table_association" "ims-prd-mgmt-ne-snet-keyvault-rt" {
   provider       = azurerm.ims-prd-management
-  subnet_id      = "ims-prd-mgmt-ne-snet-keyvault"
-  route_table_id = "ims-prd-mgmt-ne-rt-keyvault"
+  subnet_id      = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-mgmt-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-mgmt-ne-vnet-01/subnets/ims-prd-mgmt-ne-snet-keyvault"
+  route_table_id = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-mgmt-ne-rt-keyvault"
 
 }
 ################################################################
@@ -1308,35 +1308,35 @@ resource "azurerm_subnet_route_table_association" "ims-prd-mgmt-ne-snet-keyvault
 # 1a. Associate "ims-prd-avd-ne-snet-pool" subnet with "ims-prd-avd-ne-snet-nsg-pool" nsg
 resource "azurerm_subnet_network_security_group_association" "ims-prd-avd-ne-snet-pool-nsg" {
   provider                  = azurerm.ims-prd-avd
-  subnet_id                 = "ims-prd-avd-ne-snet-pool"
-  network_security_group_id = "ims-prd-avd-ne-nsg-pool"
+  subnet_id                 = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef/resourceGroups/ims-prd-avd-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-avd-ne-vnet-01/subnets/ims-prd-avd-ne-snet-pool"
+  network_security_group_id = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef/resourceGroups/ims-prd-avd-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-avd-ne-nsg-pool"
 
 }
 # 1b. Associate "ims-prd-avd-ne-snet-pool" subnet with "ims-prd-avd-ne-snet-rt-pool" route table/UDR
 resource "azurerm_subnet_route_table_association" "ims-prd-avd-ne-snet-pool-rt" {
   provider       = azurerm.ims-prd-avd
-  subnet_id      = "ims-prd-avd-ne-snet-pool"
-  route_table_id = "ims-prd-avd-ne-rt-pool"
+  subnet_id      = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef/resourceGroups/ims-prd-avd-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-avd-ne-vnet-01/subnets/ims-prd-avd-ne-snet-pool"
+  route_table_id = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef/resourceGroups/ims-prd-avd-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-avd-ne-rt-pool"
 
 }
 # 2a. Associate "ims-prd-avd-ne-snet-personal" subnet with "ims-prd-avd-ne-snet-nsg-personal" nsg
 resource "azurerm_subnet_network_security_group_association" "ims-prd-avd-ne-snet-personal-nsg" {
   provider                  = azurerm.ims-prd-avd
-  subnet_id                 = "ims-prd-avd-ne-snet-personal"
-  network_security_group_id = "ims-prd-avd-ne-nsg-personal"
+  subnet_id                 = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef/resourceGroups/ims-prd-avd-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-avd-ne-vnet-01/subnets/ims-prd-avd-ne-snet-personal"
+  network_security_group_id = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef/resourceGroups/ims-prd-avd-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-avd-ne-nsg-personal"
 
 }
 # 2b. Associate "ims-prd-avd-ne-snet-personal" subnet with "ims-prd-avd-ne-snet-rt-personal" route table/UDR
 resource "azurerm_subnet_route_table_association" "ims-prd-avd-ne-snet-personal-rt" {
   provider       = azurerm.ims-prd-avd
-  subnet_id      = "ims-prd-avd-ne-snet-personal"
-  route_table_id = "ims-prd-avd-ne-rt-personal"
+  subnet_id      = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef/resourceGroups/ims-prd-avd-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-avd-ne-vnet-01/subnets/ims-prd-avd-ne-snet-personal"
+  route_table_id = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef/resourceGroups/ims-prd-avd-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-avd-ne-rt-personal"
 
 }
 # 3. Associate "ims-prd-avd-ne-snet-pep" subnet with "ims-prd-avd-ne-snet-nsg-pep" nsg
 resource "azurerm_subnet_network_security_group_association" "ims-prd-avd-ne-snet-pep-nsg" {
   provider                  = azurerm.ims-prd-avd
-  subnet_id                 = "ims-prd-avd-ne-snet-pep"
-  network_security_group_id = "ims-prd-avd-ne-nsg-pep"
+  subnet_id                 = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef/resourceGroups/ims-prd-avd-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-avd-ne-vnet-01/subnets/ims-prd-avd-ne-snet-pep"
+  network_security_group_id = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef/resourceGroups/ims-prd-avd-ne-rg-network/providers/Microsoft.Network/routeTables/ims-prd-avd-ne-nsg-pep"
 
 }
