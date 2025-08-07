@@ -190,7 +190,7 @@ resource "azurerm_private_dns_resolver_dns_forwarding_ruleset" "dnsfrs" {
 # Create Outbound Endpoint Forwarding Rule
 resource "azurerm_private_dns_resolver_forwarding_rule" "dnsfr" {
   name                    = "ims-prd-conn-ne-dnsfrs-rule-01"
-  dns_forwarding_ruleset_id = azurerm_private_dns_resolver_dns_forwarding_ruleset.dnsfrs.name
+  dns_forwarding_ruleset_id = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/dnsForwardingRulesets/ims-prd-conn-ne-dnsfrs-01"
   domain_name             = "tescoims.org."
   enabled                 = true
   target_dns_servers {
