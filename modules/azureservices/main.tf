@@ -1,8 +1,25 @@
+terraform {
+  backend "azurerm" {
+    resource_group_name  = "ims-prd-lz-ne-rg-terraformstate"
+    storage_account_name = "imslandingznstr"
+    container_name       = "tfstate"
+    key                  = "azservices.terraform.tfstate" # Path to the state file in the container
+    use_oidc_auth        = true
+    use_azuread_auth     = true
+  }
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0"
+    }
+  }
+  required_version = ">= 1.0"  
+}
 #####################################################
 # Create Azure Firewall and Firewall Policies
 #####################################################
 provider "azurerm" {
-  features = {}
+  features {}
   subscription_id = var.subscription_id
 }
 
@@ -109,30 +126,6 @@ resource "azurerm_firewall_policy_rule_collection_group" "coreplat_group" {
 #####################################################################
 # Create Azure DNS Private Resolver with Inbound & Outbound Endpoints
 #####################################################################
-
-provider "azurerm" {
-  features {}
-}
-
-variable "subscription_id" {
-  description = "Azure Subscription ID"
-  type        = string
-}
-
-variable "resource_group_name" {
-  description = "Resource Group Name"
-  type        = string
-}
-
-variable "location" {
-  description = "Azure Region"
-  type        = string
-}
-
-variable "virtual_network_id" {
-  description = "Virtual Network ID"
-  type        = string
-}
 
 # Create Azure DNS Private Resolver
 resource "azurerm_dns_resolver" "dnspr" {

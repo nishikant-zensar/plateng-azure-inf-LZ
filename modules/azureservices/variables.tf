@@ -1,6 +1,7 @@
 variable "subscription_id" {
   description = "Azure Subscription ID"
   type        = string
+  default     = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207"
 }
 
 variable "sub1" {
