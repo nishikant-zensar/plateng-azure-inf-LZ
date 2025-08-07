@@ -268,7 +268,7 @@ provider "azurerm" {
 #1. Create a udr to associate with "GatewaySubnet" subnet in hub vNet
 resource "azurerm_route_table" "ims-prd-conn-ne-rt-vpng" {
   provider            = azurerm.ims-prd-connectivity
-  resource_group_name = "ims-prd-connectivity-rg-network"
+  resource_group_name = "ims-prd-conn-ne-rg-network"
   name                = "ims-prd-conn-ne-rt-vpng"
   location            = "northeurope"
   
@@ -316,7 +316,7 @@ resource "azurerm_route_table" "ims-prd-conn-ne-rt-vpng" {
 #2. Create a udr to associate with "ims-prd-conn-ne-snet-dnsprin" subnet subnet in hub vNet
 resource "azurerm_route_table" "ims-prd-conn-ne-rt-dnsprin" {
   provider            = azurerm.ims-prd-connectivity
-  resource_group_name = "ims-prd-connectivity-rg-network"
+  resource_group_name = "ims-prd-conn-ne-rg-network"
   name                = "ims-prd-conn-ne-rt-dnsprin"
   location            = "northeurope"
   
@@ -360,7 +360,7 @@ resource "azurerm_route_table" "ims-prd-conn-ne-rt-dnsprin" {
 #3. Create a udr to associate with "ims-prd-conn-ne-snet-dnsprout" subnet subnet in hub vNet
 resource "azurerm_route_table" "ims-prd-conn-ne-rt-dnsprout" {
   provider            = azurerm.ims-prd-connectivity
-  resource_group_name = "ims-prd-connectivity-rg-network"
+  resource_group_name = "ims-prd-conn-ne-rg-network"
   name                = "ims-prd-conn-ne-rt-dnsprout"
   location            = "northeurope"
   
