@@ -10,7 +10,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 4.0"
+      version = ">= 3.0.0"
     }
   }
   required_version = ">= 1.0"  
@@ -28,7 +28,7 @@ resource "azurerm_firewall_policy" "fw_policy" {
   name                = "ims-prd-conn-ne-afwp-01"
   location            = var.location
   resource_group_name = var.resource_group_name
-  tier               = ["Premium"]
+  # tier               = ["Premium"]
 
   threat_intelligence_mode = var.enable_threat_intel
   intrusion_detection {
@@ -226,7 +226,7 @@ data "azurerm_private_dns_zone" "dnszone" {
 
 # Create Key Vault
 resource "azurerm_key_vault" "kv" {
-  subscription                = ["b63f4e55-499d-4984-9375-f17853ff6e36"]
+  # subscription                = ["b63f4e55-499d-4984-9375-f17853ff6e36"]
   name                        = "ims-prd-mgmt-ne-kv-01"
   location                    = var.location
   resource_group_name         = var.rgkv
@@ -292,7 +292,7 @@ resource "azurerm_private_dns_a_record" "kv_record" {
 # Create Log Analytics Workspace
 #####################################################################
 resource "azurerm_log_analytics_workspace" "log_analytics" {
-  subscription        = ["b63f4e55-499d-4984-9375-f17853ff6e36"]
+  # subscription        = ["b63f4e55-499d-4984-9375-f17853ff6e36"]
   resource_group_name = "ims-prd-mgmt-ne-rg-network"
   name                = "ims-prd-mgmt-ne-log-analytics-01"
   location            = var.location
