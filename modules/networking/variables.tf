@@ -1,7 +1,7 @@
 variable "connectivity_subscription_id" {
   description = "The Azure subscription ID for Connectivity"
   type        = string
-  default     = "/subscriptions/eca8a48a-2dc4-45da-908c-94bf6100016c"
+  default     = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207"
 }
 
 variable "management_subscription_id" {
