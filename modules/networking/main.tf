@@ -120,16 +120,6 @@ data "azurerm_subnet" "gateway_subnet" {
   resource_group_name  = data.azurerm_virtual_network.vnethub.resource_group_name
 }
 
-data "azurerm_public_ip" "pip1" {
-  name                = "ims-prd-conn-ne-pip-vpng-01"
-  resource_group_name = "ims-prd-conn-ne-rg-network"
-}
-
-data "azurerm_public_ip" "pip2" {
-  name                = "ims-prd-conn-ne-pip-vpng-02"
-  resource_group_name = "ims-prd-conn-ne-rg-network"
-}
-
 resource "azurerm_virtual_network_gateway" "vpn_gw" {
   # subscription        = var.connectivity_subscription_id
   name                = "ims-prd-conn-ne-vpng-01"
@@ -145,14 +135,14 @@ resource "azurerm_virtual_network_gateway" "vpn_gw" {
 
   ip_configuration {
     name                          = "vpng-ipconfig1"
-    public_ip_address_id          = data.azurerm_public_ip.pip1.name
+    public_ip_address_id          = azurerm_public_ip.pipvpng01.name
     private_ip_address_allocation = "Dynamic"
     subnet_id                     = data.azurerm_subnet.gateway_subnet.id
   }
 
   ip_configuration {
     name                          = "vpng-ipconfig2"
-    public_ip_address_id          = data.azurerm_public_ip.pip2.name
+    public_ip_address_id          = azurerm_public_ip.pipvpng02.name
     private_ip_address_allocation = "Dynamic"
     subnet_id                     = data.azurerm_subnet.gateway_subnet.id
   }
