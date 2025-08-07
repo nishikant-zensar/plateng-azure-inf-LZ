@@ -173,8 +173,8 @@ resource "azurerm_virtual_network_gateway_connection" "s2s_connection1" {
   location                        = var.location
   resource_group_name             = var.vnet_resource_group
   type                            = "IPsec"
-  virtual_network_gateway_id      = azurerm_virtual_network_gateway.vpn_gw.name
-  local_network_gateway_id        = azurerm_local_network_gateway.aws_lgw1.name
+  virtual_network_gateway_id      = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworkGateways/ims-prd-conn-ne-vpng-01"
+  local_network_gateway_id        = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/localNetworkGateways/ims-prd-conn-ne-lgw-aws-01"
   connection_protocol             = "IKEv2"
   shared_key                      = "B8Ef._xcfBMoggqRgHpVXRocAXq3ejDX" # Replace with your actual pre-shared key
   dpd_timeout_seconds             = 45
@@ -196,8 +196,8 @@ resource "azurerm_virtual_network_gateway_connection" "s2s_connection2" {
   location                        = var.location
   resource_group_name             = var.vnet_resource_group
   type                            = "IPsec"
-  virtual_network_gateway_id      = azurerm_virtual_network_gateway.vpn_gw.name
-  local_network_gateway_id        = azurerm_local_network_gateway.aws_lgw2.name
+  virtual_network_gateway_id      = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworkGateways/ims-prd-conn-ne-vpng-01"
+  local_network_gateway_id        = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/localNetworkGateways/ims-prd-conn-ne-lgw-aws-02"
   connection_protocol             = "IKEv2"
   shared_key                      = "gyRTAP4mgsUbmTcTqJBQCU02ChqzRvSX" # Replace with your actual pre-shared key
   dpd_timeout_seconds             = 45
