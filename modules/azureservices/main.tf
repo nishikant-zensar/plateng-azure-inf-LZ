@@ -129,7 +129,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "coreplat_group" {
 #####################################################################
 
 # Create Azure DNS Private Resolver
-resource "azurerm_dns_resolver" "dnspr" {
+resource "azurerm_private_dns_resolver" "dnspr" {
   name                = "ims-prd-conn-ne-dnspr-01"
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -142,9 +142,9 @@ resource "azurerm_dns_resolver" "dnspr" {
   }
 }
 # Create DNS Private Resolver Inbound Endpoint
-resource "azurerm_dns_resolver_inbound_endpoint" "inboundep" {
+resource "azurerm_private_dns_resolver_inbound_endpoint" "inboundep" {
   name                = "ims-prd-conn-ne-in-dnspr"
-  dns_resolver_id     = azurerm_dns_resolver.dnspr.id
+  dns_resolver_id     = azurerm_private_dns_resolver.dnspr.id
   resource_group_name = var.resource_group_name
   location            = var.location
   subnet_id           = var.dnspsubnet
@@ -162,9 +162,9 @@ resource "azurerm_dns_resolver_inbound_endpoint" "inboundep" {
   }
 }
 # Create DNS Private Resolver Outbound Endpoint
-resource "azurerm_dns_resolver_outbound_endpoint" "outboundep" {
+resource "azurerm_private_dns_resolver_outbound_endpoint" "outboundep" {
   name                = "ims-prd-conn-ne-out-dnspr"
-  dns_resolver_id     = azurerm_dns_resolver.dnspr.id
+  dns_resolver_id     = azurerm_private_dns_resolver.dnspr.id
   resource_group_name = var.resource_group_name
   location            = var.location
   subnet_id           = var.dnspoutsubnet
@@ -177,13 +177,13 @@ resource "azurerm_dns_resolver_outbound_endpoint" "outboundep" {
 }
 
 # Create Outbound Endpoint Forwarding Ruleset
-resource "azurerm_dns_resolver_forwarding_ruleset" "dnsfrs" {
+resource "azurerm_private_dns_resolver_dns_forwarding_ruleset" "dnsfrs" {
   name                = "ims-prd-conn-ne-dnsfrs-01"
   resource_group_name = var.resource_group_name
   location            = var.location
-  dns_resolver_id     = azurerm_dns_resolver.dnspr.id
+  dns_resolver_id     = azurerm_private_dns_resolver.dnspr.id
 
-  outbound_endpoint_ids = azurerm_dns_resolver_outbound_endpoint.outboundep
+  outbound_endpoint_ids = azurerm_private_dns_resolver_outbound_endpoint.outboundep
 
   tags = {
     Name          = "ims-prd-conn-ne-dnsfrs-01"
@@ -193,9 +193,9 @@ resource "azurerm_dns_resolver_forwarding_ruleset" "dnsfrs" {
 }
 
 # Create Outbound Endpoint Forwarding Rule
-resource "azurerm_dns_resolver_forwarding_rule" "dnsfr" {
+resource "azurerm_private_dns_resolver_forwarding_rule" "dnsfr" {
   name                    = "ims-prd-conn-ne-dnsfrs-rule-01"
-  dns_forwarding_ruleset_id = azurerm_dns_resolver_forwarding_ruleset.dnsfrs.name
+  dns_forwarding_ruleset_id = azurerm_private_dns_resolver_dns_forwarding_ruleset.dnsfrs.name
   domain_name             = "tescoims.org."
   enabled                 = "Enabled" ? true : false
   target_dns_servers {
