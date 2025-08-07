@@ -241,6 +241,7 @@ data "azurerm_resource_group" "mgmtsub2" {
 
 # Create Key Vault
 resource "azurerm_key_vault" "kv" {
+  provider                    = azurerm.ims-prd-management
   # subscription                = ["b63f4e55-499d-4984-9375-f17853ff6e36"]
   name                        = "ims-prd-mgmt-ne-kv-01"
   location                    = var.location
@@ -273,6 +274,7 @@ resource "azurerm_key_vault" "kv" {
 
 # Private Endpoint
 resource "azurerm_private_endpoint" "kvpep" {
+  provider              = azurerm.ims-prd-management
   # subscription        = var.sub1
   resource_group_name = data.azurerm_resource_group.mgmtsub.name
   location            = var.location
@@ -291,6 +293,7 @@ resource "azurerm_private_endpoint" "kvpep" {
 
 # Private DNS zone association
 resource "azurerm_private_dns_zone_virtual_network_link" "dnslink" {
+  provider              = azurerm.ims-prd-management
   name                  = "kv-dnslink"
   resource_group_name   = data.azurerm_resource_group.mgmtsub.name
   private_dns_zone_name = "privatelink.vaultcore.azure.net"
@@ -298,6 +301,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "dnslink" {
 }
 
 resource "azurerm_private_dns_a_record" "kv_record" {
+  provider            = azurerm.ims-prd-management
   name                = azurerm_key_vault.kv.name
   zone_name           = "privatelink.vaultcore.azure.net"
   resource_group_name = data.azurerm_resource_group.mgmtsub.name
@@ -309,6 +313,7 @@ resource "azurerm_private_dns_a_record" "kv_record" {
 # Create Log Analytics Workspace
 #####################################################################
 resource "azurerm_log_analytics_workspace" "log_analytics" {
+  provider              = azurerm.ims-prd-management
   # subscription        = ["b63f4e55-499d-4984-9375-f17853ff6e36"]
   resource_group_name = data.azurerm_resource_group.mgmtsub2.name
   name                = "ims-prd-mgmt-ne-log-analytics-01"
