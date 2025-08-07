@@ -293,7 +293,7 @@ resource "azurerm_private_endpoint" "kvpep" {
 # Create Private DNS Zone
 resource "azurerm_private_dns_zone" "dnszone" {
   name                = "privatelink.vaultcore.azure.net"
-  resource_group_name = data.azurerm_resource_group.mgmtsub.name
+  resource_group_name = data.azurerm_resource_group.mgmtsub2.name
 }
 
 # Private DNS zone association
