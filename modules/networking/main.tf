@@ -122,14 +122,14 @@ resource "azurerm_virtual_network_gateway" "vpn_gw" {
 
   ip_configuration {
     name                          = "vpng-ipconfig1"
-    public_ip_address_id          = "ims-prd-conn-ne-pip-vpng-01"
+    public_ip_address_id          = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/publicIPAddresses/ims-prd-conn-ne-pip-vpng-01"
     private_ip_address_allocation = "Dynamic"
     subnet_id                     = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01/subnets/GatewaySubnet"
   }
 
   ip_configuration {
     name                          = "vpng-ipconfig2"
-    public_ip_address_id          = "ims-prd-conn-ne-pip-vpng-02"
+    public_ip_address_id          = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/publicIPAddresses/ims-prd-conn-ne-pip-vpng-02"
     private_ip_address_allocation = "Dynamic"
     subnet_id                     = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01/subnets/GatewaySubnet"
   }
