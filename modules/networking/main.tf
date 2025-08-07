@@ -29,7 +29,7 @@ provider "azurerm" {
 
 resource "azurerm_public_ip" "pipvpng01" {
   name                = "ims-prd-conn-ne-pip-vpng-01"
-  resource_group_name = "ims-prd-conn-ne-rg-network"
+  resource_group_name = var.vnet_resource_group
   location            = var.location
   sku                 = var.sku
   allocation_method   = var.allocation_method
@@ -54,7 +54,7 @@ resource "azurerm_public_ip" "pipvpng01" {
 
 resource "azurerm_public_ip" "pipvpng02" {
   name                = "ims-prd-conn-ne-pip-vpng-02"
-  resource_group_name = "ims-prd-conn-ne-rg-network"
+  resource_group_name = var.vnet_resource_group
   location            = var.location
   sku                 = var.sku
   allocation_method   = var.allocation_method
@@ -80,7 +80,7 @@ resource "azurerm_public_ip" "pipvpng02" {
 
 resource "azurerm_public_ip" "pipafw01" {
   name                = "ims-prd-conn-ne-pip-afw-01"
-  resource_group_name = "ims-prd-conn-ne-rg-network"
+  resource_group_name = var.vnet_resource_group
   location            = var.location
   sku                 = var.sku
   allocation_method   = var.allocation_method
