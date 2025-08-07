@@ -34,11 +34,11 @@ variable "sku" {
   default     = "Standard"
 }
 
-variable "zones" {
-  description = "List of Availability Zones"
-  type        = string
-  default     = "zone-redundant"
-}
+# variable "zones" {
+#  description = "List of Availability Zones"
+#  type        = type = set(string)
+#  default     = "zone-redundant"
+# }
 
 variable "tier" {
   description = "Tier (Regional or Global)"

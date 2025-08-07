@@ -34,13 +34,13 @@ resource "azurerm_public_ip" "pipvpng01" {
   sku                 = var.sku
   allocation_method   = var.allocation_method
   ip_version          = var.ip_version
-  zones               = var.zones
-  tier                = var.tier
+  zones               = ["zone-redundant"]
+  # tier                = var.tier
   domain_name_label   = var.domain_name_label
   idle_timeout_in_minutes = var.idle_timeout_in_minutes
 
   # Routing Preference (Internet, Microsoft), only valid for Standard SKU with IPv4
-  routing_preference = var.routing_preference
+  # routing_preference = var.routing_preference
 
   # DDoS protection is only available for Standard SKU
   # ddos_protection_mode = var.ddos_protection_mode
@@ -59,13 +59,13 @@ resource "azurerm_public_ip" "pipvpng02" {
   sku                 = var.sku
   allocation_method   = var.allocation_method
   ip_version          = var.ip_version
-  zones               = var.zones
-  tier                = var.tier
+  zones               = ["zone-redundant"]
+  # tier                = var.tier
   domain_name_label   = var.domain_name_label
   idle_timeout_in_minutes = var.idle_timeout_in_minutes
 
   # Routing Preference (Internet, Microsoft), only valid for Standard SKU with IPv4
-  routing_preference = var.routing_preference
+  # routing_preference = var.routing_preference
 
   # DDoS protection is only available for Standard SKU
   # ddos_protection_mode = var.ddos_protection_mode
@@ -85,13 +85,13 @@ resource "azurerm_public_ip" "pipafw01" {
   sku                 = var.sku
   allocation_method   = var.allocation_method
   ip_version          = var.ip_version
-  zones               = var.zones
-  tier                = var.tier
+  zones               = ["zone-redundant"]
+  # tier                = var.tier
   domain_name_label   = var.domain_name_label
   idle_timeout_in_minutes = var.idle_timeout_in_minutes
 
   # Routing Preference (Internet, Microsoft), only valid for Standard SKU with IPv4
-  routing_preference = var.routing_preference
+  # routing_preference = var.routing_preference
 
   # DDoS protection is only available for Standard SKU
   # ddos_protection_mode = var.ddos_protection_mode
@@ -131,7 +131,7 @@ data "azurerm_public_ip" "pip2" {
 }
 
 resource "azurerm_virtual_network_gateway" "vpn_gw" {
-  subscription        = var.connectivity_subscription_id
+  # subscription        = var.connectivity_subscription_id
   name                = "ims-prd-conn-ne-vpng-01"
   location            = var.location
   resource_group_name = data.azurerm_virtual_network.vnethub.resource_group_name
