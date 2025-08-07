@@ -10,7 +10,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0"
+      version = ">= 4.0"
     }
   }
   required_version = ">= 1.0"  
@@ -28,7 +28,7 @@ resource "azurerm_firewall_policy" "fw_policy" {
   name                = "ims-prd-conn-ne-afwp-01"
   location            = var.location
   resource_group_name = var.resource_group_name
-  tier               = "Premium"
+  tier               = ["Premium"]
 
   threat_intelligence_mode = var.enable_threat_intel
   intrusion_detection {
@@ -65,16 +65,17 @@ output "firewall_policy_id" {
 # Firewall Rule Collection
 resource "azurerm_firewall_policy_rule_collection_group" "coreplat_group" {
   name                = "ims-prd-conn-ne-afwprcg-coreplat"
-  resource_group_name = var.resource_group_name
-  location            = var.location
+  firewall_policy_id  = azurerm_firewall_policy.fw_policy.id
+  # resource_group_name = var.resource_group_name
+  # location            = var.location
   priority           = 100
 
-  nat_rule_collection {
-    name     = "ims-prd-conn-ne-afwprc-coreplat-dnat"
-    priority = 100
-    action   = "Allow"
+  # nat_rule_collection {
+  #   name     = "ims-prd-conn-ne-afwprc-coreplat-dnat"
+  #  priority = 100
+  #  action   = "Allow"
 
-  }
+  #}
   network_rule_collection {
     name     = "ims-prd-conn-ne-afwprc-coreplat-net"
     priority = 200
@@ -116,11 +117,11 @@ resource "azurerm_firewall_policy_rule_collection_group" "coreplat_group" {
       description           = "Probably best creating an IP Group with these zscaler IPs, rather than adding them to this rule individually, as it's easier to manage if the IPs change in future."
     }
   }
-  application_rule_collection {
-    name     = "ims-prd-conn-ne-afwprc-coreplat-app"
-    priority = 300
-    action   = "Allow"
-  }
+  # application_rule_collection {
+  #  name     = "ims-prd-conn-ne-afwprc-coreplat-app"
+  #  priority = 300
+  #  action   = "Allow"
+  # }
 }
 
 #####################################################################
@@ -225,12 +226,13 @@ data "azurerm_private_dns_zone" "dnszone" {
 
 # Create Key Vault
 resource "azurerm_key_vault" "kv" {
-  subscription                = var.sub1
+  subscription                = ["b63f4e55-499d-4984-9375-f17853ff6e36"]
   name                        = "ims-prd-mgmt-ne-kv-01"
   location                    = var.location
   resource_group_name         = var.rgkv
   sku_name                    = "premium"
-  soft_delete_enabled         = true
+  tenant_id                   = "684d2402-0ea6-442d-9ad7-4ef26b925ec5"
+  # soft_delete_enabled         = true
   purge_protection_enabled    = true
   soft_delete_retention_days  = 90
 
@@ -290,7 +292,7 @@ resource "azurerm_private_dns_a_record" "kv_record" {
 # Create Log Analytics Workspace
 #####################################################################
 resource "azurerm_log_analytics_workspace" "log_analytics" {
-  subscription        = var.sub1
+  subscription        = ["b63f4e55-499d-4984-9375-f17853ff6e36"]
   resource_group_name = "ims-prd-mgmt-ne-rg-network"
   name                = "ims-prd-mgmt-ne-log-analytics-01"
   location            = var.location
