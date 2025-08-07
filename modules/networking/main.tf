@@ -194,7 +194,7 @@ resource "azurerm_local_network_gateway" "aws_lgw2" {
 resource "azurerm_virtual_network_gateway_connection" "s2s_connection1" {
   name                            = "ims-prd-conn-ne-vnc-01"
   location                        = var.location
-  resource_group_name             = data.azurerm_resource_group.vpn.name
+  resource_group_name             = data.azurerm_virtual_network.vnethub.resource_group_name
   type                            = "IPsec"
   virtual_network_gateway_id      = azurerm_virtual_network_gateway.vpn_gw.name
   local_network_gateway_id        = azurerm_local_network_gateway.aws_lgw1.name
@@ -217,7 +217,7 @@ resource "azurerm_virtual_network_gateway_connection" "s2s_connection1" {
 resource "azurerm_virtual_network_gateway_connection" "s2s_connection2" {
   name                            = "ims-prd-conn-ne-vnc-02"
   location                        = var.location
-  resource_group_name             = data.azurerm_resource_group.vpn.name
+  resource_group_name             = data.azurerm_virtual_network.vnethub.resource_group_name
   type                            = "IPsec"
   virtual_network_gateway_id      = azurerm_virtual_network_gateway.vpn_gw.name
   local_network_gateway_id        = azurerm_local_network_gateway.aws_lgw2.name
