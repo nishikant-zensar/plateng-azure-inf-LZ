@@ -34,7 +34,7 @@ resource "azurerm_public_ip" "pipvpng01" {
   sku                 = var.sku
   allocation_method   = var.allocation_method
   ip_version          = var.ip_version
-  zones               = ["zone-redundant"]
+  # zones               = ["zone-redundant"]
   # tier                = var.tier
   domain_name_label   = var.domain_name_label
   idle_timeout_in_minutes = var.idle_timeout_in_minutes
@@ -59,7 +59,7 @@ resource "azurerm_public_ip" "pipvpng02" {
   sku                 = var.sku
   allocation_method   = var.allocation_method
   ip_version          = var.ip_version
-  zones               = ["zone-redundant"]
+  # zones               = ["zone-redundant"]
   # tier                = var.tier
   domain_name_label   = var.domain_name_label
   idle_timeout_in_minutes = var.idle_timeout_in_minutes
@@ -85,7 +85,7 @@ resource "azurerm_public_ip" "pipafw01" {
   sku                 = var.sku
   allocation_method   = var.allocation_method
   ip_version          = var.ip_version
-  zones               = ["zone-redundant"]
+  # zones               = ["zone-redundant"]
   # tier                = var.tier
   domain_name_label   = var.domain_name_label
   idle_timeout_in_minutes = var.idle_timeout_in_minutes
