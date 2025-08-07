@@ -44,8 +44,8 @@ resource "azurerm_firewall" "fw" {
 
   ip_configuration {
     name                 = "firewallipconfig"
-    subnet_id            = var.fw_subnet
-    public_ip_address_id = var.public_ip
+    subnet_id            = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01/subnets/AzureFirewallSubnet"
+    public_ip_address_id = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/publicIPAddresses/ims-prd-conn-ne-pip-afw-01"
   }
 }
 
@@ -129,7 +129,7 @@ resource "azurerm_private_dns_resolver" "dnspr" {
   name                = "ims-prd-conn-ne-dnspr-01"
   resource_group_name = var.resource_group_name
   location            = var.location
-  virtual_network_id  = var.vnet
+  virtual_network_id  = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01"
 
   tags = {
     Name          = "ims-prd-conn-ne-dnspr-01"
@@ -225,7 +225,7 @@ resource "azurerm_key_vault" "kv" {
   # subscription                = ["b63f4e55-499d-4984-9375-f17853ff6e36"]
   name                        = "ims-prd-mgmt-ne-kv-01"
   location                    = var.location
-  resource_group_name         = var.rgkv
+  resource_group_name         = "ims-prd-mgmt-ne-rg-keyvault"
   sku_name                    = "premium"
   tenant_id                   = "684d2402-0ea6-442d-9ad7-4ef26b925ec5"
   # soft_delete_enabled         = true
@@ -255,7 +255,7 @@ resource "azurerm_key_vault" "kv" {
 # Private Endpoint
 resource "azurerm_private_endpoint" "kvpep" {
   # subscription        = var.sub1
-  resource_group_name = var.rgkv
+  resource_group_name = "ims-prd-mgmt-ne-rg-keyvault"
   location            = var.location
   name                = "ims-prd-mgmt-ne-pep-kv-01"
   subnet_id           = var.kvsubnet
@@ -273,15 +273,15 @@ resource "azurerm_private_endpoint" "kvpep" {
 # Private DNS zone association
 resource "azurerm_private_dns_zone_virtual_network_link" "dnslink" {
   name                  = "kv-dnslink"
-  resource_group_name   = var.rgkv
-  private_dns_zone_name = data.azurerm_private_dns_zone.dnszone.name
+  resource_group_name   = "ims-prd-mgmt-ne-rg-keyvault"
+  private_dns_zone_name = "privatelink.vaultcore.azure.net"
   virtual_network_id    = var.vnetkv
 }
 
 resource "azurerm_private_dns_a_record" "kv_record" {
   name                = azurerm_key_vault.kv.name
-  zone_name           = data.azurerm_private_dns_zone.dnszone.name
-  resource_group_name = var.rgkv
+  zone_name           = "privatelink.vaultcore.azure.net"
+  resource_group_name = "ims-prd-mgmt-ne-rg-keyvault"
   records             = [azurerm_private_endpoint.kvpep.private_service_connection[0].private_ip_address]
   ttl                 = 300
 }
