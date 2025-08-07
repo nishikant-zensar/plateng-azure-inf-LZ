@@ -144,10 +144,10 @@ resource "azurerm_private_dns_resolver" "dnspr" {
 # Create DNS Private Resolver Inbound Endpoint
 resource "azurerm_private_dns_resolver_inbound_endpoint" "inboundep" {
   name                = "ims-prd-conn-ne-in-dnspr"
-  dns_resolver_id     = azurerm_private_dns_resolver.dnspr.id
-  resource_group_name = var.resource_group_name
+  private_dns_resolver_id = azurerm_private_dns_resolver.dnspr.id
+  # resource_group_name = var.resource_group_name
   location            = var.location
-  subnet_id           = var.dnspinsubnet
+  # subnet_id           = var.dnspinsubnet
 
   ip_configurations {
     subnet_id                     = var.dnspinsubnet
@@ -181,7 +181,7 @@ resource "azurerm_private_dns_resolver_dns_forwarding_ruleset" "dnsfrs" {
   name                = "ims-prd-conn-ne-dnsfrs-01"
   resource_group_name = var.resource_group_name
   location            = var.location
-  private_dns_resolver_id     = azurerm_private_dns_resolver.dnspr.id
+  # private_dns_resolver_id     = azurerm_private_dns_resolver.dnspr.id
 
   private_dns_resolver_outbound_endpoint_ids = azurerm_private_dns_resolver_outbound_endpoint.outboundep.id
 
