@@ -21,11 +21,11 @@ variable "rgkv" {
   default     = "ims-prd-mgmt-ne-rg-keyvault"
 }
 
-variable "availability_zones" {
-  description = "List of Availability Zones"
-  type        = list(string)
-  default     = []
-}
+#variable "availability_zones" {
+#  description = "List of Availability Zones"
+#  type        = list(string)
+#  default     = []
+# }
 
 # variable "firewall_sku_name" {
 #  description = "Firewall SKU (AZFW_VNet or AZFW_Hub)"
