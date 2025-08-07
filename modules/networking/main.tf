@@ -149,6 +149,7 @@ resource "azurerm_local_network_gateway" "aws_lgw1" {
   name                = "ims-prd-conn-ne-lgw-aws-01"
   location            = var.location
   resource_group_name = var.vnet_resource_group
+  gateway_address     = "34.247.16.167"
   address_space       = [
     "10.0.0.0/14"
   ]
@@ -159,7 +160,7 @@ resource "azurerm_local_network_gateway" "aws_lgw2" {
   name                = "ims-prd-conn-ne-lgw-aws-02"
   location            = var.location
   resource_group_name = var.vnet_resource_group
-  gateway_address     = "52.213.177.71"
+  gateway_address     = "99.81.84.117"
   address_space       = [
     "10.0.0.0/14"
   ]
