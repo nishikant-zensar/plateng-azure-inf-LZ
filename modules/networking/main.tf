@@ -107,24 +107,11 @@ resource "azurerm_public_ip" "pipafw01" {
 #####################################################
 # 1. Create ims-prd-conn-ne-vpng-01 VPN Gateway
 
-# Data sources for existing resources
-
-data "azurerm_virtual_network" "vnethub" {
-  name                = "ims-prd-conn-ne-vnet-hub-01"
-  resource_group_name = "ims-prd-conn-ne-rg-network"
-}
-
-data "azurerm_subnet" "gateway_subnet" {
-  name                 = "GatewaySubnet"
-  virtual_network_name = data.azurerm_virtual_network.vnethub.name
-  resource_group_name  = data.azurerm_virtual_network.vnethub.resource_group_name
-}
-
 resource "azurerm_virtual_network_gateway" "vpn_gw" {
   # subscription        = var.connectivity_subscription_id
   name                = "ims-prd-conn-ne-vpng-01"
   location            = var.location
-  resource_group_name = data.azurerm_virtual_network.vnethub.resource_group_name
+  resource_group_name = var.vnet_resource_group
 
   type     = "Vpn"
   vpn_type = "RouteBased"
@@ -137,14 +124,14 @@ resource "azurerm_virtual_network_gateway" "vpn_gw" {
     name                          = "vpng-ipconfig1"
     public_ip_address_id          = azurerm_public_ip.pipvpng01.name
     private_ip_address_allocation = "Dynamic"
-    subnet_id                     = data.azurerm_subnet.gateway_subnet.id
+    subnet_id                     = var.subnet_name
   }
 
   ip_configuration {
     name                          = "vpng-ipconfig2"
     public_ip_address_id          = azurerm_public_ip.pipvpng02.name
     private_ip_address_allocation = "Dynamic"
-    subnet_id                     = data.azurerm_subnet.gateway_subnet.id
+    subnet_id                     = var.subnet_name
   }
 
   enable_bgp = false
@@ -161,7 +148,7 @@ resource "azurerm_virtual_network_gateway" "vpn_gw" {
 resource "azurerm_local_network_gateway" "aws_lgw1" {
   name                = "ims-prd-conn-ne-lgw-aws-01"
   location            = var.location
-  resource_group_name = data.azurerm_virtual_network.vnethub.resource_group_name
+  resource_group_name = var.vnet_resource_group
   gateway_address     = "46.137.123.146"
   address_space       = [
     "10.0.0.0/14"
@@ -172,7 +159,7 @@ resource "azurerm_local_network_gateway" "aws_lgw1" {
 resource "azurerm_local_network_gateway" "aws_lgw2" {
   name                = "ims-prd-conn-ne-lgw-aws-02"
   location            = var.location
-  resource_group_name = data.azurerm_virtual_network.vnethub.resource_group_name
+  resource_group_name = var.vnet_resource_group
   gateway_address     = "52.213.177.71"
   address_space       = [
     "10.0.0.0/14"
@@ -184,12 +171,12 @@ resource "azurerm_local_network_gateway" "aws_lgw2" {
 resource "azurerm_virtual_network_gateway_connection" "s2s_connection1" {
   name                            = "ims-prd-conn-ne-vnc-01"
   location                        = var.location
-  resource_group_name             = data.azurerm_virtual_network.vnethub.resource_group_name
+  resource_group_name             = var.vnet_resource_group
   type                            = "IPsec"
   virtual_network_gateway_id      = azurerm_virtual_network_gateway.vpn_gw.name
   local_network_gateway_id        = azurerm_local_network_gateway.aws_lgw1.name
   connection_protocol             = "IKEv2"
-  shared_key                      = "<your-shared-key>" # Replace with your actual pre-shared key
+  shared_key                      = "B8Ef._xcfBMoggqRgHpVXRocAXq3ejDX" # Replace with your actual pre-shared key
   dpd_timeout_seconds             = 45
   use_policy_based_traffic_selectors = true
 
@@ -207,12 +194,12 @@ resource "azurerm_virtual_network_gateway_connection" "s2s_connection1" {
 resource "azurerm_virtual_network_gateway_connection" "s2s_connection2" {
   name                            = "ims-prd-conn-ne-vnc-02"
   location                        = var.location
-  resource_group_name             = data.azurerm_virtual_network.vnethub.resource_group_name
+  resource_group_name             = var.vnet_resource_group
   type                            = "IPsec"
   virtual_network_gateway_id      = azurerm_virtual_network_gateway.vpn_gw.name
   local_network_gateway_id        = azurerm_local_network_gateway.aws_lgw2.name
   connection_protocol             = "IKEv2"
-  shared_key                      = "<your-shared-key>" # Replace with your actual pre-shared key
+  shared_key                      = "gyRTAP4mgsUbmTcTqJBQCU02ChqzRvSX" # Replace with your actual pre-shared key
   dpd_timeout_seconds             = 45
   use_policy_based_traffic_selectors = true
 

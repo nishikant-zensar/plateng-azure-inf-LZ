@@ -16,6 +16,24 @@ variable "avd_prd_subscription_id" {
   default     = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef"
 }
 
+variable "vnet_name" {
+  description = "Name of the Virtual Network"
+  type        = string
+  default     = "ims-prd-conn-ne-vnet-hub-01"
+}
+
+variable "vnet_resource_group" {
+  description = "Resource Group Name for the Virtual Network"
+  type        = string
+  default     = "ims-prd-conn-ne-rg-network"
+}
+
+variable "subnet_name" {
+  description = "Name of the Subnet"
+  type        = string
+  default     = "GatewaySubnet"
+}
+
 variable "location" {
   description = "Azure Region"
   type        = string
