@@ -301,7 +301,7 @@ resource "azurerm_private_dns_zone" "dnszone" {
 resource "azurerm_private_dns_zone_virtual_network_link" "dnslink" {
   provider              = azurerm.ims-prd-management
   name                  = "kv-dnslink"
-  resource_group_name   = data.azurerm_resource_group.mgmtsub.name
+  resource_group_name   = data.azurerm_resource_group.mgmtsub2.name
   private_dns_zone_name = azurerm_private_dns_zone.dnszone.name
   virtual_network_id    = "/subscriptions/b63f4e55-499d-4984-9375-f17853ff6e36/resourceGroups/ims-prd-mgmt-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-mgmt-ne-vnet-01"
 }
@@ -310,7 +310,7 @@ resource "azurerm_private_dns_a_record" "kv_record" {
   provider            = azurerm.ims-prd-management
   name                = azurerm_key_vault.kv.name
   zone_name           = "privatelink.vaultcore.azure.net"
-  resource_group_name = data.azurerm_resource_group.mgmtsub.name
+  resource_group_name = data.azurerm_resource_group.mgmtsub2.name
   records             = [azurerm_private_endpoint.kvpep.private_service_connection[0].private_ip_address]
   ttl                 = 300
 }
