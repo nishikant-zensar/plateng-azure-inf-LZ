@@ -234,10 +234,10 @@ data "azurerm_subnet" "subnet" {
   resource_group_name  = data.azurerm_virtual_network.vnet.resource_group_name
 }
 
-data "azurerm_private_dns_zone" "dnszone" {
-  name                = "privatelink.vaultcore.azure.net"
-  resource_group_name = "ims-prd-mgmt-ne-rg-keyvault"
-}
+# data "azurerm_private_dns_zone" "dnszone" {
+#  name                = "privatelink.vaultcore.azure.net"
+#  resource_group_name = data.azurerm_resource_group.mgmtsub.name
+# }
 
 # Create Key Vault
 resource "azurerm_key_vault" "kv" {
