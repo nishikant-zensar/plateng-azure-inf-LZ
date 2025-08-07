@@ -86,9 +86,9 @@
     description                   = "DenyAll"
   }
 
-    depends_on = [
-      azurerm_resource_group.ims-prd-conn-ne-rg-network
-    ]
+// depends_on = [
+//   azurerm_resource_group.ims-prd-conn-ne-rg-network
+// ]
     
     tags = {
       Name          = "ims-prd-conn-ne-nsg-dnsprin"
@@ -182,9 +182,9 @@
     description                   = "DenyAll"
     }
 
-    depends_on = [
-      azurerm_resource_group.ims-prd-conn-ne-rg-network
-    ]
+    # depends_on = [
+    #   azurerm_resource_group.ims-prd-conn-ne-rg-network
+    # ]
 
     tags = {
       Name          = "ims-prd-conn-ne-nsg-dnsprout"
@@ -226,9 +226,9 @@
     description                   = "DenyAll"
     }
 
-    depends_on = [
-      azurerm_resource_group.ims-prd-conn-ne-rg-network
-    ]
+    # depends_on = [
+    #   azurerm_resource_group.ims-prd-conn-ne-rg-network
+    # ]
 
     tags = {
       Name          = "ims-prd-conn-ne-nsg-dnsprout"
@@ -277,10 +277,9 @@ resource "azurerm_route_table" "ims-prd-conn-ne-rt-vpng" {
     next_hop_in_ip_address = "192.168.0.68"
   }
   
-  depends_on = [
-    azurerm_resource_group.ims-prd-conn-ne-rg-network
-
-  ]
+  # depends_on = [
+  #   azurerm_resource_group.ims-prd-conn-ne-rg-network
+  # ]
   tags = {
     Name          = "ims-prd-conn-ne-rt-vpng"
     Environment   = "prd"
@@ -320,9 +319,9 @@ resource "azurerm_route_table" "ims-prd-conn-ne-rt-dnsprin" {
     next_hop_in_ip_address = "192.168.0.68"
   }
   
-  depends_on = [
-    azurerm_resource_group.ims-prd-conn-ne-rg-network
-  ]
+  # depends_on = [
+  #   azurerm_resource_group.ims-prd-conn-ne-rg-network
+  # ]
 
   tags = {
     Name          = "ims-prd-conn-ne-rt-dnsprin"
@@ -364,9 +363,9 @@ resource "azurerm_route_table" "ims-prd-conn-ne-rt-dnsprout" {
     next_hop_in_ip_address = "192.168.0.68"
   }
 
-  depends_on = [
-    azurerm_resource_group.ims-prd-conn-ne-rg-network
-  ]
+  # depends_on = [
+  #   azurerm_resource_group.ims-prd-conn-ne-rg-network
+  # ]
   
   tags = {
     Name          = "ims-prd-conn-ne-rt-dnsprout"
@@ -442,9 +441,9 @@ resource "azurerm_network_security_group" "ims-prd-mgmt-ne-nsg-security" {
     data_creation = "2025-07-21"
   }
 
-  depends_on = [
-    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
-  ]
+  # depends_on = [
+  #   azurerm_resource_group.ims-prd-mgmt-ne-rg-network
+  # ]
 }
 
 #2. Create a nsg to associate with "ims-prd-mgmt-ne-snet-system" subnet in the mgmt vNet 
@@ -511,9 +510,9 @@ resource "azurerm_network_security_group" "ims-prd-mgmt-ne-nsg-system" {
     data_creation = "2025-07-21"
   }
 
-  depends_on = [
-    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
-  ]
+  # depends_on = [
+  #   azurerm_resource_group.ims-prd-mgmt-ne-rg-network
+  # ]
 }
 
 #3. Create a nsg to associate with "ims-prd-mgmt-ne-snet-keyvault" subnet in the mgmt vNet 
@@ -579,9 +578,9 @@ resource "azurerm_network_security_group" "ims-prd-mgmt-ne-nsg-keyvault" {
     function      = "nsg"
     data_creation = "2025-07-21"
   }
-   depends_on = [
-    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
-  ]
+  #  depends_on = [
+  #   azurerm_resource_group.ims-prd-mgmt-ne-rg-network
+  # ]
 }
 
 #4. Create a nsg to associate with "ims-prd-mgmt-ne-snet-pep" subnet in the mgmt vNet
@@ -647,9 +646,9 @@ resource "azurerm_network_security_group" "ims-prd-mgmt-ne-nsg-pep" {
     function      = "nsg"
     data_creation = "2025-07-21"
   }
-   depends_on = [
-    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
-  ]
+  #  depends_on = [
+  #   azurerm_resource_group.ims-prd-mgmt-ne-rg-network
+  # ]
 }
 ###############################
 # Create UDRs
@@ -692,9 +691,9 @@ resource "azurerm_route_table" "ims-prd-mgmt-ne-rt-keyvault" {
     function      = "route table"
     data_creation = "2025-07-21"
   }
-  depends_on = [
-    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
-  ]
+  # depends_on = [
+  #   azurerm_resource_group.ims-prd-mgmt-ne-rg-network
+  # ]
 }
 
 #2. Create a udr to associate with "ims-prd-mgmt-ne-snet-security" subnet in the mgmt vNet
@@ -735,9 +734,9 @@ resource "azurerm_route_table" "ims-prd-mgmt-ne-rt-security" {
     function      = "route table"
     data_creation = "2025-07-21"
   }
-  depends_on = [
-    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
-  ]
+  # depends_on = [
+  #   azurerm_resource_group.ims-prd-mgmt-ne-rg-network
+  # ]
 }
 
 #3. Create a udr to associate with "ims-prd-mgmt-ne-snet-system" subnet in the mgmt vNet
@@ -772,9 +771,9 @@ resource "azurerm_route_table" "ims-prd-mgmt-ne-rt-system" {
     function      = "route table"
     data_creation = "2025-07-21"
   }
-  depends_on = [
-    azurerm_resource_group.ims-prd-mgmt-ne-rg-network
-  ]
+  # depends_on = [
+  #   azurerm_resource_group.ims-prd-mgmt-ne-rg-network
+  # ]
 }
 
 ###############################
@@ -881,9 +880,9 @@ resource "azurerm_network_security_group" "ims-prd-avd-ne-nsg-pool" {
     function      = "nsg"
     data_creation = "2025-07-21"
   }
-  depends_on = [
-    azurerm_resource_group.ims-prd-avd-ne-rg-network
-  ]
+  # depends_on = [
+  #   azurerm_resource_group.ims-prd-avd-ne-rg-network
+  # ]
 }
 
 #2. Create a nsg to associate with "ims-prd-avd-ne-snet-personal" subnet in the avd vNet
@@ -987,9 +986,9 @@ resource "azurerm_network_security_group" "ims-prd-avd-ne-nsg-personal" {
     function      = "nsg"
     data_creation = "2025-07-21"
   }
-  depends_on = [
-    azurerm_resource_group.ims-prd-avd-ne-rg-network
-  ]
+  # depends_on = [
+  #   azurerm_resource_group.ims-prd-avd-ne-rg-network
+  # ]
 }
 
 #3. Create a nsg to associate with "ims-prd-avd-ne-snet-pep" subnet in the avd vNet
@@ -1093,9 +1092,9 @@ resource "azurerm_network_security_group" "ims-prd-avd-ne-nsg-pep" {
     function      = "nsg"
     data_creation = "2025-07-21"
   }
-  depends_on = [
-    azurerm_resource_group.ims-prd-avd-ne-rg-network
-  ]
+  # depends_on = [
+  #   azurerm_resource_group.ims-prd-avd-ne-rg-network
+  # ]
 }
 
 ###############################
@@ -1145,9 +1144,9 @@ resource "azurerm_route_table" "ims-prd-avd-ne-rt-pool" {
     function      = "route table"
     data_creation = "2025-07-21"
   }
-  depends_on = [
-    azurerm_resource_group.ims-prd-avd-ne-rg-network
-  ]
+  # depends_on = [
+  #   azurerm_resource_group.ims-prd-avd-ne-rg-network
+  # ]
 }
 
 #2. Create a udr to associate with "ims-prd-avd-ne-snet-personal" subnet in the avd vNet
@@ -1194,9 +1193,9 @@ resource "azurerm_route_table" "ims-prd-avd-ne-rt-personal" {
     function      = "route table"
     data_creation = "2025-07-21"
   }
-  depends_on = [
-    azurerm_resource_group.ims-prd-avd-ne-rg-network
-  ]
+  # depends_on = [
+  #   azurerm_resource_group.ims-prd-avd-ne-rg-network
+  # ]
 }
 
 ################################################################
