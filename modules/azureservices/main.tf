@@ -197,7 +197,7 @@ resource "azurerm_private_dns_resolver_forwarding_rule" "dnsfr" {
   name                    = "ims-prd-conn-ne-dnsfrs-rule-01"
   dns_forwarding_ruleset_id = azurerm_private_dns_resolver_dns_forwarding_ruleset.dnsfrs.name
   domain_name             = "tescoims.org."
-  enabled                 = "Enabled" ? true : false
+  enabled                 = true
   target_dns_servers {
     ip_address = "1.1.1.1"
     port       = 53
