@@ -212,10 +212,11 @@ provider "azurerm" {
 }
 
 # Data sources for existing resources
-#data "azurerm_virtual_network" "vnet" {
-#  name                = "ims-prd-mgmt-ne-vnet-01"
+data "azurerm_virtual_network" "vnet" {
+  name                = "ims-prd-mgmt-ne-vnet-01"
+  provider = azurerm.ims-prd-management
 #  resource_group_name = "ims-prd-mgmt-ne-rg-keyvault"
-# }
+ }
 
 data "azurerm_resource_group" "mgmtsub" {
   name     = "ims-prd-mgmt-ne-rg-keyvault"
@@ -227,11 +228,11 @@ data "azurerm_resource_group" "mgmtsub2" {
   provider = azurerm.ims-prd-management
 }
 
-data "azurerm_subnet" "subnet" {
-  name                 = "subnet-kv" # You must specify the actual subnet name
-  virtual_network_name = data.azurerm_virtual_network.vnet.name
-  resource_group_name  = data.azurerm_virtual_network.vnet.resource_group_name
-}
+# data "azurerm_subnet" "subnet" {
+#  name                 = "subnet-kv" # You must specify the actual subnet name
+#  virtual_network_name = data.azurerm_virtual_network.vnet.name
+#  resource_group_name  = data.azurerm_resource_group.mgmtsub.name
+# }
 
 # data "azurerm_private_dns_zone" "dnszone" {
 #  name                = "privatelink.vaultcore.azure.net"
