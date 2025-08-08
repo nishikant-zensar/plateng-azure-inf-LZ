@@ -8044,10 +8044,10 @@ resource "azurerm_policy_set_definition" "ims-builtin-corp-initiative" {
   name                = "ims-builtin-corp-initiative"
   display_name        = "ims-builtin-corp-initiative"
   policy_type         = "Custom"
-  management_group_id = azurerm_management_group.IMS-Root1.id
+  management_group_id = azurerm_management_group.IMS-Root.id
 
   depends_on = [
-    azurerm_management_group.IMS-Root1
+    azurerm_management_group.IMS-Root
   ]
 
   dynamic "policy_definition_reference" {
@@ -8238,10 +8238,10 @@ resource "azurerm_policy_set_definition" "ims-builtin-prod-initiative" {
   name                = "ims-builtin-prod-initiative"
   display_name        = "ims-builtin-prod-initiative"
   policy_type         = "Custom"
-  management_group_id = azurerm_management_group.IMS-Root1.id
+  management_group_id = azurerm_management_group.IMS-Root.id
 
   depends_on = [
-    azurerm_management_group.IMS-Root1
+    azurerm_management_group.IMS-Root
   ]
 
   dynamic "policy_definition_reference" {
@@ -8432,11 +8432,11 @@ resource "azurerm_policy_set_definition" "ims-builtin-prod-location-initiative" 
   name                = "ims-builtin-prod-location-initiative"
   display_name        = "ims-builtin-prod-location-initiative"
   policy_type         = "Custom"
-  management_group_id = azurerm_management_group.IMS-Root1.id
+  management_group_id = azurerm_management_group.IMS-Root.id
   
 
 depends_on = [
-    azurerm_management_group.IMS-Root1
+    azurerm_management_group.IMS-Root
   ]
   
   policy_definition_reference {
@@ -8467,10 +8467,10 @@ resource "azurerm_policy_set_definition" "ims-custom-corp-initiative" {
   display_name        = "ims-custom-corp-initiative"
   description         = "Initiative including custom policies for corp"
   policy_type         = "Custom"
-  management_group_id = azurerm_management_group.IMS-Root1.id
+  management_group_id = azurerm_management_group.IMS-Root.id
 
 depends_on = [
-  azurerm_management_group.IMS-Root1,
+  azurerm_management_group.IMS-Root,
   azurerm_policy_definition.deploy_mysql_ssl_min_tls,
   azurerm_policy_definition.postgresql_min_tls_and_ssl,
   azurerm_policy_definition.deploy_storage_ssl_enforcement,
@@ -8557,314 +8557,314 @@ depends_on = [
  
  # Add custom definitions with default effect to the initiative
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-MySQL-sslEnforcement"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-MySQL-sslEnforcement"
     reference_id         = "Deploy-MySQL-sslEnforcement"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-PostgreSQL-sslEnforcement"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-PostgreSQL-sslEnforcement"
     reference_id         = "Deploy-PostgreSQL-sslEnforcement"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-Storage-sslEnforcement"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-Storage-sslEnforcement"
     reference_id         = "Deploy-Storage-sslEnforcement"
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Configure-Logic-Apps-Latest-TLS" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Configure-Logic-Apps-Latest-TLS" 
     reference_id = "Configure-Logic-Apps-Latest-TLS" 
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-Budget"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-Budget"
     reference_id         = "Deploy-Budget"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-Sql-AuditingSettings"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-Sql-AuditingSettings"
     reference_id         = "Deploy-Sql-AuditingSettings"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-Sql-SecurityAlertPolicies"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-Sql-SecurityAlertPolicies"
     reference_id         = "Deploy-Sql-SecurityAlertPolicies"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-Vm-autoShutdown"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-Vm-autoShutdown"
     reference_id         = "Deploy-Vm-autoShutdown"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Modify-NSG"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Modify-NSG"
     reference_id         = "Modify-NSG"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-SqlMi-minTLS"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-SqlMi-minTLS"
     reference_id         = "Deploy-SqlMi-minTLS"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-SQL-minTLS"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-SQL-minTLS"
     reference_id         = "Deploy-SQL-minTLS"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Audit-Subnet-Without-Penp"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Audit-Subnet-Without-Penp"
     reference_id         = "Audit-Subnet-Without-Penp"
   }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Defender-IoT-Hub-On" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Defender-IoT-Hub-On" 
     reference_id = "Defender-IoT-Hub-On" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/App-Insights-Configured" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/App-Insights-Configured" 
     reference_id = "App-Insights-Configured" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/ReadOnly-Locks-Storage-Accounts" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/ReadOnly-Locks-Storage-Accounts" 
     reference_id = "ReadOnly-Locks-Storage-Accounts" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/UDP-Access-From-Internet-Restricted" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/UDP-Access-From-Internet-Restricted" 
     reference_id = "UDP-Access-From-Internet-Restricted" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Enable-Key-Rotation-Reminders" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Enable-Key-Rotation-Reminders" 
     reference_id = "Enable-Key-Rotation-Reminders" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/HTTP-HTTPS-Access-From-Internet-Restricted" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/HTTP-HTTPS-Access-From-Internet-Restricted" 
     reference_id = "HTTP-HTTPS-Access-From-Internet-Restricted" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Public-IP-Addresses-Periodic-Evaluation" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Public-IP-Addresses-Periodic-Evaluation" 
     reference_id = "Public-IP-Addresses-Periodic-Evaluation" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Azure-Bastion-Host-Exists" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Azure-Bastion-Host-Exists" 
     reference_id = "Azure-Bastion-Host-Exists" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Entra-Authentication-Enabled" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Entra-Authentication-Enabled" 
     reference_id = "Entra-Authentication-Enabled" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/MFA-Enabled-Identities-VM-Access" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/MFA-Enabled-Identities-VM-Access" 
     reference_id = "MFA-Enabled-Identities-VM-Access" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/System-Assigned-Managed-Identity-On" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/System-Assigned-Managed-Identity-On" 
     reference_id = "System-Assigned-Managed-Identity-On" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Audit-Log-Enabled-MySQL" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Audit-Log-Enabled-MySQL" 
     reference_id = "Audit-Log-Enabled-MySQL" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Number-Of-Methods-Required-To-Reset" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Number-Of-Methods-Required-To-Reset" 
     reference_id = "Number-Of-Methods-Required-To-Reset" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Register-With-AAD-Enabled-App-Service" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Register-With-AAD-Enabled-App-Service" 
     reference_id = "Register-With-AAD-Enabled-App-Service" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Storage-Account-Access-Keys-Regenerated" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Storage-Account-Access-Keys-Regenerated" 
     reference_id = "Storage-Account-Access-Keys-Regenerated" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/SMB-Channel-Encryption-AES256GCM" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/SMB-Channel-Encryption-AES256GCM" 
     reference_id = "SMB-Channel-Encryption-AES256GCM" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/MFA-Policy-Admin-Groups" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/MFA-Policy-Admin-Groups" 
     reference_id = "MFA-Policy-Admin-Groups" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/MFA-Required-Risky-Signins" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/MFA-Required-Risky-Signins" 
     reference_id = "MFA-Required-Risky-Signins" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/MFA-Required-Admin-Portals" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/MFA-Required-Admin-Portals" 
     reference_id = "MFA-Required-Admin-Portals" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Account-Lockout-Threshold" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Account-Lockout-Threshold" 
     reference_id = "Account-Lockout-Threshold" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/SAS-Tokens-Expire-Within-Hour" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/SAS-Tokens-Expire-Within-Hour" 
     reference_id = "SAS-Tokens-Expire-Within-Hour" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Account-Lockout-Duration-Seconds" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Account-Lockout-Duration-Seconds" 
     reference_id = "Account-Lockout-Duration-Seconds" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Restrict-Access-Entra-Admin-Center" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Restrict-Access-Entra-Admin-Center" 
     reference_id = "Restrict-Access-Entra-Admin-Center" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Custom-Bad-Password-List-Enforce" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Custom-Bad-Password-List-Enforce" 
     reference_id = "Custom-Bad-Password-List-Enforce" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Restrict-Access-Groups-Features-Access-Pane" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Restrict-Access-Groups-Features-Access-Pane" 
     reference_id = "Restrict-Access-Groups-Features-Access-Pane" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Fewer-Than-5-Global-Admins" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Fewer-Than-5-Global-Admins" 
     reference_id = "Fewer-Than-5-Global-Admins" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Soft-Delete-Enabled-Blob-Storage" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Soft-Delete-Enabled-Blob-Storage" 
     reference_id = "Soft-Delete-Enabled-Blob-Storage" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Cloud-Security-Benchmark-Not-Disabled" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Cloud-Security-Benchmark-Not-Disabled" 
     reference_id = "Cloud-Security-Benchmark-Not-Disabled" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Number-Of-Days-Reconfirm-Auth" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Number-Of-Days-Reconfirm-Auth" 
     reference_id = "Number-Of-Days-Reconfirm-Auth" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/All-Users-Roles-Set-To-Owner" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/All-Users-Roles-Set-To-Owner" 
     reference_id = "All-Users-Roles-Set-To-Owner" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Managed-Identity-Used-For-Azure-Services" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Managed-Identity-Used-For-Azure-Services" 
     reference_id = "Managed-Identity-Used-For-Azure-Services" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Notify-Users-On-Password-Resets" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Notify-Users-On-Password-Resets" 
     reference_id = "Notify-Users-On-Password-Resets" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Notify-Admins-On-Password-Reset" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Notify-Admins-On-Password-Reset" 
     reference_id = "Notify-Admins-On-Password-Reset" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Security-Defaults-Enabled" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Security-Defaults-Enabled" 
     reference_id = "Security-Defaults-Enabled" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Logfiles-Retention-Days-PostgreSQL" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Logfiles-Retention-Days-PostgreSQL" 
     reference_id = "Logfiles-Retention-Days-PostgreSQL" 
     }
 policy_definition_reference { 
-  policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Defender-Cloud-Apps-Integration" 
+  policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Defender-Cloud-Apps-Integration" 
     reference_id = "Defender-Cloud-Apps-Integration" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Require-Secure-Transport-MySQL" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Require-Secure-Transport-MySQL" 
     reference_id = "Require-Secure-Transport-MySQL" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/TLS-Version-MySQL-Flexible-Server" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/TLS-Version-MySQL-Flexible-Server" 
     reference_id = "TLS-Version-MySQL-Flexible-Server" 
     }
 policy_definition_reference { 
-  policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Audit-Log-Events-Connection-MySQL" 
+  policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Audit-Log-Events-Connection-MySQL" 
     reference_id = "Audit-Log-Events-Connection-MySQL" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Enable-Data-Access-Authentication-Mode" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Enable-Data-Access-Authentication-Mode" 
     reference_id = "Enable-Data-Access-Authentication-Mode" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Key-Vaults-Used-To-Store-Secrets" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Key-Vaults-Used-To-Store-Secrets" 
     reference_id = "Key-Vaults-Used-To-Store-Secrets" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Resource-Locks-Mission-Critical" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Resource-Locks-Mission-Critical" 
     reference_id = "Resource-Locks-Mission-Critical" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Vulnerability-Assessment-For-Machines" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Vulnerability-Assessment-For-Machines" 
     reference_id = "Vulnerability-Assessment-For-Machines" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Endpoint-Protection-Component-On" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Endpoint-Protection-Component-On" 
     reference_id = "Endpoint-Protection-Component-On" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Agentless-Scanning-For-Machines" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Agentless-Scanning-For-Machines" 
     reference_id = "Agentless-Scanning-For-Machines" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/File-Integrity-Monitoring-On" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/File-Integrity-Monitoring-On" 
     reference_id = "File-Integrity-Monitoring-On" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Locked-Immutability-Policy-Blob" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Locked-Immutability-Policy-Blob" 
     reference_id = "Locked-Immutability-Policy-Blob" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/ARM-Delete-Locks-Storage-Accounts" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/ARM-Delete-Locks-Storage-Accounts" 
     reference_id = "ARM-Delete-Locks-Storage-Accounts" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Diagnostic-Setting-Subscription-Activity-Logs" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Diagnostic-Setting-Subscription-Activity-Logs" 
     reference_id = "Diagnostic-Setting-Subscription-Activity-Logs" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Defender-EASM-Enabled" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Defender-EASM-Enabled" 
     reference_id = "Defender-EASM-Enabled" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/HTTP-Logs-Enabled-AppService" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/HTTP-Logs-Enabled-AppService" 
     reference_id = "HTTP-Logs-Enabled-AppService" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-Storage-Blob-SoftDelete" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-Storage-Blob-SoftDelete" 
     reference_id = "Deploy-Storage-Blob-SoftDelete" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-Storage-Container-SoftDelete" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-Storage-Container-SoftDelete" 
     reference_id = "Deploy-Storage-Container-SoftDelete" 
     }
 policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-Storage-File-SoftDelete" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-Storage-File-SoftDelete" 
     reference_id = "Deploy-Storage-File-SoftDelete" 
     }
 
 #Additional Parameters Required
  /*
   policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-Custom-Route-Table" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-Custom-Route-Table" 
     reference_id = "Deploy-Custom-Route-Table" 
     }
   policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-DDoSProtection" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-DDoSProtection" 
     reference_id = "Deploy-DDoSProtection" 
     }
   policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-FirewallPolicy" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-FirewallPolicy" 
     reference_id = "Deploy-FirewallPolicy" 
     }
   policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-ASC-SecurityContacts" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-ASC-SecurityContacts" 
     reference_id = "Deploy-ASC-SecurityContacts" 
     }
   policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-Sql-vulnerabilityAssessments" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-Sql-vulnerabilityAssessments" 
     reference_id = "Deploy-Sql-vulnerabilityAssessments" 
     }
   policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-VNET-HubSpoke" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-VNET-HubSpoke" 
     reference_id = "Deploy-VNET-HubSpoke" 
     }
   policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-Windows-DomainJoin" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-Windows-DomainJoin" 
     reference_id = "Deploy-Windows-DomainJoin" 
     }
   policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deploy-Private-DNS-Generic"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deploy-Private-DNS-Generic"
     reference_id         = "Deploy-Private-DNS-Generic"
     }
   policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Modify-UDR" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Modify-UDR" 
     reference_id = "Modify-UDR" 
     }
   policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Trusted-Locations-Defined" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Trusted-Locations-Defined" 
     reference_id = "Trusted-Locations-Defined" 
     }
   policy_definition_reference { 
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Custom-Role-Administer-Resource-Locks" 
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Custom-Role-Administer-Resource-Locks" 
     reference_id = "Custom-Role-Administer-Resource-Locks" 
     }
 */
@@ -8876,10 +8876,10 @@ resource "azurerm_policy_set_definition" "ims-custom-prod-initiative" {
   display_name        = "ims-custom-prod-initiative"
   description         = "Initiative including custom policies for prod"
   policy_type         = "Custom"
-  management_group_id = azurerm_management_group.IMS-Root1.id
+  management_group_id = azurerm_management_group.IMS-Root.id
 
 depends_on = [
-  azurerm_management_group.IMS-Root1,
+  azurerm_management_group.IMS-Root,
   azurerm_policy_definition.denyaction_activity_logs,
   azurerm_policy_definition.denyaction_diagnostic_logs,
   azurerm_policy_definition.deny_storageaccount_customdomain,
@@ -8922,135 +8922,135 @@ depends_on = [
 
 # Add custom definitions with deny effect to the initiative
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/DenyAction-ActivityLogs"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/DenyAction-ActivityLogs"
     reference_id         = "DenyAction-ActivityLogs"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/DenyAction-DiagnosticLogs"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/DenyAction-DiagnosticLogs"
     reference_id         = "DenyAction-DiagnosticLogs"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deny-StorageAccount-CustomDomain"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deny-StorageAccount-CustomDomain"
     reference_id         = "Deny-StorageAccount-CustomDomain"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deny-Storage-SFTP"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deny-Storage-SFTP"
     reference_id         = "Deny-Storage-SFTP"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deny-Subnet-Without-Nsg"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deny-Subnet-Without-Nsg"
     reference_id         = "Deny-Subnet-Without-Nsg"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deny-Subnet-Without-Udr"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deny-Subnet-Without-Udr"
     reference_id         = "Deny-Subnet-Without-Udr"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deny-UDR-With-Specific-NextHop"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deny-UDR-With-Specific-NextHop"
     reference_id         = "Deny-UDR-With-Specific-NextHop"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Restrict-Non-Admin-Tenant-Creation"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Restrict-Non-Admin-Tenant-Creation"
     reference_id         = "Restrict-Non-Admin-Tenant-Creation"
    }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/WebApp-Client-Cert-Required"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/WebApp-Client-Cert-Required"
     reference_id         = "WebApp-Client-Cert-Required"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deny-Remember-MFA-On-Trusted-Devices"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deny-Remember-MFA-On-Trusted-Devices"
     reference_id         = "Deny-Remember-MFA-On-Trusted-Devices"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deny-Public-Network-Access-Recovery-Vaults"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deny-Public-Network-Access-Recovery-Vaults"
     reference_id         = "Deny-Public-Network-Access-Recovery-Vaults"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Require-MFA-For-Azure-Management-API"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Require-MFA-For-Azure-Management-API"
     reference_id         = "Require-MFA-For-Azure-Management-API"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/restrict_Subscription_Movement"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/restrict_Subscription_Movement"
     reference_id         = "restrict_Subscription_Movement"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/SMB-Protocol-Version-Required"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/SMB-Protocol-Version-Required"
     reference_id         = "SMB-Protocol-Version-Required"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/MFA-Policy-For-All-Users"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/MFA-Policy-For-All-Users"
     reference_id         = "MFA-Policy-For-All-Users"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Minimum-TLS-Version-Redis"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Minimum-TLS-Version-Redis"
     reference_id         = "Minimum-TLS-Version-Redis"
     }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Public-Network-Access-Disabled-Redis"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Public-Network-Access-Disabled-Redis"
     reference_id         = "Public-Network-Access-Disabled-Redis"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Private-VNet-For-Container-Instances"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Private-VNet-For-Container-Instances"
     reference_id         = "Private-VNet-For-Container-Instances"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deny-Basic-Consumption-SKU"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deny-Basic-Consumption-SKU"
     reference_id         = "Deny-Basic-Consumption-SKU"
    }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deny-User-Consent-For-Applications"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deny-User-Consent-For-Applications"
     reference_id         = "Deny-User-Consent-For-Applications"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deny-Users-Can-Register-Applications"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deny-Users-Can-Register-Applications"
     reference_id         = "Deny-Users-Can-Register-Applications"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deny-Guest-User-Access"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deny-Guest-User-Access"
     reference_id         = "Deny-Guest-User-Access"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deny-Owners-Manage-Group-Membership-Requests"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deny-Owners-Manage-Group-Membership-Requests"
     reference_id         = "Deny-Owners-Manage-Group-Membership-Requests"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deny-Users-Create-M365-Groups"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deny-Users-Create-M365-Groups"
     reference_id         = "Deny-Users-Create-M365-Groups"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Cross-Region-Restore-Enabled"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Cross-Region-Restore-Enabled"
     reference_id         = "Cross-Region-Restore-Enabled"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Blob-Versioning-Enabled"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Blob-Versioning-Enabled"
     reference_id         = "Blob-Versioning-Enabled"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Public-Network-Access-Disabled"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Public-Network-Access-Disabled"
     reference_id         = "Public-Network-Access-Disabled"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Soft-Delete-Azure-File-Shares"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Soft-Delete-Azure-File-Shares"
     reference_id         = "Soft-Delete-Azure-File-Shares"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Soft-Delete-Blobs-Enabled"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Soft-Delete-Blobs-Enabled"
     reference_id         = "Soft-Delete-Blobs-Enabled"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Force-Virtual-Network-Encryption"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Force-Virtual-Network-Encryption"
     reference_id         = "Force-Virtual-Network-Encryption"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/enforce-ddos-protection-on-vnet"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/enforce-ddos-protection-on-vnet"
     reference_id         = "enforce-ddos-protection-on-vnet"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deny-Storage-Container-Anonymous-Access"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deny-Storage-Container-Anonymous-Access"
     reference_id         = "Deny-Storage-Container-Anonymous-Access"
   }
 policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Deny-KeyVault-Public-Network-Access"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Deny-KeyVault-Public-Network-Access"
     reference_id         = "Deny-KeyVault-Public-Network-Access"
   }
 
@@ -9058,11 +9058,11 @@ policy_definition_reference {
   #Additional parameters required for below Azure Definitions
   /*
   policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/DenyAction-DeleteResources"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/DenyAction-DeleteResources"
     reference_id         = "DenyAction-DeleteResources"
   }
   policy_definition_reference {
-    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root1/providers/Microsoft.Authorization/policyDefinitions/Enforce-Storage-Encryption"
+    policy_definition_id = "/providers/Microsoft.Management/managementGroups/IMS-Root/providers/Microsoft.Authorization/policyDefinitions/Enforce-Storage-Encryption"
     reference_id         = "Enforce-Storage-Encryption"
   }
   */
