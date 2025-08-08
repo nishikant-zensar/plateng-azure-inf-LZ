@@ -790,6 +790,12 @@ resource "azurerm_route_table" "ims-prd-mgmt-ne-rt-system" {
     next_hop_type          = "VirtualAppliance"
     next_hop_in_ip_address = "192.168.0.68"
   }
+  route {
+    name                   = "ims-prd-mgmt-ne-udr-snet-vpng"
+    address_prefix         = "192.168.0.0/26"
+    next_hop_type          = "VirtualAppliance"
+    next_hop_in_ip_address = "192.168.0.68"
+  }
 
   tags = {
     name          = "ims-prd-mgmt-ne-rt-system"
@@ -1224,6 +1230,49 @@ resource "azurerm_route_table" "ims-prd-avd-ne-rt-personal" {
   # ]
 }
 
+#3. Create a udr to associate with "ims-prd-avd-ne-rt-mgmt" subnet in the avd vNet
+resource "azurerm_route_table" "ims-prd-avd-ne-rt-mgmt" {
+  provider            = azurerm.ims-prd-avd
+  resource_group_name = "ims-prd-avd-ne-rg-network"
+  location            = "northeurope"
+  name                = "ims-prd-avd-ne-rt-mgmt"
+
+  route {
+    name                   = "defaultRoute"
+    address_prefix         = "0.0.0.0/0"
+    next_hop_type          = "VirtualAppliance"
+    next_hop_in_ip_address = "192.168.0.68"
+  }
+
+  route {
+    name                   = "ims-prd-avd-ne-udr-vnet-aws"
+    address_prefix         = "10.0.0.0/8"
+    next_hop_type          = "VirtualAppliance"
+    next_hop_in_ip_address = "192.168.0.68"
+  }
+
+  route {
+    name                   = "ims-prd-avd-ne-udr-vnet-mgmt"
+    address_prefix         = "192.168.4.0/22"
+    next_hop_type          = "VirtualAppliance"
+    next_hop_in_ip_address = "192.168.0.68"
+  }
+
+  route {
+    name                   = "ims-prd-avd-ne-udr-snet-dnsprin"
+    address_prefix         = "192.168.0.128/26"
+    next_hop_type          = "VirtualAppliance"
+    next_hop_in_ip_address = "192.168.0.68"
+  }
+
+  route {
+    name                   = "ims-prd-avd-ne-udr-snet-hubpep"
+    address_prefix         = "192.168.1.0/26"
+    next_hop_type          = "VirtualAppliance"
+    next_hop_in_ip_address = "192.168.0.68"
+  }
+
+}
 ################################################################
 # Associate subnets with required NSG and UDR on Hub vNets
 ################################################################
