@@ -12,7 +12,7 @@ resource "azurerm_policy_definition" "deploy_custom_route_table" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -175,7 +175,7 @@ resource "azurerm_policy_definition" "deploy_ddos_network_protection" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -334,7 +334,7 @@ resource "azurerm_policy_definition" "deploy_firewall_policy" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -510,7 +510,7 @@ resource "azurerm_policy_definition" "deploy_asc_security_contacts" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -669,7 +669,7 @@ resource "azurerm_policy_definition" "private_dns_generic" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
   
 metadata     = jsonencode({
@@ -832,7 +832,7 @@ resource "azurerm_policy_definition" "deploy_sql_vulnerability_assessments" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -968,7 +968,7 @@ resource "azurerm_policy_definition" "deploy_vnet_hubspoke" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -1179,7 +1179,7 @@ resource "azurerm_policy_definition" "deploy_windows_domainjoin_extension_with_k
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -1444,7 +1444,7 @@ resource "azurerm_policy_definition" "modify_udr" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -1555,7 +1555,7 @@ resource "azurerm_policy_definition" "custom_role_administer_resource_locks" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -1600,7 +1600,7 @@ resource "azurerm_policy_definition" "trusted_locations_defined" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -1641,7 +1641,7 @@ resource "azurerm_policy_definition" "audit_subnet_without_penp" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -1748,7 +1748,7 @@ resource "azurerm_policy_definition" "deploy_mysql_ssl_min_tls" {
 
   
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
   
   metadata     = jsonencode({
@@ -1890,7 +1890,7 @@ resource "azurerm_policy_definition" "postgresql_min_tls_and_ssl" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -2032,7 +2032,7 @@ resource "azurerm_policy_definition" "deploy_storage_ssl_enforcement" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -2178,7 +2178,7 @@ resource "azurerm_policy_definition" "logic_apps_latest_tls" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -2277,7 +2277,7 @@ resource "azurerm_policy_definition" "deploy_default_budget" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -2519,7 +2519,7 @@ resource "azurerm_policy_definition" "deploy_sql_database_auditing_settings" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -2643,7 +2643,7 @@ resource "azurerm_policy_definition" "deploy_sql_security_alert_policies" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -2770,7 +2770,7 @@ resource "azurerm_policy_definition" "deploy_vm_auto_shutdown" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -2976,7 +2976,7 @@ resource "azurerm_policy_definition" "enable_soft_delete_for_blobs" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3056,7 +3056,7 @@ resource "azurerm_policy_definition" "enable_soft_delete_for_containers" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3136,7 +3136,7 @@ resource "azurerm_policy_definition" "enable_soft_delete_for_file_shares" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3216,7 +3216,7 @@ resource "azurerm_policy_definition" "modify_nsg" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3349,7 +3349,7 @@ resource "azurerm_policy_definition" "managed_identity_used_for_azure_services" 
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3406,7 +3406,7 @@ resource "azurerm_policy_definition" "azure_bastion_host_exists" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3436,7 +3436,7 @@ resource "azurerm_policy_definition" "app_insights_configured" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3482,7 +3482,7 @@ resource "azurerm_policy_definition" "key_vaults_used_to_store_secrets" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3524,7 +3524,7 @@ resource "azurerm_policy_definition" "arm_delete_locks_storage_accounts" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3574,7 +3574,7 @@ resource "azurerm_policy_definition" "readonly_locks_storage_accounts" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3624,7 +3624,7 @@ resource "azurerm_policy_definition" "fewer_than_5_global_admins" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3653,7 +3653,7 @@ resource "azurerm_policy_definition" "locked_immutability_policy_blob" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3703,7 +3703,7 @@ resource "azurerm_policy_definition" "entra_authentication_enabled"  {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3753,7 +3753,7 @@ resource "azurerm_policy_definition" "mfa_required_risky_signins" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3790,7 +3790,7 @@ resource "azurerm_policy_definition" "mfa_required_admin_portals" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3827,7 +3827,7 @@ resource "azurerm_policy_definition" "mfa_enabled_identities_vm_access" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3865,7 +3865,7 @@ resource "azurerm_policy_definition" "security_defaults_enabled" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3906,7 +3906,7 @@ resource "azurerm_policy_definition" "audit_log_enabled_mysql" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -3956,7 +3956,7 @@ resource "azurerm_policy_definition" "audit_log_events_connection_mysql" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4006,7 +4006,7 @@ resource "azurerm_policy_definition" "logfiles_retention_days_postgresql" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4036,7 +4036,7 @@ resource "azurerm_policy_definition" "require_secure_transport_mysql" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4067,7 +4067,7 @@ resource "azurerm_policy_definition" "tls_version_mysql_flexible_server" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4141,7 +4141,7 @@ resource "azurerm_policy_definition" "smb_channel_encryption_aes256gcm" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4179,7 +4179,7 @@ resource "azurerm_policy_definition" "soft_delete_enabled_blob_storage" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4262,7 +4262,7 @@ resource "azurerm_policy_definition" "custom_bad_password_list_enforce" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4299,7 +4299,7 @@ resource "azurerm_policy_definition" "diagnostic_setting_subscription_activity_l
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4344,7 +4344,7 @@ resource "azurerm_policy_definition" "mfa_policy_admin_groups" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4384,7 +4384,7 @@ resource "azurerm_policy_definition" "account_lockout_duration_seconds" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4421,7 +4421,7 @@ resource "azurerm_policy_definition" "account_lockout_threshold" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4458,7 +4458,7 @@ resource "azurerm_policy_definition" "agentless_scanning_for_machines" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4508,7 +4508,7 @@ resource "azurerm_policy_definition" "all_users_roles_set_to_owner" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4558,7 +4558,7 @@ resource "azurerm_policy_definition" "enable_data_access_auth_mode" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4595,7 +4595,7 @@ resource "azurerm_policy_definition" "enable_key_rotation_reminders" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4633,7 +4633,7 @@ resource "azurerm_policy_definition" "endpoint_protection_component_on" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4683,7 +4683,7 @@ resource "azurerm_policy_definition" "file_integrity_monitoring_on" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4733,7 +4733,7 @@ resource "azurerm_policy_definition" "http_https_access_from_internet_restricted
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4799,7 +4799,7 @@ resource "azurerm_policy_definition" "http_logs_enabled_appservice" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4837,7 +4837,7 @@ resource "azurerm_policy_definition" "cloud_security_benchmark_not_disabled" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4887,7 +4887,7 @@ resource "azurerm_policy_definition" "defender_easm_enabled" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -4937,7 +4937,7 @@ resource "azurerm_policy_definition" "defender_cloud_apps_integration" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5020,7 +5020,7 @@ resource "azurerm_policy_definition" "defender_iot_hub_on" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5109,7 +5109,7 @@ resource "azurerm_policy_definition" "notify_admins_on_password_reset" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5146,7 +5146,7 @@ resource "azurerm_policy_definition" "notify_users_on_password_resets" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5183,7 +5183,7 @@ resource "azurerm_policy_definition" "number_of_days_reconfirm_auth" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5224,7 +5224,7 @@ resource "azurerm_policy_definition" "number_of_methods_required_to_reset" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5254,7 +5254,7 @@ resource "azurerm_policy_definition" "public_ip_addresses_periodic_evaluation" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5301,7 +5301,7 @@ resource "azurerm_policy_definition" "register_with_aad_enabled_app_service" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5348,7 +5348,7 @@ resource "azurerm_policy_definition" "resource_locks_mission_critical" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5399,7 +5399,7 @@ resource "azurerm_policy_definition" "restrict_access_entra_admin_center" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5437,7 +5437,7 @@ resource "azurerm_policy_definition" "restrict_access_groups_features_access_pan
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5474,7 +5474,7 @@ resource "azurerm_policy_definition" "sas_tokens_expire_within_hour" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5519,7 +5519,7 @@ resource "azurerm_policy_definition" "storage_account_access_keys_regenerated" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5566,7 +5566,7 @@ resource "azurerm_policy_definition" "system_assigned_managed_identity_on" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5616,7 +5616,7 @@ resource "azurerm_policy_definition" "udp_access_from_internet_restricted" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5674,7 +5674,7 @@ resource "azurerm_policy_definition" "vulnerability_assessment_for_machines" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5724,7 +5724,7 @@ resource "azurerm_policy_definition" "sql_managed_instance_min_tls" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5853,7 +5853,7 @@ resource "azurerm_policy_definition" "deploy_sql_min_tls" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -5986,7 +5986,7 @@ resource "azurerm_policy_definition" "denyaction_delete_resources" {
   management_group_id = var.management_group_id
 
 depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6066,7 +6066,7 @@ resource "azurerm_policy_definition" "enforce_storage_encryption" {
   management_group_id = var.management_group_id
 
 depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
   
   metadata = jsonencode({
@@ -6142,7 +6142,7 @@ resource "azurerm_policy_definition" "deny_storage_account_public_access" {
   management_group_id = var.management_group_id
 
 depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6178,7 +6178,7 @@ resource "azurerm_policy_definition" "deny_key_vault_public_access" {
   management_group_id = var.management_group_id
 
 depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6226,7 +6226,7 @@ resource "azurerm_policy_definition" "denyaction_activity_logs" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6270,7 +6270,7 @@ resource "azurerm_policy_definition" "denyaction_diagnostic_logs" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6314,7 +6314,7 @@ resource "azurerm_policy_definition" "enforce_ddos_protection_on_vnet" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6365,7 +6365,7 @@ resource "azurerm_policy_definition" "force_vnet_encryption" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6416,7 +6416,7 @@ resource "azurerm_policy_definition" "deny_user_consent_for_applications" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6457,7 +6457,7 @@ resource "azurerm_policy_definition" "cross_region_restore_enabled" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6507,7 +6507,7 @@ resource "azurerm_policy_definition" "deny_guest_user_access" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6544,7 +6544,7 @@ resource "azurerm_policy_definition" "require_mfa_for_azure_management_api" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6573,7 +6573,7 @@ resource "azurerm_policy_definition" "private_vnet_for_container_instances" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6627,7 +6627,7 @@ resource "azurerm_policy_definition" "public_network_access_disabled" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
  
   metadata = jsonencode({
@@ -6665,7 +6665,7 @@ resource "azurerm_policy_definition" "deny_public_network_access_recovery_vaults
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6715,7 +6715,7 @@ resource "azurerm_policy_definition" "smb_protocol_version_required" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6765,7 +6765,7 @@ resource "azurerm_policy_definition" "soft_delete_azure_file_shares" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6819,7 +6819,7 @@ resource "azurerm_policy_definition" "deny_users_can_register_applications" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6848,7 +6848,7 @@ resource "azurerm_policy_definition" "mfa_policy_for_all_users" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6885,7 +6885,7 @@ resource "azurerm_policy_definition" "deny_remember_mfa_on_trusted_devices" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6914,7 +6914,7 @@ resource "azurerm_policy_definition" "minimum_tls_version_redis" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -6968,7 +6968,7 @@ resource "azurerm_policy_definition" "deny_owners_manage_group_membership_reques
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -7005,7 +7005,7 @@ resource "azurerm_policy_definition" "public_network_access_disabled_redis" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -7059,7 +7059,7 @@ resource "azurerm_policy_definition" "restrict_non_admin_tenant_creation" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -7088,7 +7088,7 @@ resource "azurerm_policy_definition" "deny_basic_consumption_sku" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -7166,7 +7166,7 @@ resource "azurerm_policy_definition" "soft_delete_blobs_enabled" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -7216,7 +7216,7 @@ resource "azurerm_policy_definition" "restrict_subscription_movement" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -7257,7 +7257,7 @@ resource "azurerm_policy_definition" "deny_users_create_m365_groups" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -7294,7 +7294,7 @@ resource "azurerm_policy_definition" "webapp_client_cert_required" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -7332,7 +7332,7 @@ resource "azurerm_policy_definition" "blob_versioning_enabled" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -7382,7 +7382,7 @@ resource "azurerm_policy_definition" "deny_storageaccount_customdomain" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -7452,7 +7452,7 @@ resource "azurerm_policy_definition" "deny_storage_sftp" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -7510,7 +7510,7 @@ resource "azurerm_policy_definition" "deny_subnet_without_nsg" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -7618,7 +7618,7 @@ resource "azurerm_policy_definition" "deny_subnet_without_udr" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -7724,7 +7724,7 @@ resource "azurerm_policy_definition" "deny_udr_with_specific_nexthop" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   metadata = jsonencode({
@@ -8051,7 +8051,7 @@ resource "azurerm_policy_set_definition" "ims-builtin-corp-initiative" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   dynamic "policy_definition_reference" {
@@ -8245,7 +8245,7 @@ resource "azurerm_policy_set_definition" "ims-builtin-prod-initiative" {
   management_group_id = var.management_group_id
 
   depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
 
   dynamic "policy_definition_reference" {
@@ -8440,7 +8440,7 @@ resource "azurerm_policy_set_definition" "ims-builtin-prod-location-initiative" 
   
 
 depends_on = [
-    data.azurerm_management_group.IMS-Root
+    var.azurerm_management_group.IMS-Root
   ]
   
   policy_definition_reference {
@@ -8474,7 +8474,7 @@ resource "azurerm_policy_set_definition" "ims-custom-corp-initiative" {
   management_group_id = var.management_group_id
 
 depends_on = [
-  data.azurerm_management_group.IMS-Root,
+  var.azurerm_management_group.IMS-Root,
   azurerm_policy_definition.deploy_mysql_ssl_min_tls,
   azurerm_policy_definition.postgresql_min_tls_and_ssl,
   azurerm_policy_definition.deploy_storage_ssl_enforcement,
@@ -8883,7 +8883,7 @@ resource "azurerm_policy_set_definition" "ims-custom-prod-initiative" {
   management_group_id = var.management_group_id
 
 depends_on = [
-  data.azurerm_management_group.IMS-Root,
+  var.azurerm_management_group.IMS-Root,
   azurerm_policy_definition.denyaction_activity_logs,
   azurerm_policy_definition.denyaction_diagnostic_logs,
   azurerm_policy_definition.deny_storageaccount_customdomain,
