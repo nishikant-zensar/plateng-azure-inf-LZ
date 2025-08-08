@@ -185,6 +185,9 @@ resource "azurerm_subnet" "AzureFirewallSubnet" {
   virtual_network_name = azurerm_virtual_network.hubvnet.name
   name                 = "AzureFirewallSubnet"
   address_prefixes     = ["192.168.0.64/26"]
+
+  private_endpoint_network_policies_enabled = true
+
 }
 
  # 2. Create "AzureFirewallManagementSubnet" subnet for Firewall Management traffic at hub vNet
@@ -195,6 +198,8 @@ resource "azurerm_subnet" "AzureFirewallManagementSubnet" {
   name                 = "AzureFirewallManagementSubnet"
   address_prefixes     = ["192.168.1.64/26"]
 
+  private_endpoint_network_policies_enabled = true
+
 }
 # 3. Create "GatewaySubnet" subnet for Gateway traffic at hub vNet
 resource "azurerm_subnet" "GatewaySubnet" {
@@ -203,6 +208,8 @@ resource "azurerm_subnet" "GatewaySubnet" {
   virtual_network_name = azurerm_virtual_network.hubvnet.name
   name                 = "GatewaySubnet"
   address_prefixes     = ["192.168.0.0/26"]
+
+  private_endpoint_network_policies_enabled = true
 
   }
   # 4. Create "ims-prd-conn-ne-snet-dnsprin" subnet for inbound DNS private resolution traffic at hub vNet
@@ -213,6 +220,16 @@ resource "azurerm_subnet" "ims-prd-conn-ne-snet-dnsprin" {
   name                 = "ims-prd-conn-ne-snet-dnsprin"
   address_prefixes     = ["192.168.0.128/26"]
 
+  private_endpoint_network_policies_enabled = true
+  private_link_service_network_policies_enabled = true
+  
+  delegation {
+    name = "dnsResolversDelegation"
+    service_delegation {
+      name    = "Microsoft.Network/dnsResolvers"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }
+  }
 }
 # 5. Create "ims-prd-conn-ne-snet-dnsprout" subnet for outbound DNS private resolution traffic at hub vNet
 resource "azurerm_subnet" "ims-prd-conn-ne-snet-dnsprout" {
@@ -222,6 +239,16 @@ resource "azurerm_subnet" "ims-prd-conn-ne-snet-dnsprout" {
   name                 = "ims-prd-conn-ne-snet-dnsprout"
   address_prefixes     = ["192.168.0.192/26"]
 
+  private_endpoint_network_policies_enabled = true
+  private_link_service_network_policies_enabled = true
+  
+  delegation {
+    name = "dnsResolversDelegation"
+    service_delegation {
+      name    = "Microsoft.Network/dnsResolvers"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }
+  }
 }
 # 6. Create "ims-prd-conn-ne-snet-pep" Private endpoint subnet at hub vNet
 resource "azurerm_subnet" "ims-prd-conn-ne-snet-pep" {
@@ -231,6 +258,9 @@ resource "azurerm_subnet" "ims-prd-conn-ne-snet-pep" {
   name                 = "ims-prd-conn-ne-snet-pep"
   address_prefixes     = ["192.168.1.0/26"]
 
+  private_endpoint_network_policies_enabled = true
+  private_link_service_network_policies_enabled = true
+  
 }
 ####################################################
 # Create "ims-prd-mgmt-ne-vnet-01" management vNet
@@ -241,6 +271,7 @@ resource "azurerm_virtual_network" "mgmtvnet" {
   name                = "ims-prd-mgmt-ne-vnet-01"
   location            = var.location
   address_space       = ["192.168.4.0/22"]
+  dns_servers = ["192.168.0.132"]
 
   encryption {
     enforcement = "AllowUnencrypted"
@@ -264,6 +295,9 @@ resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-security" {
   name                 = "ims-prd-mgmt-ne-snet-security"
   address_prefixes     = ["192.168.4.0/26"]
 
+  private_endpoint_network_policies_enabled = true
+  private_link_service_network_policies_enabled = true
+  
 }
 # 2. Create "ims-prd-mgmt-ne-snet-system" subnet for mgmt system traffic at mgmt vNet
 resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-system" {
@@ -273,6 +307,9 @@ resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-system" {
   name                 = "ims-prd-mgmt-ne-snet-system"
   address_prefixes     = ["192.168.4.64/26"]
 
+  private_endpoint_network_policies_enabled = true
+  private_link_service_network_policies_enabled = true
+
 }
 # 3. Create "ims-prd-mgmt-ne-snet-keyvault" subnet for mgmt keyvault traffic at mgmt vNet
 resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-keyvault" {
@@ -281,6 +318,9 @@ resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-keyvault" {
   virtual_network_name = azurerm_virtual_network.mgmtvnet.name
   name                 = "ims-prd-mgmt-ne-snet-keyvault"
   address_prefixes     = ["192.168.4.128/26"]
+  
+  private_endpoint_network_policies_enabled = true
+  private_link_service_network_policies_enabled = true
 
 }
 # 4. Create "ims-prd-mgmt-ne-snet-pep" subnet for mgmt private endpoint traffic at mgmt vNet
@@ -290,6 +330,9 @@ resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-pep" {
   virtual_network_name = azurerm_virtual_network.mgmtvnet.name
   name                 = "ims-prd-mgmt-ne-snet-pep"
   address_prefixes     = ["192.168.4.192/26"]
+
+  private_endpoint_network_policies_enabled = true
+  private_link_service_network_policies_enabled = true
 
 }
 
@@ -302,6 +345,7 @@ resource "azurerm_virtual_network" "avdvnet" {
   name                = "ims-prd-avd-ne-vnet-01"
   location            = var.location
   address_space       = ["192.168.8.0/22"]
+  dns_servers = ["192.168.0.132"]
 
   encryption {
     enforcement = "AllowUnencrypted"
@@ -325,6 +369,9 @@ resource "azurerm_subnet" "ims-prd-avd-ne-snet-pool" {
   name                 = "ims-prd-avd-ne-snet-pool"
   address_prefixes     = ["192.168.8.0/24"]
 
+  private_endpoint_network_policies_enabled = true
+  private_link_service_network_policies_enabled = true
+
 }
 
 # 2. Create "ims-prd-avd-ne-snet-personal" subnet for avd personal traffic at avd vNet
@@ -335,6 +382,8 @@ resource "azurerm_subnet" "ims-prd-avd-ne-snet-personal" {
   name                 = "ims-prd-avd-ne-snet-personal"
   address_prefixes     = ["192.168.9.0/24"]
 
+  private_endpoint_network_policies_enabled = true
+  private_link_service_network_policies_enabled = true
 }
 
 # 3. Create "ims-prd-avd-ne-snet-pep" subnet for avd private endpoint traffic at avd vNet
@@ -345,6 +394,9 @@ resource "azurerm_subnet" "ims-prd-avd-ne-snet-pep" {
   name                 = "ims-prd-avd-ne-snet-pep"
   address_prefixes     = ["192.168.11.128/26"]
 
+  private_endpoint_network_policies_enabled = true
+  private_link_service_network_policies_enabled = true
+
 }
 
 # 4. Create "ims-prd-avd-ne-snet-mgmt" subnet for avd management traffic at avd vNet
@@ -354,6 +406,9 @@ resource "azurerm_subnet" "ims-prd-avd-ne-snet-mgmt" {
   virtual_network_name = azurerm_virtual_network.avdvnet.name
   name                 = "ims-prd-avd-ne-snet-mgmt"
   address_prefixes     = ["192.168.10.0/24"]
+
+  private_endpoint_network_policies_enabled = true
+  private_link_service_network_policies_enabled = true
 
 }
 ################################################################
