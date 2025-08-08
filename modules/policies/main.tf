@@ -1,5 +1,7807 @@
+# corp-Additional Parameters-Deploy a route table with specific user defined routes
+resource "azurerm_policy_definition" "deploy_custom_route_table" {
+  name                = "Deploy-Custom-Route-Table"
+  display_name        = "Deploy a route table with specific user defined routes"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Deploys a route table with specific user defined routes when one does not exist. The route table deployed by the policy must be manually associated to subnet(s)"
+  management_group_id = azurerm_management_group.IMS_Root1.id
 
-# --- Start of Initiative ims-builtin-corp-initiative-231.tf ---
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category   = "Network",
+    source     = "https://github.com/Azure/Enterprise-Scale/",
+    version    = "1.0.0",
+    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
+    createdOn  = "2025-06-06T12:21:20.9813071Z",
+    updatedBy  = null,
+    updatedOn  = null
+  })
+
+  parameters = jsonencode({
+    disableBgpPropagation = {
+      type        = "Boolean"
+      metadata    = {
+        description = "Disable BGP Propagation"
+        displayName = "DisableBgpPropagation"
+      }
+      defaultValue = false
+    }
+    effect = {
+      type = "String"
+      metadata = {
+        description = "Enable or disable the execution of the policy"
+        displayName = "Effect"
+      }
+      allowedValues = [
+        "DeployIfNotExists",
+        "Disabled"
+      ]
+      defaultValue = "DeployIfNotExists"
+    }
+    requiredRoutes = {
+      type = "Array"
+      metadata = {
+        description = "Routes that must exist in compliant route tables deployed by this policy"
+        displayName = "requiredRoutes"
+      }
+    }
+    routeTableName = {
+      type = "String"
+      metadata = {
+        description = "Name of the route table automatically deployed by this policy"
+        displayName = "routeTableName"
+      }
+    }
+    vnetRegion = {
+      type = "String"
+      metadata = {
+        description = "Only VNets in this region will be evaluated against this policy"
+        displayName = "vnetRegion"
+      }
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          equals = "Microsoft.Network/virtualNetworks"
+          field  = "type"
+        },
+        {
+          equals = "[parameters('vnetRegion')]"
+          field  = "location"
+        }
+      ]
+    }
+    then = {
+      details = {
+        deployment = {
+          properties = {
+            mode = "incremental"
+            parameters = {
+              disableBgpPropagation = {
+                value = "[parameters('disableBgpPropagation')]"
+              }
+              requiredRoutes = {
+                value = "[parameters('requiredRoutes')]"
+              }
+              routeTableName = {
+                value = "[parameters('routeTableName')]"
+              }
+              vnetRegion = {
+                value = "[parameters('vnetRegion')]"
+              }
+            }
+            template = {
+              "$schema" = "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
+              contentVersion = "1.0.0.0"
+              parameters = {
+                disableBgpPropagation = {
+                  type = "bool"
+                }
+                requiredRoutes = {
+                  type = "array"
+                }
+                routeTableName = {
+                  type = "string"
+                }
+                vnetRegion = {
+                  type = "string"
+                }
+              }
+              resources = [
+                {
+                  apiVersion = "2021-02-01"
+                  location   = "[parameters('vnetRegion')]"
+                  name       = "[parameters('routeTableName')]"
+                  properties = {
+                    disableBgpRoutePropagation = "[parameters('disableBgpPropagation')]"
+                  }
+                  type = "Microsoft.Network/routeTables"
+                }
+              ]
+            }
+          }
+        }
+        existenceCondition = {
+          allOf = [
+            {
+              equals = "[parameters('routeTableName')]"
+              field  = "name"
+            },
+            {
+              count = {
+                field = "Microsoft.Network/routeTables/routes[*]"
+                where = {
+                  in = "[parameters('requiredRoutes')]"
+                  value = "[concat(current('Microsoft.Network/routeTables/routes[*].addressPrefix'), ';', current('Microsoft.Network/routeTables/routes[*].nextHopType'), if(equals(toLower(current('Microsoft.Network/routeTables/routes[*].nextHopType')),'virtualappliance'), concat(';', current('Microsoft.Network/routeTables/routes[*].nextHopIpAddress')), ''))]"
+                }
+              }
+              equals = "[length(parameters('requiredRoutes'))]"
+            }
+          ]
+        }
+        roleDefinitionIds = [
+          "/subscriptions/e867a45d-e513-44ac-931e-4741cef80b24/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+        ]
+        type = "Microsoft.Network/routeTables"
+      }
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+
+#corp-Additional Parameters-Deploy an Azure DDoS Network Protection
+resource "azurerm_policy_definition" "deploy_ddos_network_protection" {
+  name                = "Deploy-DDoSProtection"
+  display_name        = "Deploy an Azure DDoS Network Protection"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Deploys an Azure DDoS Network Protection"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category   = "Network",
+    source     = "https://github.com/Azure/Enterprise-Scale/",
+    version    = "1.0.1",
+    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
+    createdOn  = "2025-06-06T12:21:16.4527194Z",
+    updatedBy  = null,
+    updatedOn  = null
+  })
+
+  parameters = jsonencode({
+    ddosName = {
+      type = "String"
+      metadata = {
+        description = "DDoSVnet"
+        displayName = "ddosName"
+      }
+    }
+    ddosRegion = {
+      type = "String"
+      metadata = {
+        description = "DDoSVnet location"
+        displayName = "ddosRegion"
+        strongType  = "location"
+      }
+    }
+    effect = {
+      type = "String"
+      metadata = {
+        description = "Enable or disable the execution of the policy"
+        displayName = "Effect"
+      }
+      allowedValues = [
+        "DeployIfNotExists",
+        "Disabled"
+      ]
+      defaultValue = "DeployIfNotExists"
+    }
+    rgName = {
+      type = "String"
+      metadata = {
+        description = "Provide name for resource group."
+        displayName = "rgName"
+      }
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          equals = "Microsoft.Resources/subscriptions"
+          field  = "type"
+        }
+      ]
+    }
+    then = {
+      details = {
+        deployment = {
+          location = "northeurope"
+          properties = {
+            mode = "Incremental"
+            parameters = {
+              ddosname = {
+                value = "[parameters('ddosname')]"
+              }
+              ddosregion = {
+                value = "[parameters('ddosRegion')]"
+              }
+              rgName = {
+                value = "[parameters('rgName')]"
+              }
+            }
+            template = {
+              "$schema" = "http://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json"
+              contentVersion = "1.0.0.0"
+              outputs = {}
+              parameters = {
+                ddosRegion = {
+                  type = "String"
+                }
+                ddosname = {
+                  type = "String"
+                }
+                rgName = {
+                  type = "String"
+                }
+              }
+              resources = [
+                {
+                  apiVersion = "2018-05-01"
+                  location   = "[deployment().location]"
+                  name       = "[parameters('rgName')]"
+                  properties = {}
+                  type       = "Microsoft.Resources/resourceGroups"
+                },
+                {
+                  apiVersion = "2018-05-01"
+                  dependsOn  = [
+                    "[resourceId('Microsoft.Resources/resourceGroups/', parameters('rgName'))]"
+                  ]
+                  name = "ddosprotection"
+                  properties = {
+                    mode = "Incremental"
+                    template = {
+                      "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json"
+                      contentVersion = "1.0.0.0"
+                      outputs = {}
+                      parameters = {}
+                      resources = [
+                        {
+                          apiVersion = "2019-12-01"
+                          location   = "[parameters('ddosRegion')]"
+                          name       = "[parameters('ddosName')]"
+                          properties = {}
+                          type       = "Microsoft.Network/ddosProtectionPlans"
+                        }
+                      ]
+                    }
+                  }
+                  resourceGroup = "[parameters('rgName')]"
+                  type          = "Microsoft.Resources/deployments"
+                }
+              ]
+            }
+          }
+        }
+        deploymentScope = "subscription"
+        existenceScope  = "resourceGroup"
+        name            = "[parameters('ddosName')]"
+        resourceGroupName = "[parameters('rgName')]"
+        roleDefinitionIds = [
+          "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+        ]
+        type = "Microsoft.Network/ddosProtectionPlans"
+      }
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+
+#corp-Additional Parameters-Deploy Azure Firewall Manager policy in the subscription
+resource "azurerm_policy_definition" "deploy_firewall_policy" {
+  name                = "Deploy-FirewallPolicy"
+  display_name        = "Deploy Azure Firewall Manager policy in the subscription"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Deploys Azure Firewall Manager policy in subscription where the policy is assigned."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category   = "Network",
+    source     = "https://github.com/Azure/Enterprise-Scale/",
+    version    = "1.0.0",
+    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
+    createdOn  = "2025-06-06T12:21:22.8627252Z",
+    updatedBy  = null,
+    updatedOn  = null
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String"
+      metadata = {
+        description = "Enable or disable the execution of the policy"
+        displayName = "Effect"
+      }
+      allowedValues = [
+        "DeployIfNotExists",
+        "Disabled"
+      ]
+      defaultValue = "DeployIfNotExists"
+    }
+    fwPolicyRegion = {
+      type = "String"
+      metadata = {
+        description = "Select Azure region for Azure Firewall Policy"
+        displayName = "fwPolicyRegion"
+        strongType  = "location"
+      }
+    }
+    fwpolicy = {
+      type = "Object"
+      metadata = {
+        description = "Object describing Azure Firewall Policy"
+        displayName = "fwpolicy"
+      }
+      defaultValue = {}
+    }
+    rgName = {
+      type = "String"
+      metadata = {
+        description = "Provide name for resource group."
+        displayName = "rgName"
+      }
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          equals = "Microsoft.Resources/subscriptions"
+          field  = "type"
+        }
+      ]
+    }
+    then = {
+      details = {
+        deployment = {
+          location = "northeurope"
+          properties = {
+            mode = "Incremental"
+            parameters = {
+              fwPolicy = {
+                value = "[parameters('fwPolicy')]"
+              }
+              fwPolicyRegion = {
+                value = "[parameters('fwPolicyRegion')]"
+              }
+              rgName = {
+                value = "[parameters('rgName')]"
+              }
+            }
+            template = {
+              "$schema" = "http://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json"
+              contentVersion = "1.0.0.0"
+              outputs = {}
+              parameters = {
+                fwPolicy = {
+                  type = "object"
+                }
+                fwPolicyRegion = {
+                  type = "String"
+                }
+                rgName = {
+                  type = "String"
+                }
+              }
+              resources = [
+                {
+                  apiVersion = "2018-05-01"
+                  location   = "[deployment().location]"
+                  name       = "[parameters('rgName')]"
+                  properties = {}
+                  type       = "Microsoft.Resources/resourceGroups"
+                },
+                {
+                  apiVersion = "2018-05-01"
+                  dependsOn  = [
+                    "[resourceId('Microsoft.Resources/resourceGroups/', parameters('rgName'))]"
+                  ]
+                  name = "fwpolicies"
+                  properties = {
+                    mode = "Incremental"
+                    template = {
+                      "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json"
+                      contentVersion = "1.0.0.0"
+                      outputs = {}
+                      parameters = {}
+                      resources = [
+                        {
+                          apiVersion = "2019-09-01"
+                          dependsOn = []
+                          location   = "[parameters('fwpolicy').location]"
+                          name       = "[parameters('fwpolicy').firewallPolicyName]"
+                          properties = {}
+                          resources = [
+                            {
+                              apiVersion = "2019-09-01"
+                              dependsOn = [
+                                "[resourceId('Microsoft.Network/firewallPolicies',parameters('fwpolicy').firewallPolicyName)]"
+                              ]
+                              name = "[parameters('fwpolicy').ruleGroups.name]"
+                              properties = {
+                                priority = "[parameters('fwpolicy').ruleGroups.properties.priority]"
+                                rules    = "[parameters('fwpolicy').ruleGroups.properties.rules]"
+                              }
+                              type = "ruleGroups"
+                            }
+                          ]
+                          tags = {}
+                          type = "Microsoft.Network/firewallPolicies"
+                        }
+                      ]
+                      variables = {}
+                    }
+                  }
+                  resourceGroup = "[parameters('rgName')]"
+                  type          = "Microsoft.Resources/deployments"
+                }
+              ]
+            }
+          }
+        }
+        deploymentScope = "subscription"
+        existenceScope  = "resourceGroup"
+        resourceGroupName = "[parameters('rgName')]"
+        roleDefinitionIds = [
+          "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+        ]
+        type = "Microsoft.Network/firewallPolicies"
+      }
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+
+#corp-Additional Parameters-Deploy Microsoft Defender for Cloud Security Contacts
+resource "azurerm_policy_definition" "deploy_asc_security_contacts" {
+  name                = "Deploy-ASC-SecurityContacts"
+  display_name        = "Deploy Microsoft Defender for Cloud Security Contacts"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Deploy Microsoft Defender for Cloud Security Contacts"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category   = "Security Center",
+    source     = "https://github.com/Azure/Enterprise-Scale/",
+    version    = "2.0.0",
+    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
+    createdOn  = "2025-06-06T12:21:09.1770467Z",
+    updatedBy  = null,
+    updatedOn  = null
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String"
+      metadata = {
+        description = "Enable or disable the execution of the policy"
+        displayName = "Effect"
+      }
+      allowedValues = [
+        "DeployIfNotExists",
+        "Disabled"
+      ]
+      defaultValue = "DeployIfNotExists"
+    }
+    emailSecurityContact = {
+      type = "String"
+      metadata = {
+        description = "Provide email addresses (semi-colon separated) for Defender for Cloud contact details"
+        displayName = "Security contacts email address"
+      }
+    }
+    minimalSeverity = {
+      type = "String"
+      metadata = {
+        description = "Defines the minimal alert severity which will be sent as email notifications"
+        displayName = "Minimal severity"
+      }
+      allowedValues = [
+        "High",
+        "Medium",
+        "Low"
+      ]
+      defaultValue = "High"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          equals = "Microsoft.Resources/subscriptions"
+          field  = "type"
+        }
+      ]
+    }
+    then = {
+      details = {
+        deployment = {
+          location = "northeurope"
+          properties = {
+            mode = "incremental"
+            parameters = {
+              emailSecurityContact = {
+                value = "[parameters('emailSecurityContact')]"
+              }
+              minimalSeverity = {
+                value = "[parameters('minimalSeverity')]"
+              }
+            }
+            template = {
+              "$schema" = "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
+              contentVersion = "1.0.0.0"
+              outputs = {}
+              parameters = {
+                emailSecurityContact = {
+                  type = "string"
+                  metadata = {
+                    description = "Security contacts email address"
+                  }
+                }
+                minimalSeverity = {
+                  type = "string"
+                  metadata = {
+                    description = "Minimal severity level reported"
+                  }
+                }
+              }
+              resources = [
+                {
+                  apiVersion = "2023-12-01-preview"
+                  name       = "default"
+                  type       = "Microsoft.Security/securityContacts"
+                  properties = {
+                    emails = "[parameters('emailSecurityContact')]"
+                    isEnabled = true
+                    notificationsByRole = {
+                      roles = [
+                        "Owner"
+                      ]
+                      state = "On"
+                    }
+                    notificationsSources = [
+                      {
+                        minimalSeverity = "[parameters('minimalSeverity')]"
+                        sourceType = "Alert"
+                      }
+                    ]
+                  }
+                }
+              ]
+              variables = {}
+            }
+          }
+        }
+        deploymentScope = "subscription"
+        existenceCondition = {
+          allOf = [
+            {
+              contains = "[parameters('emailSecurityContact')]"
+              field    = "Microsoft.Security/securityContacts/email"
+            },
+            {
+              equals = true
+              field  = "Microsoft.Security/securityContacts/isEnabled"
+            },
+            {
+              contains = "[parameters('minimalSeverity')]"
+              field    = "Microsoft.Security/securityContacts/notificationsSources[*].Alert.minimalSeverity"
+            }
+          ]
+        }
+        existenceScope = "subscription"
+        roleDefinitionIds = [
+          "/providers/Microsoft.Authorization/roleDefinitions/fb1c8493-542b-48eb-b624-b4c8fea62acd"
+        ]
+        type = "Microsoft.Security/securityContacts"
+      }
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+
+# corp-Additional Parameters-Deploy Private DNS Generic
+resource "azurerm_policy_definition" "private_dns_generic" {
+  name         = "Deploy-Private-DNS-Generic"
+  policy_type  = "Custom"
+  mode         = "All"
+  display_name = "Deploy-Private-DNS-Generic"
+  description  = "Configure private DNS zone group to override the DNS resolution for PaaS services private endpoint. See https://aka.ms/pepdnszones for information on values to provide to parameters in this policy."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+  
+metadata     = jsonencode({
+    category = "Networking"
+    version  = "2.0.0"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String"
+      metadata = {
+        description = "Enable or disable the execution of the policy"
+        displayName = "Effect"
+      }
+      allowedValues = ["DeployIfNotExists", "Disabled"]
+      defaultValue  = "DeployIfNotExists"
+    }
+    evaluationDelay = {
+      type = "String"
+      metadata = {
+        description = "The delay in evaluation of the policy. Review delay options at https://learn.microsoft.com/en-us/azure/governance/policy/concepts/effect-deploy-if-not-exists"
+        displayName = "Evaluation Delay"
+      }
+      defaultValue = "PT10M"
+    }
+    groupId = {
+      type = "String"
+      metadata = {
+        description = "The group ID of the PaaS private endpoint. Also referred to as subresource."
+        displayName = "PaaS Private endpoint group ID (subresource)"
+      }
+    }
+    location = {
+      type = "String"
+      metadata = {
+        description = "Specify the Private Endpoint location"
+        displayName = "Location (Specify the Private Endpoint location)"
+        strongType  = "location"
+      }
+      defaultValue = "northeurope"
+    }
+    privateDnsZoneId = {
+      type = "String"
+      metadata = {
+        assignPermissions = true
+        description       = "The private DNS zone name required for specific PaaS Services to resolve a private DNS Zone."
+        displayName       = "Private DNS Zone ID for PaaS services"
+        strongType        = "Microsoft.Network/privateDnsZones"
+      }
+    }
+    resourceType = {
+      type = "String"
+      metadata = {
+        description = "The PaaS endpoint resource type."
+        displayName = "PaaS private endpoint resource type"
+      }
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          equals = "[parameters('location')]"
+          field  = "location"
+        },
+        {
+          equals = "Microsoft.Network/privateEndpoints"
+          field  = "type"
+        },
+        {
+          count = {
+            field = "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*]"
+            where = {
+              allOf = [
+                {
+                  contains = "[parameters('resourceType')]"
+                  field    = "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].privateLinkServiceId"
+                },
+                {
+                  equals = "[parameters('groupId')]"
+                  field  = "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].groupIds[*]"
+                }
+              ]
+            }
+          }
+          greaterOrEquals = 1
+        }
+      ]
+    }
+    then = {
+      details = {
+        deployment = {
+          properties = {
+            mode = "incremental"
+            parameters = {
+              location = {
+                value = "[field('location')]"
+              }
+              privateDnsZoneId = {
+                value = "[parameters('privateDnsZoneId')]"
+              }
+              privateEndpointName = {
+                value = "[field('name')]"
+              }
+            }
+            template = {
+              "$schema" = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#"
+              contentVersion = "1.0.0.0"
+              parameters = {
+                location = {
+                  type = "string"
+                }
+                privateDnsZoneId = {
+                  type = "string"
+                }
+                privateEndpointName = {
+                  type = "string"
+                }
+              }
+              resources = [
+                {
+                  apiVersion = "2020-03-01"
+                  location   = "[parameters('location')]"
+                  name       = "[concat(parameters('privateEndpointName'), '/deployedByPolicy')]"
+                  properties = {
+                    privateDnsZoneConfigs = [
+                      {
+                        name = "PaaS-Service-Private-DNS-Zone-Config"
+                        properties = {
+                          privateDnsZoneId = "[parameters('privateDnsZoneId')]"
+                        }
+                      }
+                    ]
+                  }
+                  type = "Microsoft.Network/privateEndpoints/privateDnsZoneGroups"
+                }
+              ]
+            }
+          }
+        }
+        evaluationDelay = "[parameters('evaluationDelay')]"
+        roleDefinitionIds = [
+          "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+        ]
+        type = "Microsoft.Network/privateEndpoints/privateDnsZoneGroups"
+      }
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+
+#corp-Additional Parameters-Deploy SQL database auditing settings
+resource "azurerm_policy_definition" "deploy_sql_vulnerability_assessments" {
+  name                = "Deploy-Sql-vulnerabilityAssessments"
+  display_name        = "Deploy SQL Database Vulnerability Assessments"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Deploy SQL Database Vulnerability Assessments when it does not exist in the deployment, and save results to the storage account specified in the parameters."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "SQL",
+    version  = "1.0.0",
+    source   = "https://github.com/Azure/Enterprise-Scale/"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "Enable or disable the execution of the policy"
+        displayName = "Effect"
+      },
+      allowedValues = [
+        "DeployIfNotExists",
+        "Disabled"
+      ],
+      defaultValue = "DeployIfNotExists"
+    },
+    vulnerabilityAssessmentsEmail = {
+      type = "Array",
+      metadata = {
+        description = "The email address(es) to send alerts."
+        displayName = "The email address(es) to send alerts."
+      }
+    },
+    vulnerabilityAssessmentsStorageID = {
+      type = "String",
+      metadata = {
+        assignPermissions = true,
+        description = "The storage account ID to store assessments",
+        displayName = "The storage account ID to store assessments"
+      }
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      field  = "type",
+      equals = "Microsoft.Sql/servers/databases"
+    },
+    then = {
+      details = {
+        deployment = {
+          properties = {
+            mode = "Incremental",
+            parameters = {
+              location = {
+                value = "[field('location')]"
+              },
+              sqlServerDataBaseName = {
+                value = "[field('name')]"
+              },
+              sqlServerName = {
+                value = "[first(split(field('fullname'),'/'))]"
+              },
+              vulnerabilityAssessmentsEmail = {
+                value = "[parameters('vulnerabilityAssessmentsEmail')]"
+              },
+              vulnerabilityAssessmentsStorageID = {
+                value = "[parameters('vulnerabilityAssessmentsStorageID')]"
+              }
+            },
+            template = {
+              "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+              contentVersion = "1.0.0.0",
+              outputs = {},
+              parameters = {
+                location = {
+                  type = "String"
+                },
+                sqlServerDataBaseName = {
+                  type = "String"
+                },
+                sqlServerName = {
+                  type = "String"
+                },
+                vulnerabilityAssessmentsEmail = {
+                  type = "Array"
+                },
+                vulnerabilityAssessmentsStorageID = {
+                  type = "String"
+                }
+              },
+              resources = [
+                {
+                  apiVersion = "2017-03-01-preview",
+                  name = "[concat(parameters('sqlServerName'),'/',parameters('sqlServerDataBaseName'),'/default')]",
+                  type = "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
+                  properties = {
+                    recurringScans = {
+                      emailSubscriptionAdmins = false,
+                      emails = "[parameters('vulnerabilityAssessmentsEmail')]",
+                      isEnabled = true
+                    },
+                    storageAccountAccessKey = "[listKeys(parameters('vulnerabilityAssessmentsStorageID'), '2019-06-01').keys[0].value]",
+                    storageContainerPath = "[concat('https://', last(split(parameters('vulnerabilityAssessmentsStorageID'), '/')), '.blob.core.windows.net/vulnerabilitylogs')]"
+                  }
+                }
+              ],
+              variables = {}
+            }
+          }
+        },
+        existenceCondition = {
+          allOf = [
+            {
+              equals = true,
+              field  = "Microsoft.Sql/servers/databases/vulnerabilityAssessments/recurringScans.isEnabled"
+            }
+          ]
+        },
+        roleDefinitionIds = [
+          "/providers/Microsoft.Authorization/roleDefinitions/056cd41c-7e88-42e1-933e-88ba6a50c9c3",
+          "/providers/Microsoft.Authorization/roleDefinitions/749f88d5-cbae-40b8-bcfc-e573ddc772fa",
+          "/providers/Microsoft.Authorization/roleDefinitions/17d1049b-9a84-46fb-8f53-869881c3d3ab"
+        ],
+              type = "Microsoft.Sql/servers/databases/vulnerabilityAssessments"
+            },
+            effect = "[parameters('effect')]"
+          }
+        })
+      }
+#corp-Additional Parameters-Deploy Virtual Network with peering to the hub
+resource "azurerm_policy_definition" "deploy_vnet_hubspoke" {
+  name                = "Deploy-VNET-HubSpoke"
+  display_name        = "Deploy Virtual Network with peering to the hub"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy deploys virtual network and peer to the hub"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category   = "Network",
+    source     = "https://github.com/Azure/Enterprise-Scale/",
+    version    = "1.1.0",
+    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
+    createdOn  = "2025-06-06T12:21:21.4492159Z",
+    updatedBy  = null,
+    updatedOn  = null
+  })
+
+  parameters = jsonencode({
+    dnsServers = {
+      type = "Array",
+      metadata = {
+        description = "Default domain servers for the vNET.",
+        displayName = "DNSServers"
+      },
+      defaultValue = []
+    },
+    hubResourceId = {
+      type = "String",
+      metadata = {
+        description = "Resource ID for the HUB vNet",
+        displayName = "hubResourceId"
+      }
+    },
+    vNetCidrRange = {
+      type = "String",
+      metadata = {
+        description = "CIDR Range for the vNet",
+        displayName = "vNetCidrRange"
+      }
+    },
+    vNetLocation = {
+      type = "String",
+      metadata = {
+        description = "Location for the vNet",
+        displayName = "vNetLocation"
+      }
+    },
+    vNetName = {
+      type = "String",
+      metadata = {
+        description = "Name of the landing zone vNet",
+        displayName = "vNetName"
+      }
+    },
+    vNetPeerUseRemoteGateway = {
+      type = "Boolean",
+      metadata = {
+        description = "Enable gateway transit for the LZ network",
+        displayName = "vNetPeerUseRemoteGateway"
+      },
+      defaultValue = false
+    },
+    vNetRgName = {
+      type = "String",
+      metadata = {
+        description = "Name of the landing zone vNet RG",
+        displayName = "vNetRgName"
+      }
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          equals = "Microsoft.Resources/subscriptions",
+          field  = "type"
+        }
+      ]
+    },
+    then = {
+      details = {
+        ResourceGroupName = "[parameters('vNetRgName')]",
+        deployment = {
+          location = "northeurope",
+          properties = {
+            mode = "Incremental",
+            parameters = {
+              dnsServers = {
+                value = "[parameters('dnsServers')]"
+              },
+              hubResourceId = {
+                value = "[parameters('hubResourceId')]"
+              },
+              vNetCidrRange = {
+                value = "[parameters('vNetCidrRange')]"
+              },
+              vNetLocation = {
+                value = "[parameters('vNetLocation')]"
+              },
+              vNetName = {
+                value = "[parameters('vNetName')]"
+              },
+              vNetPeerUseRemoteGateway = {
+                value = "[parameters('vNetPeerUseRemoteGateway')]"
+              },
+              vNetRgName = {
+                value = "[parameters('vNetRgName')]"
+              }
+            },
+            template = {
+              "$schema" = "http://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json",
+              contentVersion = "1.0.0.0",
+              outputs = {},
+              parameters = {
+                dnsServers = {
+                  defaultValue = [],
+                  type = "Array"
+                },
+                hubResourceId = {
+                  type = "String"
+                },
+                vNetCidrRange = {
+                  type = "String"
+                },
+                vNetLocation = {
+                  type = "String"
+                },
+                vNetName = {
+                  type = "String"
+                },
+                vNetPeerUseRemoteGateway = {
+                  defaultValue = false,
+                  type = "bool"
+                },
+                vNetRgName = {
+                  type = "String"
+                }
+              },
+              resources = [
+                {
+                  apiVersion = "2021-02-01",
+                  location = "[parameters('vNetLocation')]",
+                  name = "[parameters('vNetName')]",
+                  properties = {
+                    addressSpace = {
+                      addressPrefixes = [
+                        "[parameters('vNetCidrRange')]"
+                      ]
+                    },
+                    dhcpOptions = {
+                      dnsServers = "[parameters('dnsServers')]"
+                    }
+                  },
+                  type = "Microsoft.Network/virtualNetworks"
+                },
+                {
+                  apiVersion = "2021-02-01",
+                  name = "[concat(parameters('vNetName'), '/peerToHub')]",
+                  properties = {
+                    allowForwardedTraffic = true,
+                    allowGatewayTransit = false,
+                    allowVirtualNetworkAccess = true,
+                    remoteVirtualNetwork = {
+                      id = "[parameters('hubResourceId')]"
+                    },
+                    useRemoteGateways = "[parameters('vNetPeerUseRemoteGateway')]"
+                  },
+                  type = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings"
+                }
+              ],
+              variables = {}
+            }
+          }
+        },
+        deploymentScope = "resourceGroup",
+        existenceCondition = {
+          allOf = [
+            {
+              field = "name",
+              like = "[parameters('vNetName')]"
+            },
+            {
+              equals = "[parameters('vNetLocation')]",
+              field = "location"
+            }
+          ]
+        },
+        existenceScope = "resourceGroup",
+        name = "[parameters('vNetName')]",
+        roleDefinitionIds = [
+          "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+        ],
+        type = "Microsoft.Network/virtualNetworks"
+      },
+      effect = "DeployIfNotExists"
+    }
+  })
+}
+
+#corp-Additional Parameters-Deploy Windows Domain Join Extension with keyvault configuration
+resource "azurerm_policy_definition" "deploy_windows_domainjoin_extension_with_keyvault" {
+  name                = "Deploy-Windows-DomainJoin"
+  display_name        = "Deploy Windows Domain Join Extension with keyvault configuration"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Deploy Windows Domain Join Extension with keyvault configuration when the extension does not exist on a given Windows Virtual Machine"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category = "Guest Configuration",
+    source   = "https://github.com/Azure/Enterprise-Scale/",
+    version  = "1.0.0"
+  })
+
+  parameters = jsonencode({
+    domainFQDN = {
+      type = "String",
+      metadata = {
+        displayName = "domainFQDN"
+      }
+    },
+    domainOUPath = {
+      type = "String",
+      metadata = {
+        displayName = "domainOUPath"
+      }
+    },
+    domainPassword = {
+      type = "String",
+      metadata = {
+        displayName = "domainPassword"
+      }
+    },
+    domainUsername = {
+      type = "String",
+      metadata = {
+        displayName = "domainUsername"
+      }
+    },
+    effect = {
+      type = "String",
+      metadata = {
+        description = "Enable or disable the execution of the policy",
+        displayName = "Effect"
+      },
+      allowedValues = [
+        "DeployIfNotExists",
+        "Disabled"
+      ],
+      defaultValue = "DeployIfNotExists"
+    },
+    keyVaultResourceId = {
+      type = "String",
+      metadata = {
+        displayName = "keyVaultResourceId"
+      }
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "equals" = "Microsoft.Compute/virtualMachines",
+          "field"  = "type"
+        },
+        {
+          "equals" = "MicrosoftWindowsServer",
+          "field"  = "Microsoft.Compute/imagePublisher"
+        },
+        {
+          "equals" = "WindowsServer",
+          "field"  = "Microsoft.Compute/imageOffer"
+        },
+        {
+          "field" = "Microsoft.Compute/imageSKU",
+          "in" = [
+            "2008-R2-SP1",
+            "2008-R2-SP1-smalldisk",
+            "2008-R2-SP1-zhcn",
+            "2012-Datacenter",
+            "2012-datacenter-gensecond",
+            "2012-Datacenter-smalldisk",
+            "2012-datacenter-smalldisk-g2",
+            "2012-Datacenter-zhcn",
+            "2012-datacenter-zhcn-g2",
+            "2012-R2-Datacenter",
+            "2012-r2-datacenter-gensecond",
+            "2012-R2-Datacenter-smalldisk",
+            "2012-r2-datacenter-smalldisk-g2",
+            "2012-R2-Datacenter-zhcn",
+            "2012-r2-datacenter-zhcn-g2",
+            "2016-Datacenter",
+            "2016-datacenter-gensecond",
+            "2016-datacenter-gs",
+            "2016-Datacenter-Server-Core",
+            "2016-datacenter-server-core-g2",
+            "2016-Datacenter-Server-Core-smalldisk",
+            "2016-datacenter-server-core-smalldisk-g2",
+            "2016-Datacenter-smalldisk",
+            "2016-datacenter-smalldisk-g2",
+            "2016-Datacenter-with-Containers",
+            "2016-datacenter-with-containers-g2",
+            "2016-Datacenter-with-RDSH",
+            "2016-Datacenter-zhcn",
+            "2016-datacenter-zhcn-g2",
+            "2019-Datacenter",
+            "2019-Datacenter-Core",
+            "2019-datacenter-core-g2",
+            "2019-Datacenter-Core-smalldisk",
+            "2019-datacenter-core-smalldisk-g2",
+            "2019-Datacenter-Core-with-Containers",
+            "2019-datacenter-core-with-containers-g2",
+            "2019-Datacenter-Core-with-Containers-smalldisk",
+            "2019-datacenter-core-with-containers-smalldisk-g2",
+            "2019-datacenter-gensecond",
+            "2019-datacenter-gs",
+            "2019-Datacenter-smalldisk",
+            "2019-datacenter-smalldisk-g2",
+            "2019-Datacenter-with-Containers",
+            "2019-datacenter-with-containers-g2",
+            "2019-Datacenter-with-Containers-smalldisk",
+            "2019-datacenter-with-containers-smalldisk-g2",
+            "2019-Datacenter-zhcn",
+            "2019-datacenter-zhcn-g2",
+            "Datacenter-Core-1803-with-Containers-smalldisk",
+            "datacenter-core-1803-with-containers-smalldisk-g2",
+            "Datacenter-Core-1809-with-Containers-smalldisk",
+            "datacenter-core-1809-with-containers-smalldisk-g2",
+            "Datacenter-Core-1903-with-Containers-smalldisk",
+            "datacenter-core-1903-with-containers-smalldisk-g2",
+            "datacenter-core-1909-with-containers-smalldisk",
+            "datacenter-core-1909-with-containers-smalldisk-g1",
+            "datacenter-core-1909-with-containers-smalldisk-g2"
+          ]
+        }
+      ]
+    },
+    "then" = {
+      "details" = {
+        "deployment" = {
+          "properties" = {
+            "mode" = "Incremental",
+            "parameters" = {
+              "domainFQDN" = {
+                "value" = "[parameters('domainFQDN')]"
+              },
+              "domainOUPath" = {
+                "value" = "[parameters('domainOUPath')]"
+              },
+              "domainPassword" = {
+                "reference" = {
+                  "keyVault" = {
+                    "id" = "[parameters('keyVaultResourceId')]"
+                  },
+                  "secretName" = "[parameters('domainPassword')]"
+                }
+              },
+              "domainUsername" = {
+                "reference" = {
+                  "keyVault" = {
+                    "id" = "[parameters('keyVaultResourceId')]"
+                  },
+                  "secretName" = "[parameters('domainUsername')]"
+                }
+              },
+              "keyVaultResourceId" = {
+                "value" = "[parameters('keyVaultResourceId')]"
+              },
+              "location" = {
+                "value" = "[field('location')]"
+              },
+              "vmName" = {
+                "value" = "[field('name')]"
+              }
+            },
+            "template" = {
+              "$schema" = "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+              "contentVersion" = "1.0.0.0",
+              "outputs" = {},
+              "parameters" = {
+                "domainFQDN" = {
+                  "type" = "String"
+                },
+                "domainOUPath" = {
+                  "type" = "String"
+                },
+                "domainPassword" = {
+                  "type" = "securestring"
+                },
+                "domainUsername" = {
+                  "type" = "String"
+                },
+                "keyVaultResourceId" = {
+                  "type" = "String"
+                },
+                "location" = {
+                  "type" = "String"
+                },
+                "vmName" = {
+                  "type" = "String"
+                }
+              },
+              "resources" = [
+                {
+                  "apiVersion" = "2015-06-15",
+                  "location"   = "[resourceGroup().location]",
+                  "name"       = "[concat(variables('vmName'),'/joindomain')]",
+                  "properties" = {
+                    "autoUpgradeMinorVersion" = true,
+                    "protectedSettings" = {
+                      "Password" = "[parameters('domainPassword')]"
+                    },
+                    "publisher" = "Microsoft.Compute",
+                    "settings" = {
+                      "Name"    = "[parameters('domainFQDN')]",
+                      "OUPath"  = "[parameters('domainOUPath')]",
+                      "Options" = "[variables('domainJoinOptions')]",
+                      "Restart" = "true",
+                      "User"    = "[parameters('domainUsername')]"
+                    },
+                    "type" = "JsonADDomainExtension",
+                    "typeHandlerVersion" = "1.3"
+                  },
+                  "type" = "Microsoft.Compute/virtualMachines/extensions"
+                }
+              ],
+              "variables" = {
+                "domainJoinOptions" = 3,
+                "vmName" = "[parameters('vmName')]"
+              }
+            }
+          }
+        },
+        "existenceCondition" = {
+          "allOf" = [
+            {
+              "equals" = "JsonADDomainExtension",
+              "field"  = "Microsoft.Compute/virtualMachines/extensions/type"
+            },
+            {
+              "equals" = "Microsoft.Compute",
+              "field"  = "Microsoft.Compute/virtualMachines/extensions/publisher"
+            }
+          ]
+        },
+        "roleDefinitionIds" = [
+          "/providers/Microsoft.Authorization/roleDefinitions/9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+        ],
+        "type" = "Microsoft.Compute/virtualMachines/extensions"
+      },
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Additional Parameters-Enforce specific configuration of User Defined Routes (UDR)
+resource "azurerm_policy_definition" "modify_udr" {
+  name                = "Modify-UDR"
+  display_name        = "Enforce specific configuration of User-Defined Routes (UDR)"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy enforces the configuration of User-Defined Routes (UDR) within a subnet."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category   = "Network",
+    source     = "https://github.com/Azure/Enterprise-Scale/",
+    version    = "1.0.0",
+    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
+    createdOn  = "2025-06-06T12:21:24.0971427Z",
+    updatedBy  = null,
+    updatedOn  = null
+  })
+
+  parameters = jsonencode({
+    addressPrefix = {
+      type = "String",
+      metadata = {
+        description = "The destination IP address range in CIDR notation that this Policy checks for within the UDR. Example: 0.0.0.0/0 to check for the presence of a default route.",
+        displayName = "Address Prefix"
+      }
+    },
+    effect = {
+      type = "String",
+      metadata = {
+        description = "Enable or disable the execution of the policy",
+        displayName = "Effect"
+      },
+      allowedValues = [
+        "Modify",
+        "Disabled"
+      ],
+      defaultValue = "Modify"
+    },
+    nextHopIpAddress = {
+      type = "String",
+      metadata = {
+        description = "The IP address packets should be forwarded to.",
+        displayName = "Next Hop IP Address"
+      }
+    },
+    nextHopType = {
+      type = "String",
+      metadata = {
+        description = "The next hope type that the policy checks for within the inspected route. The value can be Virtual Network, Virtual Network Gateway, Internet, Virtual Appliance, or None.",
+        displayName = "Next Hop Type"
+      },
+      allowedValues = [
+        "VnetLocal",
+        "VirtualNetworkGateway",
+        "Internet",
+        "VirtualAppliance",
+        "None"
+      ]
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          equals = "Microsoft.Network/routeTables",
+          field  = "type"
+        },
+        {
+          count = {
+            field = "Microsoft.Network/routeTables/routes[*]"
+          },
+          equals = 0
+        }
+      ]
+    },
+    then = {
+      details = {
+        conflictEffect = "audit",
+        operations = [
+          {
+            field     = "Microsoft.Network/routeTables/routes[*]",
+            operation = "add",
+            value = {
+              name = "default",
+              properties = {
+                addressPrefix    = "[parameters('addressPrefix')]",
+                nextHopIpAddress = "[parameters('nextHopIpAddress')]",
+                nextHopType      = "[parameters('nextHopType')]"
+              }
+            }
+          }
+        ],
+        roleDefinitionIds = [
+          "/providers/microsoft.authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+        ]
+      },
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Additional Parameters-Ensure a Custom Role is Assigned Permissions for Administering Resource Locks
+resource "azurerm_policy_definition" "custom_role_administer_resource_locks" {
+  name                = "Custom-Role-Administer-Resource-Locks"
+  display_name        = "Ensure a Custom Role is Assigned Permissions for Administering Resource Locks"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy ensures that a custom role with permissions to administer resource locks is assigned."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Authorization"
+  })
+
+  parameters = jsonencode({
+    roleDefinitionId = {
+      type = "String",
+      metadata = {
+        description = "The ID of the custom role that should have permissions for resource locks.",
+        displayName = "Role Definition ID"
+      }
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Authorization/roleAssignments"
+        },
+        {
+          field  = "Microsoft.Authorization/roleAssignments/roleDefinitionId",
+          equals = "[parameters('roleDefinitionId')]"
+        }
+      ]
+    },
+    then = {
+      effect = "audit"
+    }
+  })
+}
+#corp-Additional Parameters-Ensure Trusted Locations Are Defined
+resource "azurerm_policy_definition" "trusted_locations_defined" {
+  name                = "Trusted-Locations-Defined"
+  display_name        = "Ensure Trusted Locations Are Defined"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy audits resources that are deployed outside of the specified trusted locations."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Security"
+  })
+
+  parameters = jsonencode({
+    allowedLocations = {
+      type = "Array",
+      metadata = {
+        description = "The list of allowed locations.",
+        displayName = "Allowed Locations"
+      }
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "location",
+          "notIn"  = "[parameters('allowedLocations')]"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "audit"
+    }
+  })
+}
+#corp-Audit-Subnet-Without-Penp-Audit Subnets without Private Endpoint Network Policies enabled
+resource "azurerm_policy_definition" "audit_subnet_without_penp" {
+  name                = "Audit-Subnet-Without-Penp"
+  display_name        = "Subnets without Private Endpoint Network Policies enabled should be audited"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy audits the subnet without Private Endpoint Network Policies enabled. This policy is intended for 'workload' subnets, not 'central infrastructure' (aka, 'hub') subnets."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category  = "Network",
+    source    = "https://github.com/Azure/Enterprise-Scale/",
+    version   = "1.0.0"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect determines what happens when the policy rule is evaluated to match",
+        displayName = "Effect"
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Audit"
+    },
+    excludedSubnets = {
+      type = "Array",
+      metadata = {
+        description = "Array of subnet names that are excluded from this policy",
+        displayName = "Excluded Subnets"
+      },
+      defaultValue = [
+        "GatewaySubnet",
+        "AzureFirewallSubnet",
+        "AzureFirewallManagementSubnet",
+        "AzureBastionSubnet"
+      ]
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "anyOf" = [
+        {
+          "allOf" = [
+            {
+              "equals" = "Microsoft.Network/virtualNetworks",
+              "field"  = "type"
+            },
+            {
+              "count" = {
+                "field" = "Microsoft.Network/virtualNetworks/subnets[*]",
+                "where" = {
+                  "allOf" = [
+                    {
+                      "field"     = "Microsoft.Network/virtualNetworks/subnets[*].privateEndpointNetworkPolicies",
+                      "notEquals" = "Enabled"
+                    },
+                    {
+                      "field"     = "Microsoft.Network/virtualNetworks/subnets[*].name",
+                      "notIn"     = "[parameters('excludedSubnets')]"
+                    }
+                  ]
+                }
+              },
+              "notEquals" = 0
+            }
+          ]
+        },
+        {
+          "allOf" = [
+            {
+              "equals" = "Microsoft.Network/virtualNetworks/subnets",
+              "field"  = "type"
+            },
+            {
+              "field"  = "name",
+              "notIn"  = "[parameters('excludedSubnets')]"
+            },
+            {
+              "field"     = "Microsoft.Network/virtualNetworks/subnets/privateEndpointNetworkPolicies",
+              "notEquals" = "Enabled"
+            }
+          ]
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+
+#corp-Azure Database for MySQL server deploy a specific min TLS version and enforce SSL
+resource "azurerm_policy_definition" "deploy_mysql_ssl_min_tls" {
+  name         = "Deploy-MySQL-sslEnforcement"
+  display_name = "Azure Database for MySQL server deploy a specific min TLS version and enforce SSL."
+  policy_type  = "Custom"
+  mode         = "Indexed"
+  description  = "Deploy a specific min TLS version requirement and enforce SSL on Azure Database for MySQL server. Enforce the Server to client applications using minimum version of Tls to secure the connection between your database server and your client applications helps protect against 'man in the middle' attacks by encrypting the data stream between the server and your application. This configuration enforces that SSL is always enabled for accessing your database server."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+  
+  metadata     = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ]
+    category = "SQL"
+    source   = "https://github.com/Azure/Enterprise-Scale/"
+    version  = "1.2.0"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String"
+      metadata = {
+        description = "Enable or disable the execution of the policy minimum TLS version Azure Database for MySQL server"
+        displayName = "Effect minimum TLS version Azure Database for MySQL server"
+      }
+      allowedValues = [
+        "DeployIfNotExists",
+        "Disabled"
+      ]
+      defaultValue = "DeployIfNotExists"
+    }
+    minimalTlsVersion = {
+      type = "String"
+      metadata = {
+        description = "Select version  minimum TLS version Azure Database for MySQL server to enforce"
+        displayName = "Select version minimum TLS for MySQL server"
+      }
+      allowedValues = [
+        "TLS1_2",
+        "TLS1_0",
+        "TLS1_1",
+        "TLSEnforcementDisabled"
+      ]
+      defaultValue = "TLS1_2"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          equals = "Microsoft.DBforMySQL/servers"
+          field  = "type"
+        },
+        {
+          anyOf = [
+            {
+              field     = "Microsoft.DBforMySQL/servers/sslEnforcement"
+              notEquals = "Enabled"
+            },
+            {
+              field = "Microsoft.DBforMySQL/servers/minimalTlsVersion"
+              less  = "[parameters('minimalTlsVersion')]"
+            }
+          ]
+        }
+      ]
+    }
+    then = {
+      effect = "[parameters('effect')]"
+      details = {
+        deployment = {
+          properties = {
+            mode = "Incremental"
+            parameters = {
+              location = {
+                value = "[field('location')]"
+              }
+              minimalTlsVersion = {
+                value = "[parameters('minimalTlsVersion')]"
+              }
+              resourceName = {
+                value = "[field('name')]"
+              }
+            }
+            template = {
+              "$schema"        = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
+              contentVersion   = "1.0.0.0"
+              outputs          = {}
+              parameters = {
+                location = {
+                  type = "String"
+                }
+                minimalTlsVersion = {
+                  type = "String"
+                }
+                resourceName = {
+                  type = "String"
+                }
+              }
+              resources = [
+                {
+                  apiVersion = "2017-12-01"
+                  location   = "[parameters('location')]"
+                  name       = "[concat(parameters('resourceName'))]"
+                  properties = {
+                    minimalTlsVersion = "[parameters('minimalTlsVersion')]"
+                    sslEnforcement    = "[if(equals(parameters('minimalTlsVersion'), 'TLSEnforcementDisabled'),'Disabled', 'Enabled')]"
+                  }
+                  type = "Microsoft.DBforMySQL/servers"
+                }
+              ]
+              variables = {}
+            }
+          }
+        }
+        existenceCondition = {
+          allOf = [
+            {
+              equals = "Enabled"
+              field  = "Microsoft.DBforMySQL/servers/sslEnforcement"
+            },
+            {
+              equals = "[parameters('minimalTlsVersion')]"
+              field  = "Microsoft.DBforMySQL/servers/minimalTlsVersion"
+            }
+          ]
+        }
+        roleDefinitionIds = [
+          "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+        ]
+        type = "Microsoft.DBforMySQL/servers"
+      }
+    }
+  })
+}
+#corp-Azure DB for PostgreSQL server deploy a specific min TLS version re
+resource "azurerm_policy_definition" "postgresql_min_tls_and_ssl" {
+  name                = "Deploy-PostgreSQL-sslEnforcement"
+  display_name        = "Azure Database for PostgreSQL server deploy a specific min TLS version requirement and enforce SSL"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Deploy a specific min TLS version requirement and enforce SSL on Azure Database for PostgreSQL server. Enforces that SSL is always enabled and a minimum TLS version is set to help protect against 'man in the middle' attacks."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category = "SQL",
+    source   = "https://github.com/Azure/Enterprise-Scale/",
+    version  = "1.2.0"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "Enable or disable the execution of the policy minimum TLS version Azure Database for PostgreSQL server",
+        displayName = "Effect Azure Database for PostgreSQL server"
+      },
+      allowedValues = [
+        "DeployIfNotExists",
+        "Disabled"
+      ],
+      defaultValue = "DeployIfNotExists"
+    },
+    minimalTlsVersion = {
+      type = "String",
+      metadata = {
+        description = "Select version minimum TLS version Azure Database for PostgreSQL server to enforce",
+        displayName = "Select version for PostgreSQL server"
+      },
+      allowedValues = [
+        "TLS1_2",
+        "TLS1_0",
+        "TLS1_1",
+        "TLSEnforcementDisabled"
+      ],
+      defaultValue = "TLS1_2"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "equals" = "Microsoft.DBforPostgreSQL/servers",
+          "field"  = "type"
+        },
+        {
+          "anyOf" = [
+            {
+              "field"     = "Microsoft.DBforPostgreSQL/servers/sslEnforcement",
+              "notEquals" = "Enabled"
+            },
+            {
+              "field" = "Microsoft.DBforPostgreSQL/servers/minimalTlsVersion",
+              "less"  = "[parameters('minimalTlsVersion')]"
+            }
+          ]
+        }
+      ]
+    },
+    "then" = {
+      "details" = {
+        "deployment" = {
+          "properties" = {
+            "mode" = "Incremental",
+            "parameters" = {
+              "location" = {
+                "value" = "[field('location')]"
+              },
+              "minimalTlsVersion" = {
+                "value" = "[parameters('minimalTlsVersion')]"
+              },
+              "resourceName" = {
+                "value" = "[field('name')]"
+              }
+            },
+            "template" = {
+              "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+              "contentVersion" = "1.0.0.0",
+              "outputs" = {},
+              "parameters" = {
+                "location" = {
+                  "type" = "String"
+                },
+                "minimalTlsVersion" = {
+                  "type" = "String"
+                },
+                "resourceName" = {
+                  "type" = "String"
+                }
+              },
+              "resources" = [
+                {
+                  "apiVersion" = "2017-12-01",
+                  "location"   = "[parameters('location')]",
+                  "name"       = "[concat(parameters('resourceName'))]",
+                  "properties" = {
+                    "minimalTlsVersion" = "[parameters('minimalTlsVersion')]",
+                    "sslEnforcement"    = "[if(equals(parameters('minimalTlsVersion'), 'TLSEnforcementDisabled'),'Disabled', 'Enabled')]"
+                  },
+                  "type" = "Microsoft.DBforPostgreSQL/servers"
+                }
+              ],
+              "variables" = {}
+            }
+          }
+        },
+        "existenceCondition" = {
+          "allOf" = [
+            {
+              "equals" = "Enabled",
+              "field"  = "Microsoft.DBforPostgreSQL/servers/sslEnforcement"
+            },
+            {
+              "equals" = "[parameters('minimalTlsVersion')]",
+              "field"  = "Microsoft.DBforPostgreSQL/servers/minimalTlsVersion"
+            }
+          ]
+        },
+        "roleDefinitionIds" = [
+          "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+        ],
+        "type" = "Microsoft.DBforPostgreSQL/servers"
+      },
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Azure Storage deploy a specific min TLS version requirement and enforce SSLHTTPS
+resource "azurerm_policy_definition" "deploy_storage_ssl_enforcement" {
+  name                = "Deploy-Storage-sslEnforcement"
+  display_name        = "Azure Storage deploy a specific min TLS version requirement and enforce SSL/HTTPS"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Deploy a specific min TLS version requirement and enforce SSL on Azure Storage. Enables secure server to client by enforce minimal Tls Version to secure the connection between your database server and your client applications helps protect against 'man in the middle' attacks by encrypting the data stream between the server and your application. This configuration enforces that SSL is always enabled for accessing your Azure Storage."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category   = "Storage",
+    source     = "https://github.com/Azure/Enterprise-Scale/",
+    version    = "1.3.0",
+    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
+    createdOn  = "2025-06-06T12:21:06.7604768Z",
+    updatedBy  = null,
+    updatedOn  = null
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String"
+      metadata = {
+        description = "Enable or disable the execution of the policy minimum TLS version Azure STorage"
+        displayName = "Effect Azure Storage"
+      }
+      allowedValues = [
+        "DeployIfNotExists",
+        "Disabled"
+      ]
+      defaultValue = "DeployIfNotExists"
+    }
+    minimumTlsVersion = {
+      type = "String"
+      metadata = {
+        description = "Select version minimum TLS version Azure STorage to enforce"
+        displayName = "Select TLS version for Azure Storage server"
+      }
+      allowedValues = [
+        "TLS1_2",
+        "TLS1_1",
+        "TLS1_0"
+      ]
+      defaultValue = "TLS1_2"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          equals = "Microsoft.Storage/storageAccounts"
+          field  = "type"
+        },
+        {
+          anyOf = [
+            {
+              field     = "Microsoft.Storage/storageAccounts/supportsHttpsTrafficOnly"
+              notEquals = "true"
+            },
+            {
+              field = "Microsoft.Storage/storageAccounts/minimumTlsVersion"
+              less  = "[parameters('minimumTlsVersion')]"
+            }
+          ]
+        }
+      ]
+    }
+    then = {
+      details = {
+        deployment = {
+          properties = {
+            mode = "Incremental"
+            parameters = {
+              location = {
+                value = "[field('location')]"
+              }
+              minimumTlsVersion = {
+                value = "[parameters('minimumTlsVersion')]"
+              }
+              resourceName = {
+                value = "[field('name')]"
+              }
+            }
+            template = {
+              "$schema"      = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
+              contentVersion = "1.0.0.0"
+              outputs        = {}
+              parameters = {
+                location = {
+                  type = "String"
+                }
+                minimumTlsVersion = {
+                  type = "String"
+                }
+                resourceName = {
+                  type = "String"
+                }
+              }
+              resources = [
+                {
+                  apiVersion = "2019-06-01"
+                  location   = "[parameters('location')]"
+                  name       = "[concat(parameters('resourceName'))]"
+                  properties = {
+                    minimumTlsVersion        = "[parameters('minimumTlsVersion')]"
+                    supportsHttpsTrafficOnly = true
+                  }
+                  type = "Microsoft.Storage/storageAccounts"
+                }
+              ]
+              variables = {}
+            }
+          }
+        }
+        existenceCondition = {
+          allOf = [
+            {
+              equals = "true"
+              field  = "Microsoft.Storage/storageAccounts/supportsHttpsTrafficOnly"
+            },
+            {
+              equals = "[parameters('minimumTlsVersion')]"
+              field  = "Microsoft.Storage/storageAccounts/minimumTlsVersion"
+            }
+          ]
+        }
+        name              = "current"
+        roleDefinitionIds = [
+          "/providers/microsoft.authorization/roleDefinitions/17d1049b-9a84-46fb-8f53-869881c3d3ab"
+        ]
+        type = "Microsoft.Storage/storageAccounts"
+      }
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Configure Logic apps to use the latest TLS version
+resource "azurerm_policy_definition" "logic_apps_latest_tls" {
+  name                = "Configure-Logic-Apps-Latest-TLS"
+  display_name        = "Configure Logic apps to use the latest TLS version"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Periodically, newer versions are released for TLS either due to security flaws, include additional functionality, and enhance speed. Upgrade to the latest TLS version for Logic Apps to take advantage of security fixes and new functionalities."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category  = "Logic Apps",
+    source    = "https://github.com/Azure/Enterprise-Scale/",
+    version   = "1.0.0"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "Enable or disable the execution of the policy",
+        displayName = "Effect"
+      },
+      allowedValues = [
+        "DeployIfNotExists",
+        "Disabled"
+      ],
+      defaultValue = "DeployIfNotExists"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field   = "type",
+          equals  = "Microsoft.Web/sites"
+        },
+        {
+          field   = "kind",
+          contains = "workflowapp"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]",
+      details = {
+        type = "Microsoft.Web/sites/config",
+        name = "web",
+        roleDefinitionIds = [
+          "/providers/microsoft.authorization/roleDefinitions/de139f84-1756-47ae-9be6-808fbbe84772"
+        ],
+        existenceCondition = {
+          field  = "Microsoft.Web/sites/config/minTlsVersion",
+          equals = "1.2"
+        },
+        deployment = {
+          properties = {
+            mode = "incremental",
+            parameters = {
+              siteName = {
+                value = "[field('name')]"
+              }
+            },
+            template = {
+              "$schema" = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+              contentVersion = "1.0.0.0",
+              parameters = {
+                siteName = {
+                  type = "string"
+                }
+              },
+              resources = [
+                {
+                  type = "Microsoft.Web/sites/config",
+                  apiVersion = "2021-02-01",
+                  name = "[concat(parameters('siteName'), '/web')]",
+                  properties = {
+                    minTlsVersion = "1.2"
+                  }
+                }
+              ],
+              outputs = {},
+              variables = {}
+            }
+          }
+        }
+      }
+    }
+  })
+}
+#corp-Deploy a default budget on all subscriptions under the assigned scope
+resource "azurerm_policy_definition" "deploy_default_budget" {
+  name                = "Deploy-Budget"
+  display_name        = "Deploy a default budget on all subscriptions under the assigned scope"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Deploy a default budget on all subscriptions under the assigned scope"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureUSGovernment"
+    ],
+    category  = "Budget",
+    source    = "https://github.com/Azure/Enterprise-Scale/",
+    version   = "1.1.0"
+  })
+
+  parameters = jsonencode({
+    amount = {
+      type = "String",
+      metadata = {
+        description = "The total amount of cost or usage to track with the budget"
+      },
+      defaultValue = "1000"
+    },
+    budgetName = {
+      type = "String",
+      metadata = {
+        description = "The name for the budget to be created"
+      },
+      defaultValue = "budget-set-by-policy"
+    },
+    contactEmails = {
+      type = "Array",
+      metadata = {
+        description = "The list of email addresses, in an array, to send the budget notification to when the threshold is exceeded."
+      },
+      defaultValue = []
+    },
+    contactGroups = {
+      type = "Array",
+      metadata = {
+        description = "The list of action groups, in an array, to send the budget notification to when the threshold is exceeded. It accepts array of strings."
+      },
+      defaultValue = []
+    },
+    contactRoles = {
+      type = "Array",
+      metadata = {
+        description = "The list of contact RBAC roles, in an array, to send the budget notification to when the threshold is exceeded."
+      },
+      defaultValue = [
+        "Owner",
+        "Contributor"
+      ]
+    },
+    effect = {
+      type = "String",
+      metadata = {
+        description = "Enable or disable the execution of the policy"
+      },
+      allowedValues = [
+        "DeployIfNotExists",
+        "AuditIfNotExists",
+        "Disabled"
+      ],
+      defaultValue = "DeployIfNotExists"
+    },
+    firstThreshold = {
+      type = "String",
+      metadata = {
+        description = "Threshold value associated with a notification. Notification is sent when the cost exceeded the threshold. It is always percent and has to be between 0 and 1000."
+      },
+      defaultValue = "90"
+    },
+    secondThreshold = {
+      type = "String",
+      metadata = {
+        description = "Threshold value associated with a notification. Notification is sent when the cost exceeded the threshold. It is always percent and has to be between 0 and 1000."
+      },
+      defaultValue = "100"
+    },
+    timeGrain = {
+      type = "String",
+      metadata = {
+        description = "The time covered by a budget. Tracking of the amount will be reset based on the time grain."
+      },
+      allowedValues = [
+        "Monthly",
+        "Quarterly",
+        "Annually",
+        "BillingMonth",
+        "BillingQuarter",
+        "BillingAnnual"
+      ],
+      defaultValue = "Monthly"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "equals" = "Microsoft.Resources/subscriptions",
+          "field"  = "type"
+        }
+      ]
+    },
+    "then" = {
+      "details" = {
+        "deployment" = {
+          "location" = "northeurope",
+          "properties" = {
+            "mode" = "Incremental",
+            "parameters" = {
+              "amount" = {
+                "value" = "[parameters('amount')]"
+              },
+              "budgetName" = {
+                "value" = "[parameters('budgetName')]"
+              },
+              "contactEmails" = {
+                "value" = "[parameters('contactEmails')]"
+              },
+              "contactGroups" = {
+                "value" = "[parameters('contactGroups')]"
+              },
+              "contactRoles" = {
+                "value" = "[parameters('contactRoles')]"
+              },
+              "firstThreshold" = {
+                "value" = "[parameters('firstThreshold')]"
+              },
+              "secondThreshold" = {
+                "value" = "[parameters('secondThreshold')]"
+              },
+              "timeGrain" = {
+                "value" = "[parameters('timeGrain')]"
+              }
+            },
+            "template" = {
+              "$schema" = "http://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json",
+              "contentVersion" = "1.0.0.0",
+              "parameters" = {
+                "amount" = {
+                  "type" = "String"
+                },
+                "budgetName" = {
+                  "type" = "String"
+                },
+                "contactEmails" = {
+                  "type" = "Array"
+                },
+                "contactGroups" = {
+                  "type" = "Array"
+                },
+                "contactRoles" = {
+                  "type" = "Array"
+                },
+                "firstThreshold" = {
+                  "type" = "String"
+                },
+                "secondThreshold" = {
+                  "type" = "String"
+                },
+                "startDate" = {
+                  "defaultValue" = "[concat(utcNow('MM'), '/01/', utcNow('yyyy'))]",
+                  "type" = "String"
+                },
+                "timeGrain" = {
+                  "type" = "String"
+                }
+              },
+              "resources" = [
+                {
+                  "apiVersion" = "2019-10-01",
+                  "name" = "[parameters('budgetName')]",
+                  "properties" = {
+                    "amount" = "[parameters('amount')]",
+                    "category" = "Cost",
+                    "notifications" = {
+                      "NotificationForExceededBudget1" = {
+                        "contactEmails" = "[parameters('contactEmails')]",
+                        "contactGroups" = "[parameters('contactGroups')]",
+                        "contactRoles" = "[parameters('contactRoles')]",
+                        "enabled" = true,
+                        "operator" = "GreaterThan",
+                        "threshold" = "[parameters('firstThreshold')]"
+                      },
+                      "NotificationForExceededBudget2" = {
+                        "contactEmails" = "[parameters('contactEmails')]",
+                        "contactGroups" = "[parameters('contactGroups')]",
+                        "contactRoles" = "[parameters('contactRoles')]",
+                        "enabled" = true,
+                        "operator" = "GreaterThan",
+                        "threshold" = "[parameters('secondThreshold')]"
+                      }
+                    },
+                    "timeGrain" = "[parameters('timeGrain')]",
+                    "timePeriod" = {
+                      "startDate" = "[parameters('startDate')]"
+                    }
+                  },
+                  "type" = "Microsoft.Consumption/budgets"
+                }
+              ]
+            }
+          }
+        },
+        "deploymentScope" = "subscription",
+        "existenceCondition" = {
+          "allOf" = [
+            {
+              "equals" = "[parameters('amount')]",
+              "field"  = "Microsoft.Consumption/budgets/amount"
+            },
+            {
+              "equals" = "[parameters('timeGrain')]",
+              "field"  = "Microsoft.Consumption/budgets/timeGrain"
+            },
+            {
+              "equals" = "Cost",
+              "field"  = "Microsoft.Consumption/budgets/category"
+            }
+          ]
+        },
+        "existenceScope" = "subscription",
+        "roleDefinitionIds" = [
+          "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+        ],
+        "type" = "Microsoft.Consumption/budgets"
+      },
+      "effect" = "[parameters('effect')]"
+    }
+ })
+}
+#corp-Deploy SQL Database Vulnerability Assessments
+resource "azurerm_policy_definition" "deploy_sql_database_auditing_settings" {
+  name                = "Deploy-Sql-AuditingSettings"
+  display_name        = "Deploy SQL database auditing settings"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Deploy auditing settings to SQL Database when it does not exist in the deployment."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "SQL",
+    version  = "1.0.0",
+    source   = "https://github.com/Azure/Enterprise-Scale/"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "Enable or disable the execution of the policy"
+        displayName = "Effect"
+      },
+      allowedValues = [
+        "DeployIfNotExists",
+        "Disabled"
+      ],
+      defaultValue = "DeployIfNotExists"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      field  = "type",
+      equals = "Microsoft.Sql/servers/databases"
+    },
+    then = {
+      details = {
+        deployment = {
+          properties = {
+            mode = "Incremental",
+            parameters = {
+              location = {
+                value = "[field('location')]"
+              },
+              sqlServerDataBaseName = {
+                value = "[field('name')]"
+              },
+              sqlServerName = {
+                value = "[first(split(field('fullname'),'/'))]"
+              }
+            },
+            template = {
+              "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+              contentVersion = "1.0.0.0",
+              outputs = {},
+              parameters = {
+                location = {
+                  type = "String"
+                },
+                sqlServerDataBaseName = {
+                  type = "String"
+                },
+                sqlServerName = {
+                  type = "String"
+                }
+              },
+              resources = [
+                {
+                  apiVersion = "2017-03-01-preview",
+                  name = "[concat(parameters('sqlServerName'),'/',parameters('sqlServerDataBaseName'),'/default')]",
+                  type = "Microsoft.Sql/servers/databases/auditingSettings",
+                  properties = {
+                    auditActionsAndGroups = [
+                      "BATCH_COMPLETED_GROUP",
+                      "DATABASE_OBJECT_CHANGE_GROUP",
+                      "SCHEMA_OBJECT_CHANGE_GROUP",
+                      "BACKUP_RESTORE_GROUP",
+                      "APPLICATION_ROLE_CHANGE_PASSWORD_GROUP",
+                      "DATABASE_PRINCIPAL_CHANGE_GROUP",
+                      "DATABASE_PRINCIPAL_IMPERSONATION_GROUP",
+                      "DATABASE_ROLE_MEMBER_CHANGE_GROUP",
+                      "USER_CHANGE_PASSWORD_GROUP",
+                      "DATABASE_OBJECT_OWNERSHIP_CHANGE_GROUP",
+                      "DATABASE_OBJECT_PERMISSION_CHANGE_GROUP",
+                      "DATABASE_PERMISSION_CHANGE_GROUP",
+                      "SCHEMA_OBJECT_PERMISSION_CHANGE_GROUP",
+                      "SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP",
+                      "FAILED_DATABASE_AUTHENTICATION_GROUP"
+                    ],
+                    isAzureMonitorTargetEnabled = true,
+                    state = "enabled"
+                  }
+                }
+              ],
+              variables = {}
+            }
+          }
+        },
+        existenceCondition = {
+          allOf = [
+            {
+              equals = "enabled",
+              field  = "Microsoft.Sql/servers/databases/auditingSettings/state"
+            },
+            {
+              equals = "true",
+              field  = "Microsoft.Sql/servers/databases/auditingSettings/isAzureMonitorTargetEnabled"
+            }
+          ]
+        },
+        name = "default",
+        roleDefinitionIds = [
+          "/providers/Microsoft.Authorization/roleDefinitions/056cd41c-7e88-42e1-933e-88ba6a50c9c3"
+        ],
+        type = "Microsoft.Sql/servers/databases/auditingSettings"
+      },
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Deploy SQL DB security Alert Policies configuration with email admin accounts
+resource "azurerm_policy_definition" "deploy_sql_security_alert_policies" {
+  name                = "Deploy-Sql-SecurityAlertPolicies"
+  display_name        = "Deploy SQL Database security Alert Policies configuration with email admin accounts"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Deploy the security Alert Policies configuration with email admin accounts when it does not exist in current configuration"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category = "SQL",
+    source   = "https://github.com/Azure/Enterprise-Scale/",
+    version  = "1.1.1"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "Enable or disable the execution of the policy",
+        displayName = "Effect"
+      },
+      allowedValues = [
+        "DeployIfNotExists",
+        "Disabled"
+      ],
+      defaultValue = "DeployIfNotExists"
+    },
+    emailAddresses = {
+      type = "Array",
+      defaultValue = [
+        "admin@contoso.com",
+        "admin@fabrikam.com"
+      ]
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "equals" = "Microsoft.Sql/servers/databases",
+      "field"  = "type"
+    },
+    "then" = {
+      "details" = {
+        "deployment" = {
+          "properties" = {
+            "mode" = "Incremental",
+            "parameters" = {
+              "emailAddresses" = {
+                "value" = "[parameters('emailAddresses')]"
+              },
+              "location" = {
+                "value" = "[field('location')]"
+              },
+              "sqlServerDataBaseName" = {
+                "value" = "[field('name')]"
+              },
+              "sqlServerName" = {
+                "value" = "[first(split(field('fullname'),'/'))]"
+              }
+            },
+            "template" = {
+              "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+              "contentVersion" = "1.0.0.0",
+              "outputs" = {},
+              "parameters" = {
+                "emailAddresses" = {
+                  "type" = "Array"
+                },
+                "location" = {
+                  "type" = "String"
+                },
+                "sqlServerDataBaseName" = {
+                  "type" = "String"
+                },
+                "sqlServerName" = {
+                  "type" = "String"
+                }
+              },
+              "resources" = [
+                {
+                  "apiVersion" = "2018-06-01-preview",
+                  "name" = "[concat(parameters('sqlServerName'),'/',parameters('sqlServerDataBaseName'),'/default')]",
+                  "properties" = {
+                    "disabledAlerts" = [
+                      ""
+                    ],
+                    "emailAccountAdmins" = true,
+                    "emailAddresses" = "[parameters('emailAddresses')]",
+                    "retentionDays" = 0,
+                    "state" = "Enabled",
+                    "storageAccountAccessKey" = "",
+                    "storageEndpoint" = null
+                  },
+                  "type" = "Microsoft.Sql/servers/databases/securityAlertPolicies"
+                }
+              ],
+              "variables" = {}
+            }
+          }
+        },
+        "existenceCondition" = {
+          "allOf" = [
+            {
+              "equals" = "Enabled",
+              "field"  = "Microsoft.Sql/servers/databases/securityAlertPolicies/state"
+            }
+          ]
+        },
+        "roleDefinitionIds" = [
+          "/providers/Microsoft.Authorization/roleDefinitions/056cd41c-7e88-42e1-933e-88ba6a50c9c3"
+        ],
+        "type" = "Microsoft.Sql/servers/databases/securityAlertPolicies"
+      },
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Deploy Virtual Machine Auto Shutdown Schedule
+resource "azurerm_policy_definition" "deploy_vm_auto_shutdown" {
+  name                = "Deploy-Vm-autoShutdown"
+  display_name        = "Deploy Virtual Machine Auto Shutdown Schedule"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Deploys an auto shutdown schedule to a virtual machine"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category   = "Compute",
+    source     = "https://github.com/Azure/Enterprise-Scale/",
+    version    = "1.0.0"
+  })
+
+  parameters = jsonencode({
+    EnableNotification = {
+      type = "String",
+      metadata = {
+        description = "If notifications are enabled for this schedule (i.e. Enabled, Disabled).",
+        displayName = "Send Notification before auto-shutdown"
+      },
+      allowedValues = [
+        "Disabled",
+        "Enabled"
+      ],
+      defaultValue = "Disabled"
+    },
+    NotificationEmailRecipient = {
+      type = "String",
+      metadata = {
+        description = "Email address to be used for notification",
+        displayName = "Email Address"
+      },
+      defaultValue = ""
+    },
+    NotificationWebhookUrl = {
+      type = "String",
+      metadata = {
+        description = "A notification will be posted to the specified webhook endpoint when the auto-shutdown is about to happen.",
+        displayName = "Webhook URL"
+      },
+      defaultValue = ""
+    },
+    time = {
+      type = "String",
+      metadata = {
+        description = "Daily Scheduled shutdown time. i.e. 2300 = 11:00 PM",
+        displayName = "Scheduled Shutdown Time"
+      },
+      defaultValue = "0000"
+    },
+    timeZoneId = {
+      type = "String",
+      metadata = {
+        description = "The time zone ID (e.g. Pacific Standard time).",
+        displayName = "Time zone"
+      },
+      defaultValue = "UTC"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      equals = "Microsoft.Compute/virtualMachines",
+      field  = "type"
+    },
+    then = {
+      details = {
+        deployment = {
+          properties = {
+            mode = "incremental",
+            parameters = {
+              EnableNotification = {
+                value = "[parameters('EnableNotification')]"
+              },
+              NotificationEmailRecipient = {
+                value = "[parameters('NotificationEmailRecipient')]"
+              },
+              NotificationWebhookUrl = {
+                value = "[parameters('NotificationWebhookUrl')]"
+              },
+              location = {
+                value = "[field('location')]"
+              },
+              time = {
+                value = "[parameters('time')]"
+              },
+              timeZoneId = {
+                value = "[parameters('timeZoneId')]"
+              },
+              vmName = {
+                value = "[field('name')]"
+              },
+              vmResourceId = {
+                value = "[field('id')]"
+              }
+            },
+            template = {
+              "$schema" = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+              contentVersion = "1.0.0.0",
+              outputs = {},
+              parameters = {
+                EnableNotification = {
+                  type = "string",
+                  defaultValue = "",
+                  metadata = {
+                    description = "If notifications are enabled for this schedule (i.e. Enabled, Disabled)."
+                  }
+                },
+                NotificationEmailRecipient = {
+                  type = "string",
+                  defaultValue = "",
+                  metadata = {
+                    description = "Email address to be used for notification"
+                  }
+                },
+                NotificationWebhookUrl = {
+                  type = "string",
+                  defaultValue = "",
+                  metadata = {
+                    description = "A notification will be posted to the specified webhook endpoint when the auto-shutdown is about to happen."
+                  }
+                },
+                location = {
+                  type = "string"
+                },
+                time = {
+                  type = "string",
+                  defaultValue = "",
+                  metadata = {
+                    description = "Daily Scheduled shutdown time. i.e. 2300 = 11:00 PM"
+                  }
+                },
+                timeZoneId = {
+                  type = "string",
+                  defaultValue = "",
+                  metadata = {
+                    description = "The time zone ID (e.g. Pacific Standard time)."
+                  }
+                },
+                vmName = {
+                  type = "string"
+                },
+                vmResourceId = {
+                  type = "string"
+                }
+              },
+              resources = [
+                {
+                  apiVersion = "2018-09-15",
+                  location   = "[parameters('location')]",
+                  name       = "[concat('shutdown-computevm-',parameters('vmName'))]",
+                  type       = "Microsoft.DevTestLab/schedules",
+                  properties = {
+                    dailyRecurrence = {
+                      time = "[parameters('time')]"
+                    },
+                    notificationSettings = {
+                      emailRecipient = "[parameters('NotificationEmailRecipient')]",
+                      notificationLocale = "en",
+                      status = "[parameters('EnableNotification')]",
+                      timeInMinutes = 30,
+                      webhookUrl = "[parameters('NotificationWebhookUrl')]"
+                    },
+                    status = "Enabled",
+                    targetResourceId = "[parameters('vmResourceId')]",
+                    taskType = "ComputeVmShutdownTask",
+                    timeZoneId = "[parameters('timeZoneId')]"
+                  }
+                }
+              ],
+              variables = {}
+            }
+          }
+        },
+        existenceCondition = {
+          allOf = [
+            {
+              equals = "ComputeVmShutdownTask",
+              field  = "Microsoft.DevTestLab/schedules/taskType"
+            },
+            {
+              equals = "[field('id')]",
+              field  = "Microsoft.DevTestLab/schedules/targetResourceId"
+            }
+          ]
+        },
+        roleDefinitionIds = [
+          "/providers/microsoft.authorization/roleDefinitions/9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+        ],
+        type = "Microsoft.DevTestLab/schedules"
+      },
+      effect = "DeployIfNotExists"
+    }
+  })
+}
+#corp-Enable soft delete for blobs
+resource "azurerm_policy_definition" "enable_soft_delete_for_blobs" {
+  name                = "Deploy-Storage-Blob-SoftDelete"
+  display_name        = "Enable soft delete for blobs on storage accounts"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensures that soft delete is enabled for blobs on all storage accounts."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Storage"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type        = "String"
+      allowedValues = ["DeployIfNotExists", "Disabled"]
+      defaultValue = "DeployIfNotExists"
+      metadata = {
+        description = "Enable or disable the execution of the policy"
+        displayName = "Effect"
+      }
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      field = "type"
+      equals = "Microsoft.Storage/storageAccounts"
+    }
+    then = {
+      effect = "[parameters('effect')]"
+      details = {
+        type = "Microsoft.Storage/storageAccounts/blobServices"
+        name = "default"
+        existenceCondition = {
+          field = "Microsoft.Storage/storageAccounts/blobServices/deleteRetentionPolicy.enabled"
+          equals = true
+        }
+        deployment = {
+          properties = {
+            mode = "incremental"
+            template = {
+              "$schema" = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#"
+              contentVersion = "1.0.0.0"
+              resources = [
+                {
+                  type = "Microsoft.Storage/storageAccounts/blobServices"
+                  apiVersion = "2021-04-01"
+                  name = "[concat(parameters('storageAccountName'), '/default')]"
+                  properties = {
+                    deleteRetentionPolicy = {
+                      enabled = true
+                      days    = 7
+                    }
+                  }
+                }
+              ]
+              parameters = {
+                storageAccountName = {
+                  type = "string"
+                }
+              }
+            }
+            parameters = {
+              storageAccountName = {
+                value = "[field('name')]"
+              }
+            }
+          }
+        }
+      }
+    }
+  })
+}
+#corp-Enable soft delete for containers
+resource "azurerm_policy_definition" "enable_soft_delete_for_containers" {
+  name                = "Deploy-Storage-Container-SoftDelete"
+  display_name        = "Enable soft delete for containers on storage accounts"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensures that soft delete is enabled for containers on all storage accounts."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Storage"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type          = "String"
+      allowedValues = ["DeployIfNotExists", "Disabled"]
+      defaultValue  = "DeployIfNotExists"
+      metadata = {
+        description = "Enable or disable the execution of the policy"
+        displayName = "Effect"
+      }
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      field  = "type"
+      equals = "Microsoft.Storage/storageAccounts"
+    }
+    then = {
+      effect = "[parameters('effect')]"
+      details = {
+        type = "Microsoft.Storage/storageAccounts/blobServices"
+        name = "default"
+        existenceCondition = {
+          field  = "Microsoft.Storage/storageAccounts/blobServices/containerDeleteRetentionPolicy.enabled"
+          equals = true
+        }
+        deployment = {
+          properties = {
+            mode = "incremental"
+            template = {
+              "$schema"      = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#"
+              contentVersion = "1.0.0.0"
+              resources = [
+                {
+                  type       = "Microsoft.Storage/storageAccounts/blobServices"
+                  apiVersion = "2021-04-01"
+                  name       = "[concat(parameters('storageAccountName'), '/default')]"
+                  properties = {
+                    containerDeleteRetentionPolicy = {
+                      enabled = true
+                      days    = 7
+                    }
+                  }
+                }
+              ]
+              parameters = {
+                storageAccountName = {
+                  type = "string"
+                }
+              }
+            }
+            parameters = {
+              storageAccountName = {
+                value = "[field('name')]"
+              }
+            }
+          }
+        }
+      }
+    }
+  })
+}
+#corp-Enable soft delete for file shares
+resource "azurerm_policy_definition" "enable_soft_delete_for_file_shares" {
+  name                = "Deploy-Storage-File-SoftDelete"
+  display_name        = "Enable soft delete for file shares on storage accounts"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensures that soft delete is enabled for file shares on all storage accounts."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Storage"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type          = "String",
+      allowedValues = ["DeployIfNotExists", "Disabled"],
+      defaultValue  = "DeployIfNotExists",
+      metadata = {
+        description = "Enable or disable the execution of the policy",
+        displayName = "Effect"
+      }
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      field  = "type",
+      equals = "Microsoft.Storage/storageAccounts"
+    },
+    then = {
+      effect = "[parameters('effect')]",
+      details = {
+        type = "Microsoft.Storage/storageAccounts/fileServices",
+        name = "default",
+        existenceCondition = {
+          field  = "Microsoft.Storage/storageAccounts/fileServices/shareDeleteRetentionPolicy.enabled",
+          equals = true
+        },
+        deployment = {
+          properties = {
+            mode = "incremental",
+            template = {
+              "$schema"      = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+              contentVersion = "1.0.0.0",
+              resources = [
+                {
+                  type       = "Microsoft.Storage/storageAccounts/fileServices",
+                  apiVersion = "2021-04-01",
+                  name       = "[concat(parameters('storageAccountName'), '/default')]",
+                  properties = {
+                    shareDeleteRetentionPolicy = {
+                      enabled = true,
+                      days    = 7
+                    }
+                  }
+                }
+              ],
+              parameters = {
+                storageAccountName = {
+                  type = "string"
+                }
+              }
+            },
+            parameters = {
+              storageAccountName = {
+                value = "[field('name')]"
+              }
+            }
+          }
+        }
+      }
+    }
+  })
+}
+#corp-Enforce specific configuration of Network Security Groups (NSG)
+resource "azurerm_policy_definition" "modify_nsg" {
+  name                = "Modify-NSG"
+  display_name        = "Enforce specific configuration of Network Security Groups (NSG)"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy enforces the configuration of Network Security Groups (NSG)."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category = "Network",
+    source   = "https://github.com/Azure/Enterprise-Scale/",
+    version  = "1.0.0"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "Enable or disable the execution of the policy",
+        displayName = "Effect"
+      },
+      allowedValues = [
+        "Modify",
+        "Disabled"
+      ],
+      defaultValue = "Modify"
+    },
+    nsgRuleAccess = {
+      type = "String",
+      allowedValues = [
+        "Allow",
+        "Deny"
+      ],
+      defaultValue = "Deny"
+    },
+    nsgRuleDescription = {
+      type = "String",
+      defaultValue = "Deny any outbound traffic to the Internet"
+    },
+    nsgRuleDestinationAddressPrefix = {
+      type = "String",
+      defaultValue = "Internet"
+    },
+    nsgRuleDestinationPortRange = {
+      type = "String",
+      defaultValue = "*"
+    },
+    nsgRuleDirection = {
+      type = "String",
+      allowedValues = [
+        "Inbound",
+        "Outbound"
+      ],
+      defaultValue = "Outbound"
+    },
+    nsgRuleName = {
+      type = "String",
+      defaultValue = "DenyAnyInternetOutbound"
+    },
+    nsgRulePriority = {
+      type = "Integer",
+      defaultValue = 1000
+    },
+    nsgRuleProtocol = {
+      type = "String",
+      defaultValue = "*"
+    },
+    nsgRuleSourceAddressPrefix = {
+      type = "String",
+      defaultValue = "*"
+    },
+    nsgRuleSourcePortRange = {
+      type = "String",
+      defaultValue = "*"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "equals" = "Microsoft.Network/networkSecurityGroups",
+          "field"  = "type"
+        },
+        {
+          "count" = {
+            "field" = "Microsoft.Network/networkSecurityGroups/securityRules[*]"
+          },
+          "equals" = 0
+        }
+      ]
+    },
+    "then" = {
+      "details" = {
+        "conflictEffect" = "audit",
+        "operations" = [
+          {
+            "field"     = "Microsoft.Network/networkSecurityGroups/securityRules[*]",
+            "operation" = "add",
+            "value" = {
+              "name" = "[parameters('nsgRuleName')]",
+              "properties" = {
+                "access"                  = "[parameters('nsgRuleAccess')]",
+                "description"             = "[parameters('nsgRuleDescription')]",
+                "destinationAddressPrefix"= "[parameters('nsgRuleDestinationAddressPrefix')]",
+                "destinationPortRange"    = "[parameters('nsgRuleDestinationPortRange')]",
+                "direction"               = "[parameters('nsgRuleDirection')]",
+                "priority"                = "[parameters('nsgRulePriority')]",
+                "protocol"                = "[parameters('nsgRuleProtocol')]",
+                "sourceAddressPrefix"     = "[parameters('nsgRuleSourceAddressPrefix')]",
+                "sourcePortRange"         = "[parameters('nsgRuleSourcePortRange')]"
+              }
+            }
+          }
+        ],
+        "roleDefinitionIds" = [
+          "/providers/microsoft.authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+        ]
+      },
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Ensure a Managed Identity is used for interactions with other Azure services
+resource "azurerm_policy_definition" "managed_identity_used_for_azure_services" {
+  name                = "Managed-Identity-Used-For-Azure-Services"
+  display_name        = "Ensure a Managed Identity is used for interactions with other Azure services"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "This policy ensures that resources like Virtual Machines, Container Instances, and App Services use Managed Identities for accessing other Azure resources."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "anyOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Web/sites"
+        },
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Compute/virtualMachines"
+        },
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.ContainerInstance/containerGroups"
+        },
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.ManagedIdentity/userAssignedIdentities"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "auditIfNotExists",
+      "details" = {
+        "type" = "Microsoft.ManagedIdentity/userAssignedIdentities",
+        "existenceCondition" = {
+          "field" = "identity.type",
+          "in" = [
+            "SystemAssigned",
+            "UserAssigned",
+            "SystemAssigned, UserAssigned"
+          ]
+        }
+      }
+    }
+  })
+}
+#corp-Ensure an Azure Bastion Host Exists
+resource "azurerm_policy_definition" "azure_bastion_host_exists" {
+  name                = "Azure-Bastion-Host-Exists"
+  display_name        = "Ensure an Azure Bastion Host Exists"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Manual control: Ensure an Azure Bastion Host exists in the virtual network. This policy is for documentation and compliance tracking only."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Network"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "field"  = "type",
+      "equals" = "Microsoft.Network/virtualNetworks"
+    },
+    "then" = {
+      "effect" = "Manual"
+    }
+  })
+}
+#corp-Ensure Application Insights are Configured
+resource "azurerm_policy_definition" "app_insights_configured" {
+  name                = "App-Insights-Configured"
+  display_name        = "Ensure Application Insights are Configured"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "This policy audits Azure App Services that do not have Application Insights or any diagnostic extension configured. It ensures that telemetry collection is enabled."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Monitoring"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Web/sites"
+        },
+        {
+          "anyOf" = [
+            {
+              "field"     = "Microsoft.Web/sites/siteConfig.appSettings[*].name",
+              "notEquals" = "APPINSIGHTS_INSTRUMENTATIONKEY"
+            },
+            {
+              "field"     = "Microsoft.Web/sites/siteConfig.appSettings[*].name",
+              "notEquals" = "APPLICATIONINSIGHTS_CONNECTION_STRING"
+            }
+          ]
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "audit"
+    }
+  })
+}
+#corp-Ensure Azure Key Vaults are Used to Store Secrets
+resource "azurerm_policy_definition" "key_vaults_used_to_store_secrets" {
+  name                = "Key-Vaults-Used-To-Store-Secrets"
+  display_name        = "Ensure Azure Key Vaults are Used to Store Secrets"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Audits resources to ensure that secrets are stored in Azure Key Vault and not in other less secure locations."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Security"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      field = "type",
+      in = [
+        "Microsoft.Web/sites",
+        "Microsoft.Compute/virtualMachines",
+        "Microsoft.Sql/servers",
+        "Microsoft.Storage/storageAccounts"
+      ]
+    },
+    then = {
+      effect = "auditIfNotExists",
+      details = {
+        type = "Microsoft.KeyVault/vaults",
+        existenceCondition = {
+          field  = "Microsoft.Web/sites/hostNameSslStates[*].sslState",
+          exists = "true"
+        }
+      }
+    }
+  })
+}
+#corp-Ensure Azure Resource Manager Delete locks are applied to Azure Storage Accounts
+resource "azurerm_policy_definition" "arm_delete_locks_storage_accounts" {
+  name                = "ARM-Delete-Locks-Storage-Accounts"
+  display_name        = "Ensure Azure Resource Manager Delete locks are applied to Azure Storage Accounts"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure Azure Resource Manager Delete locks are applied to Azure Storage Accounts"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Storage"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Audit"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Storage/storageAccounts"
+        },
+        {
+          field     = "Microsoft.Storage/storageAccounts/sku.name",
+          notEquals = "Premium"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Ensure Azure Resource Manager ReadOnly locks are considered for Storage Accounts
+resource "azurerm_policy_definition" "readonly_locks_storage_accounts" {
+  name                = "ReadOnly-Locks-Storage-Accounts"
+  display_name        = "Ensure Azure Resource Manager ReadOnly locks are considered for Azure Storage Accounts"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure Azure Resource Manager ReadOnly locks are considered for Azure Storage Accounts"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Storage"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Audit"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Storage/storageAccounts"
+        },
+        {
+          "field"     = "Microsoft.Storage/storageAccounts/sku.name",
+          "notEquals" = "Premium"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Ensure fewer than 5 users have global administrator assignment
+resource "azurerm_policy_definition" "fewer_than_5_global_admins" {
+  name                = "Fewer-Than-5-Global-Admins"
+  display_name        = "Ensure fewer than 5 users have global administrator assignment"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure fewer than 5 users have global administrator assignments."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "field"  = "Microsoft.Authorization/roleAssignments/roleDefinitionId",
+      "equals" = "/providers/Microsoft.Authorization/roleDefinitions/{globalAdminRoleId}"
+    },
+    "then" = {
+      "effect" = "audit"
+    }
+  })
+}
+#corp-Ensure locked immutability policies are used for containers storing business critical blob data
+resource "azurerm_policy_definition" "locked_immutability_policy_blob" {
+  name                = "Locked-Immutability-Policy-Blob"
+  display_name        = "Ensure locked immutability policies are used for containers storing business-critical blob data"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure locked immutability policies are used for containers storing business-critical blob data"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Storage"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Audit"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Storage/storageAccounts"
+        },
+        {
+          field     = "Microsoft.Storage/storageAccounts/immutableStorageWithVersioning.enabled",
+          notEquals = "true"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Ensure 'Microsoft Entra Authentication' is 'Enabled'
+resource "azurerm_policy_definition" "entra_authentication_enabled"  {
+  name                = "Entra-Authentication-Enabled"
+  display_name        = "Ensure 'Microsoft Entra Authentication' is 'Enabled'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure 'Microsoft Entra Authentication' is 'Enabled'"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Security"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Audit"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Cache/Redis"
+        },
+        {
+          "field"  = "Microsoft.Cache/Redis/sslPort",
+          "exists" = "false"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Ensure Multi factor Authentication is Required for Risky Sign ins
+resource "azurerm_policy_definition" "mfa_required_risky_signins" {
+  name                = "MFA-Required-Risky-Signins"
+  display_name        = "Ensure Multi-factor Authentication is Required for Risky Sign-ins"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy audits to ensure Multi-factor Authentication is required for risky sign-ins (Manual)."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Authorization/policyAssignments"
+        },
+        {
+          "field"  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          "equals" = "/providers/Microsoft.Authorization/policyDefinitions/signInRisk"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "Audit"
+    }
+  })
+}
+#corp-Ensure Multi factor Authentication is Required to access Microsoft Admin Portals
+resource "azurerm_policy_definition" "mfa_required_admin_portals" {
+  name                = "MFA-Required-Admin-Portals"
+  display_name        = "Ensure Multi-factor Authentication is Required to access Microsoft Admin Portals"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy audits if MFA is required for admin portals."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Authorization/policyAssignments"
+        },
+        {
+          "field"  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          "equals" = "/providers/Microsoft.Authorization/policyDefinitions/RequireMFAForAdmins"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "Audit"
+    }
+  })
+}
+#corp-Ensure only MFA enabled identities can access privileged Virtual Machine
+resource "azurerm_policy_definition" "mfa_enabled_identities_vm_access" {
+  name                = "MFA-Enabled-Identities-VM-Access"
+  display_name        = "Ensure only MFA enabled identities can access privileged Virtual Machine"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy audits role assignments made to user principals. It is recommended that these identities have MFA enforced via Conditional Access."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Identity & Access"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Authorization/roleAssignments"
+        },
+        {
+          "field"  = "Microsoft.Authorization/roleAssignments/principalType",
+          "equals" = "User"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "audit"
+    }
+  })
+}
+#corp-Ensure Security Defaults is enabled on Microsoft Entra ID
+resource "azurerm_policy_definition" "security_defaults_enabled" {
+  name                = "Security-Defaults-Enabled"
+  display_name        = "Ensure Security Defaults is enabled on Microsoft Entra ID"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy ensures that Security Defaults are enabled on Microsoft Entra ID."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Security"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Authorization/policyAssignments"
+        },
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "/providers/Microsoft.Authorization/policyDefinitions/securityDefaults"
+        },
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "Disabled"
+        }
+      ]
+    },
+    then = {
+      effect = "audit"
+    }
+  })
+}
+#corp-Ensure server parameter 'audit log enabled' is set to 'ON' for MySQL DB
+resource "azurerm_policy_definition" "audit_log_enabled_mysql" {
+  name                = "Audit-Log-Enabled-MySQL"
+  display_name        = "Ensure server parameter 'audit_log_enabled' is set to 'ON' for MySQL Database Server"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy ensures that the server parameter 'audit_log_enabled' is set to 'ON' for MySQL Database Servers to capture auditing data."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Database"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Audit"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.DBforMySQL/servers"
+        },
+        {
+          "field"     = "Microsoft.DBforMySQL/servers/sku.name",
+          "notEquals" = "GeneralPurpose"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Ensure server parameter 'audit log events' has 'CONNECTION' set for MySQL flexible server
+resource "azurerm_policy_definition" "audit_log_events_connection_mysql" {
+  name                = "Audit-Log-Events-Connection-MySQL"
+  display_name        = "Ensure server parameter 'audit_log_events' has 'CONNECTION' set for MySQL flexible server"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure server parameter 'audit_log_events' has 'CONNECTION' set for MySQL flexible server"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Database"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Audit"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.DBforMySQL/flexibleServers"
+        },
+        {
+          field  = "Microsoft.DBforMySQL/flexibleServers/sslEnforcement",
+          equals = "Disabled"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Ensure server parameter 'logfiles.retention days' is greater than 3 days for PostgreSQL flexible server
+resource "azurerm_policy_definition" "logfiles_retention_days_postgresql" {
+  name                = "Logfiles-Retention-Days-PostgreSQL"
+  display_name        = "Ensure server parameter 'logfiles.retention_days' is greater than 3 days for PostgreSQL flexible server"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Manual control: Ensure server parameter 'logfiles.retention_days' is greater than 3 days for PostgreSQL flexible server. No Azure Policy alias currently exists for this setting, so this policy is for documentation and compliance tracking only."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "PostgreSQL"
+  })
+
+  parameters = jsonencode({})
+
+  # No valid Azure Policy alias exists for this setting, so the policy rule only audits existence for documentation.
+  policy_rule = jsonencode({
+    if = {
+      field  = "type",
+      equals = "Microsoft.DBforPostgreSQL/flexibleServers"
+    },
+    then = {
+      effect = "Manual"
+    }
+  })
+}
+#corp-Ensure server parameter 'require secure transport' is set to 'ON' for MySQL flexible server
+resource "azurerm_policy_definition" "require_secure_transport_mysql" {
+  name                = "Require-Secure-Transport-MySQL"
+  display_name        = "Ensure server parameter 'require_secure_transport' is set to 'ON' for MySQL flexible server"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Manual control: Ensure 'require_secure_transport' is set to 'ON' for MySQL flexible servers. No Azure Policy alias currently exists for this setting, so this policy is for documentation and compliance tracking only."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Database"
+  })
+
+  parameters = jsonencode({})
+
+  # No valid Azure Policy alias exists for this setting, so the policy rule only audits existence for documentation.
+  policy_rule = jsonencode({
+    if = {
+      field  = "type",
+      equals = "Microsoft.DBforMySQL/flexibleServers"
+    },
+    then = {
+      effect = "Manual"
+    }
+  })
+}
+#corp-Ensure server parameter 'tls version' is set to 'TLSv1.2' (or higher) for MySQL flexible server
+resource "azurerm_policy_definition" "tls_version_mysql_flexible_server" {
+  name                = "TLS-Version-MySQL-Flexible-Server"
+  display_name        = "Ensure server parameter 'tls_version' is set to 'TLSv1.2' (or higher) for MySQL flexible server"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Enforces that the 'tls_version' parameter is set to 'TLSv1.2' or higher to ensure secure communication with the MySQL Flexible Server."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Security"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      field  = "type",
+      equals = "Microsoft.DBforMySQL/flexibleServers"
+    },
+    then = {
+      effect = "deployIfNotExists",
+      details = {
+        type = "Microsoft.DBforMySQL/flexibleServers/configurations",
+        name = "tls_version",
+        roleDefinitionIds = [
+          "/providers/Microsoft.Authorization/roleDefinitions/8a1b3204-d7f0-4a3c-9f9e-8c118f51a92c"
+        ],
+        deployment = {
+          properties = {
+            mode = "incremental",
+            template = {
+              "$schema" = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+              contentVersion = "1.0.0.0",
+              parameters = {
+                serverName = {
+                  type = "string"
+                },
+                location = {
+                  type = "string"
+                }
+              },
+              resources = [
+                {
+                  type = "Microsoft.DBforMySQL/flexibleServers/configurations",
+                  apiVersion = "2021-05-01",
+                  name = "[concat(parameters('serverName'), '/tls_version')]",
+                  location = "[parameters('location')]",
+                  properties = {
+                    value = "TLSv1.2",
+                    source = "user-override"
+                  }
+                }
+              ]
+            },
+            parameters = {
+              serverName = {
+                value = "[field('name')]"
+              },
+              location = {
+                value = "[field('location')]"
+              }
+            }
+          }
+        }
+      }
+    }
+  })
+}
+#corp-Ensure 'SMB channel encryption' is set to 'AES 256 GCM' or higher for SMB file shares
+resource "azurerm_policy_definition" "smb_channel_encryption_aes256gcm" {
+  name                = "SMB-Channel-Encryption-AES256GCM"
+  display_name        = "Ensure 'SMB channel encryption' is set to 'AES-256-GCM' or higher for SMB file shares"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Audit file services that do not use AES-256-GCM for SMB channel encryption."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Storage"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Storage/storageAccounts/fileServices"
+        },
+        {
+          "field"     = "Microsoft.Storage/storageAccounts/fileServices/protocolSettings.smb.channelEncryption",
+          "notEquals" = "AES-256-GCM"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "audit"
+    }
+  })
+}
+#corp-Ensure Soft Delete is Enabled for Azure Containers and Blob Storage
+resource "azurerm_policy_definition" "soft_delete_enabled_blob_storage" {
+  name                = "Soft-Delete-Enabled-Blob-Storage"
+  display_name        = "Ensure Soft Delete is Enabled for Azure Containers and Blob Storage"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Audits blob services under storage accounts that do not have soft delete enabled or configured properly."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.3",
+    category = "Storage"
+  })
+
+  parameters = jsonencode({
+    minimumRetentionDays = {
+      type = "Integer",
+      metadata = {
+        displayName = "Minimum Retention Days",
+        description = "Minimum number of days for soft delete retention",
+        strongType = "Integer"
+      },
+      defaultValue = 7
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      anyOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Storage/storageAccounts/blobServices"
+        }
+      ]
+    },
+    then = {
+      effect = "auditIfNotExists",
+      details = {
+        type = "Microsoft.Storage/storageAccounts/blobServices",
+        existenceCondition = {
+          anyOf = [
+            {
+              field     = "Microsoft.Storage/storageAccounts/blobServices/deleteRetentionPolicy.enabled",
+              notEquals = true
+            },
+            {
+              allOf = [
+                {
+                  field  = "Microsoft.Storage/storageAccounts/blobServices/deleteRetentionPolicy.enabled",
+                  equals = true
+                },
+                {
+                  field = "Microsoft.Storage/storageAccounts/blobServices/deleteRetentionPolicy.days",
+                  less  = "[parameters('minimumRetentionDays')]"
+                }
+              ]
+            },
+            {
+              field     = "Microsoft.Storage/storageAccounts/blobServices/containerDeleteRetentionPolicy.enabled",
+              notEquals = true
+            },
+            {
+              allOf = [
+                {
+                  field  = "Microsoft.Storage/storageAccounts/blobServices/containerDeleteRetentionPolicy.enabled",
+                  equals = true
+                },
+                {
+                  field = "Microsoft.Storage/storageAccounts/blobServices/containerDeleteRetentionPolicy.days",
+                  less  = "[parameters('minimumRetentionDays')]"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  })
+}
+#corp-Ensure that a Custom Bad Password List is set to 'Enforce' for your Organization
+resource "azurerm_policy_definition" "custom_bad_password_list_enforce" {
+  name                = "Custom-Bad-Password-List-Enforce"
+  display_name        = "Ensure that a Custom Bad Password List is set to 'Enforce' for your Organization"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy audits if the custom bad password list is not set to 'Enforce' in Microsoft Entra password protection settings. Manual remediation is required."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Authorization/policyAssignments"
+        },
+        {
+          "field"  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          "equals" = "/providers/Microsoft.Authorization/policyDefinitions/customBadPasswordListEnforcementState"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "Audit"
+    }
+  })
+}
+#corp-Ensure that a 'Diagnostic Setting' exists for Subscription Activity Logs
+resource "azurerm_policy_definition" "diagnostic_setting_subscription_activity_logs" {
+  name                = "Diagnostic-Setting-Subscription-Activity-Logs"
+  display_name        = "Ensure that a 'Diagnostic Setting' exists for Subscription Activity Logs"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Audits subscriptions that do not have a diagnostic setting configured to export Activity Logs to Log Analytics, Event Hub, or Storage Account."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Monitoring"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "field"  = "type",
+      "equals" = "Microsoft.Resources/subscriptions"
+    },
+    "then" = {
+      "effect" = "auditIfNotExists",
+      "details" = {
+        "type" = "Microsoft.Insights/diagnosticSettings",
+        "existenceCondition" = {
+          "anyOf" = [
+            {
+              "field"  = "Microsoft.Insights/diagnosticSettings/logs.enabled",
+              "equals" = true
+            },
+            {
+              "field"  = "Microsoft.Insights/diagnosticSettings/metrics.enabled",
+              "equals" = true
+            }
+          ]
+        }
+      }
+    }
+  })
+}
+#corp-Ensure that A Multi factor Authentication Policy Exists for Administrative Groups
+resource "azurerm_policy_definition" "mfa_policy_admin_groups" {
+  name                = "MFA-Policy-Admin-Groups"
+  display_name        = "Ensure that A Multi-factor Authentication Policy Exists for Administrative Groups"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensures that MFA is enabled for all administrative groups."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Authorization/roleAssignments"
+        },
+        {
+          "field" = "Microsoft.Authorization/roleAssignments/roleDefinitionId",
+          "in" = [
+            "/providers/Microsoft.Authorization/roleDefinitions/{roleId1}",
+            "/providers/Microsoft.Authorization/roleDefinitions/{roleId2}"
+          ]
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "audit"
+    }
+  })
+}
+#corp-Ensure that account 'Lockout duration in seconds' is greater than or equal to '60'
+resource "azurerm_policy_definition" "account_lockout_duration_seconds" {
+  name                = "Account-Lockout-Duration-Seconds"
+  display_name        = "Ensure that account 'Lockout duration in seconds' is greater than or equal to '60'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy audits to ensure that account 'Lockout duration in seconds' is greater than or equal to '60' (Manual)."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Authorization/policyAssignments"
+        },
+        {
+          "field" = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          "less"  = 60
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "Audit"
+    }
+  })
+}
+#corp-Ensure that account 'Lockout Threshold' is less than or equal to '10'
+resource "azurerm_policy_definition" "account_lockout_threshold" {
+  name                = "Account-Lockout-Threshold"
+  display_name        = "Ensure that account 'Lockout Threshold' is less than or equal to '10'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy audits to ensure that account 'Lockout Threshold' is less than or equal to '10' (Manual)."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Authorization/policyAssignments"
+        },
+        {
+          "field" = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          "lessOrEquals" = 10
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "Audit"
+    }
+  })
+}
+# corp-Ensure that 'Agentless scanning for machines' component status is set to 'On'
+resource "azurerm_policy_definition" "agentless_scanning_for_machines" {
+  name                = "Agentless-Scanning-For-Machines"
+  display_name        = "Ensure that 'Agentless scanning for machines' component status is set to 'On'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure that 'Agentless scanning for machines' component status is set to 'On'"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Security"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Audit"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Security/assessments"
+        },
+        {
+          field  = "Microsoft.Security/assessments/status.code",
+          equals = "Enabled"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Ensure That 'All users with the following roles' is set to 'Owner'
+resource "azurerm_policy_definition" "all_users_roles_set_to_owner" {
+  name                = "All-Users-Roles-Set-To-Owner"
+  display_name        = "Ensure That 'All users with the following roles' is set to 'Owner'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure That 'All users with the following roles' is set to 'Owner'"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Security"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Audit"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Authorization/roleAssignments"
+        },
+        {
+          "field"  = "Microsoft.Authorization/roleAssignments/roleDefinitionId",
+          "equals" = "/subscriptions/{subscription-id}/providers/Microsoft.Authorization/roleDefinitions/{owner-role-definition-id}"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+# corp-Ensure that 'Enable Data Access Authentication Mode' is 'Checked'
+resource "azurerm_policy_definition" "enable_data_access_auth_mode" {
+  name                = "Enable-Data-Access-Authentication-Mode"
+  display_name        = "Ensure that 'Enable Data Access Authentication Mode' is 'Checked'"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "This policy audits Azure Key Vaults that are not using the RBAC permission model. It helps ensure access control is managed via Azure RBAC instead of access policies."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Key Vault"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      field  = "type",
+      equals = "Microsoft.KeyVault/vaults"
+    },
+    then = {
+      effect = "auditIfNotExists",
+      details = {
+        type = "Microsoft.KeyVault/vaults",
+        existenceCondition = {
+          field  = "Microsoft.KeyVault/vaults/enableRbacAuthorization",
+          equals = true
+        }
+      }
+    }
+  })
+}
+# corp-Ensure that 'Enable key rotation reminders' is enabled for each Storage Account
+resource "azurerm_policy_definition" "enable_key_rotation_reminders" {
+  name                = "Enable-Key-Rotation-Reminders"
+  display_name        = "Ensure that 'Enable key rotation reminders' is enabled for each Storage Account"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "This policy ensures that 'Enable key rotation reminders' is enabled for all Storage Accounts."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Storage"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Storage/storageAccounts"
+        },
+        {
+          field     = "Microsoft.Storage/storageAccounts/keyPolicy.keyExpirationPeriodInDays",
+          notEquals = 90
+        }
+      ]
+    },
+    then = {
+      effect = "audit"
+    }
+  })
+}
+#corp-Ensure that 'Endpoint protection' component status is set to On'
+resource "azurerm_policy_definition" "endpoint_protection_component_on" {
+  name                = "Endpoint-Protection-Component-On"
+  display_name        = "Ensure that 'Endpoint protection' component status is set to 'On'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure that 'Endpoint protection' component status is set to 'On'"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Security"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Audit"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Security/assessments"
+        },
+        {
+          field  = "Microsoft.Security/assessments/status.code",
+          equals = "Enabled"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Ensure that 'File Integrity Monitoring' component status is set to 'On'
+resource "azurerm_policy_definition" "file_integrity_monitoring_on" {
+  name                = "File-Integrity-Monitoring-On"
+  display_name        = "Ensure that 'File Integrity Monitoring' component status is set to 'On'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure that 'File Integrity Monitoring' component status is set to 'On'"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Security"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Audit"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Security/assessments"
+        },
+        {
+          field  = "Microsoft.Security/assessments/status.code",
+          equals = "Enabled"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Ensure that HTTP(S) access from the Internet is evaluated and restricted
+resource "azurerm_policy_definition" "http_https_access_from_internet_restricted" {
+  name                = "HTTP-HTTPS-Access-From-Internet-Restricted"
+  display_name        = "Ensure that HTTP(S) access from the Internet is evaluated and restricted"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy audits NSG rules that allow inbound HTTP or HTTPS (TCP ports 80 or 443) traffic from the Internet."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Network"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Network/networkSecurityGroups/securityRules"
+        },
+        {
+          "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/access",
+          "equals" = "Allow"
+        },
+        {
+          "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/direction",
+          "equals" = "Inbound"
+        },
+        {
+          "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/protocol",
+          "equals" = "Tcp"
+        },
+        {
+          "field" = "Microsoft.Network/networkSecurityGroups/securityRules/sourceAddressPrefix",
+          "in"    = ["*", "Internet"]
+        },
+        {
+          "anyOf" = [
+            {
+              "field" = "Microsoft.Network/networkSecurityGroups/securityRules/destinationPortRange",
+              "in"    = ["80", "443"]
+            },
+            {
+              "field" = "Microsoft.Network/networkSecurityGroups/securityRules/destinationPortRanges[*]",
+              "contains" = "80"
+            },
+            {
+              "field" = "Microsoft.Network/networkSecurityGroups/securityRules/destinationPortRanges[*]",
+              "contains" = "443"
+            }
+          ]
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "audit"
+    }
+  })
+}
+#corp-Ensure that logging for Azure AppService 'HTTP logs' is enabled
+resource "azurerm_policy_definition" "http_logs_enabled_appservice" {
+  name                = "HTTP-Logs-Enabled-AppService"
+  display_name        = "Ensure that logging for Azure AppService 'HTTP logs' is enabled"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Audits App Services where HTTP Logging (web server logging) is not enabled. This ensures access logs are available for diagnostics and compliance."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "App Service"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Web/sites"
+        },
+        {
+          "field"     = "Microsoft.Web/sites/siteConfig.httpLoggingEnabled",
+          "notEquals" = true
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "audit"
+    }
+  })
+}
+#corp-Ensure that Microsoft Cloud Security Benchmark policies are not set to 'Disabled'
+resource "azurerm_policy_definition" "cloud_security_benchmark_not_disabled" {
+  name                = "Cloud-Security-Benchmark-Not-Disabled"
+  display_name        = "Ensure that Microsoft Cloud Security Benchmark policies are not set to 'Disabled'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure that Microsoft Cloud Security Benchmark policies are not set to 'Disabled'"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Security"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Audit"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Security/assessments"
+        },
+        {
+          "field"  = "Microsoft.Security/assessments/status.code",
+          "equals" = "Disabled"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Ensure that Microsoft Defender External Attack Surface Monitoring is enabled
+resource "azurerm_policy_definition" "defender_easm_enabled" {
+  name                = "Defender-EASM-Enabled"
+  display_name        = "Ensure that Microsoft Defender External Attack Surface Monitoring (EASM) is enabled"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure that Microsoft Defender External Attack Surface Monitoring (EASM) is enabled"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Security"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Audit"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Security/assessments"
+        },
+        {
+          field  = "Microsoft.Security/assessments/status.code",
+          equals = "Enabled"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Ensure that Microsoft Defender for Cloud Apps integration with Microsoft Defender for Cloud is Selected
+resource "azurerm_policy_definition" "defender_cloud_apps_integration" {
+  name                = "Defender-Cloud-Apps-Integration"
+  display_name        = "Ensure that Microsoft Defender for Cloud Apps integration with Microsoft Defender for Cloud is Selected"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensures Microsoft Defender for Cloud Apps integration with Microsoft Defender for Cloud is enabled (CIS Microsoft Azure Foundations Benchmark v3.0.0 3.1.1.2)"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Security Center"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        displayName = "Effect",
+        description = "Enable or disable the execution of the policy"
+      },
+      allowedValues = [
+        "DeployIfNotExists",
+        "AuditIfNotExists",
+        "Disabled"
+      ],
+      defaultValue = "DeployIfNotExists"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Security/settings"
+        },
+        {
+          field  = "name",
+          equals = "MCAS"
+        },
+        {
+          field     = "Microsoft.Security/settings/DataExportSettings.enabled",
+          notEquals = "true"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]",
+      details = {
+        type = "Microsoft.Security/settings",
+        existenceCondition = {
+          field  = "Microsoft.Security/settings/DataExportSettings.enabled",
+          equals = "true"
+        },
+        deployment = {
+          properties = {
+            mode = "incremental",
+            template = {
+              "$schema" = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+              contentVersion = "1.0.0.0",
+              resources = [
+                {
+                  type       = "Microsoft.Security/settings",
+                  apiVersion = "2022-01-01-preview",
+                  name       = "MCAS",
+                  properties = {
+                    enabled     = true,
+                    settingKind = "DataExportSettings"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  })
+}
+#corp-Ensure That Microsoft Defender for IoT Hub Is Set To 'On'
+resource "azurerm_policy_definition" "defender_iot_hub_on" {
+  name                = "Defender-IoT-Hub-On"
+  display_name        = "Ensure That Microsoft Defender for IoT Hub Is Set To 'On'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensures Microsoft Defender for IoT Hub is enabled as per CIS Azure Foundations Benchmark v3.0.0"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Security Center"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        displayName = "Effect",
+        description = "Enable or disable policy execution"
+      },
+      allowedValues = [
+        "DeployIfNotExists",
+        "AuditIfNotExists",
+        "Disabled"
+      ],
+      defaultValue = "DeployIfNotExists"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Security/pricings"
+        },
+        {
+          field  = "name",
+          equals = "IoT"
+        },
+        {
+          field     = "Microsoft.Security/pricings/pricingTier",
+          notEquals = "Standard"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]",
+      details = {
+        type = "Microsoft.Security/pricings",
+        existenceCondition = {
+          allOf = [
+            {
+              field  = "Microsoft.Security/pricings/pricingTier",
+              equals = "Standard"
+            }
+          ]
+        },
+        roleDefinitionIds = [
+          "/providers/Microsoft.Authorization/roleDefinitions/fb1c8493-542b-48eb-b624-b4c8fea62acd"
+        ],
+        deployment = {
+          properties = {
+            mode = "incremental",
+            template = {
+              "$schema" = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+              contentVersion = "1.0.0.0",
+              resources = [
+                {
+                  type = "Microsoft.Security/pricings",
+                  apiVersion = "2023-01-01",
+                  name = "IoT",
+                  properties = {
+                    pricingTier = "Standard"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  })
+}
+#corp-Ensure That 'Notify all admins when other admins reset their password' is set to 'Yes'
+resource "azurerm_policy_definition" "notify_admins_on_password_reset" {
+  name                = "Notify-Admins-On-Password-Reset"
+  display_name        = "Ensure That 'Notify all admins when other admins reset their password?' is set to 'Yes'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy ensures that the setting 'Notify all admins when other admins reset their password' is enabled."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "/providers/Microsoft.Authorization/policyDefinitions/notifyAdminsOnPasswordReset"
+        },
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "No"
+        }
+      ]
+    },
+    then = {
+      effect = "Audit"
+    }
+  })
+}
+#corp-Ensure that 'Notify users on password resets' is set to 'Yes'
+resource "azurerm_policy_definition" "notify_users_on_password_resets" {
+  name                = "Notify-Users-On-Password-Resets"
+  display_name        = "Ensure that 'Notify users on password resets?' is set to 'Yes'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy ensures that users are notified on password resets."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "/providers/Microsoft.Authorization/policyDefinitions/notifyOnPasswordReset"
+        },
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "No"
+        }
+      ]
+    },
+    then = {
+      effect = "Audit"
+    }
+  })
+}
+#corp-Ensure that Number of days before users are asked to re confirm their authentication information is not set to 0
+resource "azurerm_policy_definition" "number_of_days_reconfirm_auth" {
+  name                = "Number-Of-Days-Reconfirm-Auth"
+  display_name        = "Ensure that Number of days before users are asked to re-confirm their authentication information is not set to 0"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy ensures that the number of days before users are asked to re-confirm their authentication information is not set to 0."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Authorization/policyAssignments"
+        },
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "/providers/Microsoft.Authorization/policyDefinitions/numberOfDays"
+        },
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = 0
+        }
+      ]
+    },
+    then = {
+      effect = "Audit"
+    }
+  })
+}
+# corp-Ensure That 'Number of methods required to reset' is set to '2'
+resource "azurerm_policy_definition" "number_of_methods_required_to_reset" {
+  name                = "Number-Of-Methods-Required-To-Reset"
+  display_name        = "Ensure That 'Number of methods required to reset' is set to '2'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Manual control: Ensure that the number of methods required to reset is set to 2 for enhanced security. This policy is for documentation and tracking only, as there is no Azure Policy alias for this setting."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  # No valid Azure Policy alias exists for this setting, so the policy rule only audits existence for documentation.
+  policy_rule = jsonencode({
+    if = {
+      field  = "type",
+      equals = "Microsoft.Resources/subscriptions"
+    },
+    then = {
+      effect = "Manual"
+    }
+  })
+}
+# corp-Ensure that Public IP addresses are Evaluated on a Periodic Basis
+resource "azurerm_policy_definition" "public_ip_addresses_periodic_evaluation" {
+  name                = "Public-IP-Addresses-Periodic-Evaluation"
+  display_name        = "Ensure that Public IP addresses are Evaluated on a Periodic Basis"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Audits all Public IP Addresses that are missing a required tag (e.g., 'reviewDate') to support periodic review of public exposure."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Network"
+  })
+
+  parameters = jsonencode({
+    tagName = {
+      type = "String",
+      metadata = {
+        description = "The name of the tag used for periodic review tracking (e.g., reviewDate or owner).",
+        displayName = "Required Tag Name"
+      },
+      defaultValue = "reviewDate"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Network/publicIPAddresses"
+        },
+        {
+          "field"  = "[concat('tags[', parameters('tagName'), ']')]",
+          "exists" = "false"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "audit"
+    }
+  })
+}
+#corp-Ensure that Register with Azure Active Directory is enabled on App Service
+resource "azurerm_policy_definition" "register_with_aad_enabled_app_service" {
+  name                = "Register-With-AAD-Enabled-App-Service"
+  display_name        = "Ensure that Register with Azure Active Directory is enabled on App Service"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "This policy audits deployments of App Services that do not contain an authSettings block, which is required to register with Azure AD."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "App Service"
+  })
+
+  parameters = jsonencode({
+    authConfiguredDeploymentNamePattern = {
+      type = "String",
+      metadata = {
+        description = "Pattern for deployment names that include auth settings (e.g., AAD)",
+        displayName = "Auth-Configured Deployment Name Pattern"
+      },
+      defaultValue = "auth*"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Resources/deployments"
+        },
+        {
+          "field"    = "name",
+          "notLike"  = "[parameters('authConfiguredDeploymentNamePattern')]"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "audit"
+    }
+  })
+}
+# corp-Ensure that Resource Locks are set for Mission Critical Azure Resources
+resource "azurerm_policy_definition" "resource_locks_mission_critical" {
+  name                = "Resource-Locks-Mission-Critical"
+  display_name        = "Ensure that Resource Locks are set for Mission-Critical Azure Resources"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Audits resources that are not tagged as mission-critical. Used to manually cross-check with resource locks."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "CIS",
+    version  = "1.0.0"
+  })
+
+  parameters = jsonencode({
+    tagName = {
+      type = "String",
+      metadata = {
+        displayName = "Tag Name",
+        description = "Name of the tag to identify critical resources"
+      },
+      defaultValue = "critical"
+    },
+    tagValue = {
+      type = "String",
+      metadata = {
+        displayName = "Tag Value",
+        description = "Value of the tag to identify critical resources"
+      },
+      defaultValue = "true"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"     = "[concat('tags[', parameters('tagName'), ']')]",
+          "notEquals" = "[parameters('tagValue')]"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "audit"
+    }
+  })
+}
+#corp-Ensure That 'Restrict access to Microsoft Entra admin center' is Set to 'Yes'
+resource "azurerm_policy_definition" "restrict_access_entra_admin_center" {
+  name                = "Restrict-Access-Entra-Admin-Center"
+  display_name        = "Ensure That 'Restrict access to Microsoft Entra admin center' is Set to 'Yes'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy audits if access to the Microsoft Entra admin center is not restricted. Manual remediation is required."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Security"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Authorization/policyAssignments"
+        },
+        {
+          "field"  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          "equals" = "/providers/Microsoft.Authorization/policyDefinitions/adminCenterAccess"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "Audit"
+    }
+  })
+}
+#corp-Ensure that 'Restrict user ability to access groups features in the Access Pane' is Set to 'Yes'
+resource "azurerm_policy_definition" "restrict_access_groups_features_access_pane" {
+  name                = "Restrict-Access-Groups-Features-Access-Pane"
+  display_name        = "Ensure that 'Restrict user ability to access groups features in the Access Pane' is Set to 'Yes'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy audits if user ability to access groups features in the Access Pane is not restricted. Manual remediation is required."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Authorization/policyAssignments"
+        },
+        {
+          "field"  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          "equals" = "/providers/Microsoft.Authorization/policyDefinitions/effect"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "Audit"
+    }
+  })
+}
+#corp-Ensure that Shared Access Signature Tokens Expire Within an Hour
+resource "azurerm_policy_definition" "sas_tokens_expire_within_hour" {
+  name                = "SAS-Tokens-Expire-Within-Hour"
+  display_name        = "Ensure that Shared Access Signature Tokens Expire Within an Hour"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy reminds users to set Shared Access Signature tokens to expire within one hour. Due to platform limitations, this must be enforced through manual review or custom automation."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Storage"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      field  = "type",
+      equals = "Microsoft.Storage/storageAccounts"
+    },
+    then = {
+      effect = "auditIfNotExists",
+      details = {
+        type = "Microsoft.Insights/activityLogAlerts",
+        existenceCondition = {
+          allOf = [
+            {
+              field  = "Microsoft.Insights/activityLogAlerts/condition.allOf[*].field",
+              equals = "operationName"
+            },
+            {
+              field  = "Microsoft.Insights/activityLogAlerts/condition.allOf[*].equals",
+              equals = "Microsoft.Storage/storageAccounts/ListAccountSas/action"
+            }
+          ]
+        }
+      }
+    }
+  })
+}
+#corp-Ensure that Storage Account Access Keys are Periodically Regenerated
+resource "azurerm_policy_definition" "storage_account_access_keys_regenerated" {
+  name                = "Storage-Account-Access-Keys-Regenerated"
+  display_name        = "Ensure that Storage Account Access Keys are Periodically Regenerated"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Audit Storage Accounts that do not have key expiration policy set. Enforcing key expiration helps ensure keys are regenerated periodically."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Storage"
+  })
+
+  parameters = jsonencode({
+    keyExpirationDays = {
+      type = "Integer",
+      metadata = {
+        displayName = "Maximum Key Age (Days)",
+        description = "Maximum number of days access keys are allowed before they should be regenerated."
+      },
+      defaultValue = 90
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Storage/storageAccounts"
+        },
+        {
+          field     = "Microsoft.Storage/storageAccounts/keyPolicy.keyExpirationPeriodInDays",
+          notEquals = "[parameters('keyExpirationDays')]"
+        }
+      ]
+    },
+    then = {
+      effect = "audit"
+    }
+  })
+}
+#corp-Ensure that 'System Assigned Managed Identity' is set to 'On'
+resource "azurerm_policy_definition" "system_assigned_managed_identity_on" {
+  name                = "System-Assigned-Managed-Identity-On"
+  display_name        = "Ensure that 'System Assigned Managed Identity' is set to 'On'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure that 'System Assigned Managed Identity' is set to 'On'"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Audit"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Cache/Redis"
+        },
+        {
+          "field"     = "Microsoft.Cache/Redis/sku.name",
+          "notEquals" = "Premium"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+#corp-Ensure that UDP access from the Internet is evaluated and restricted
+resource "azurerm_policy_definition" "udp_access_from_internet_restricted" {
+  name                = "UDP-Access-From-Internet-Restricted"
+  display_name        = "Ensure that UDP access from the Internet is evaluated and restricted"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy audits NSG rules that allow inbound UDP traffic from the Internet. UDP should be restricted unless explicitly required."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Network"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Network/networkSecurityGroups/securityRules"
+        },
+        {
+          "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/access",
+          "equals" = "Allow"
+        },
+        {
+          "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/direction",
+          "equals" = "Inbound"
+        },
+        {
+          "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/protocol",
+          "equals" = "Udp"
+        },
+        {
+          "anyOf" = [
+            {
+              "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/sourceAddressPrefix",
+              "equals" = "*"
+            },
+            {
+              "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/sourceAddressPrefix",
+              "equals" = "Internet"
+            }
+          ]
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "audit"
+    }
+  })
+}
+#corp-Ensure that 'Vulnerability assessment for machines' component status is set to 'On'
+resource "azurerm_policy_definition" "vulnerability_assessment_for_machines" {
+  name                = "Vulnerability-Assessment-For-Machines"
+  display_name        = "Ensure that 'Vulnerability assessment for machines' component status is set to 'On'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure that 'Vulnerability assessment for machines' component status is set to 'On'"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Security"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Audit"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Security/assessments"
+        },
+        {
+          field     = "Microsoft.Security/assessments/status",
+          notEquals = "On"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#corp-SQL managed instances deploy a specific min TLS version requirement
+resource "azurerm_policy_definition" "sql_managed_instance_min_tls" {
+  name                = "Deploy-SqlMi-minTLS"
+  display_name        = "SQL managed instances deploy a specific min TLS version requirement."
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Deploy a specific min TLS version requirement and enforce SSL on SQL managed instances. Enables secure server to client by enforcing minimal TLS Version to secure the connection between your database server and your client applications. This configuration enforces that SSL is always enabled for accessing your database server."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category = "SQL",
+    source   = "https://github.com/Azure/Enterprise-Scale/",
+    version  = "1.3.0"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "Enable or disable the execution of the policy minimum TLS version SQL servers",
+        displayName = "Effect SQL servers"
+      },
+      allowedValues = [
+        "DeployIfNotExists",
+        "Disabled"
+      ],
+      defaultValue = "DeployIfNotExists"
+    },
+    minimalTlsVersion = {
+      type = "String",
+      metadata = {
+        description = "Select version minimum TLS version SQL servers to enforce",
+        displayName = "Select version for SQL server"
+      },
+      allowedValues = [
+        "1.2",
+        "1.1",
+        "1.0"
+      ],
+      defaultValue = "1.2"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "equals" = "Microsoft.Sql/managedInstances",
+          "field"  = "type"
+        },
+        {
+          "field" = "Microsoft.Sql/managedInstances/minimalTlsVersion",
+          "less"  = "[parameters('minimalTlsVersion')]"
+        }
+      ]
+    },
+    "then" = {
+      "details" = {
+        "deployment" = {
+          "properties" = {
+            "mode" = "Incremental",
+            "parameters" = {
+              "location" = {
+                "value" = "[field('location')]"
+              },
+              "minimalTlsVersion" = {
+                "value" = "[parameters('minimalTlsVersion')]"
+              },
+              "resourceName" = {
+                "value" = "[field('name')]"
+              }
+            },
+            "template" = {
+              "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+              "contentVersion" = "1.0.0.0",
+              "outputs" = {},
+              "parameters" = {
+                "location" = {
+                  "type" = "String"
+                },
+                "minimalTlsVersion" = {
+                  "type" = "String"
+                },
+                "resourceName" = {
+                  "type" = "String"
+                }
+              },
+              "resources" = [
+                {
+                  "apiVersion" = "2020-02-02-preview",
+                  "location"   = "[parameters('location')]",
+                  "name"       = "[concat(parameters('resourceName'))]",
+                  "properties" = {
+                    "minimalTlsVersion" = "[parameters('minimalTlsVersion')]"
+                  },
+                  "type" = "Microsoft.Sql/managedInstances"
+                }
+              ],
+              "variables" = {}
+            }
+          }
+        },
+        "evaluationDelay" = "AfterProvisioningSuccess",
+        "existenceCondition" = {
+          "allOf" = [
+            {
+              "equals" = "[parameters('minimalTlsVersion')]",
+              "field"  = "Microsoft.Sql/managedInstances/minimalTlsVersion"
+            }
+          ]
+        },
+        "roleDefinitionIds" = [
+          "/providers/microsoft.authorization/roleDefinitions/4939a1f6-9ae0-4e48-a1e0-f2cbe897382d"
+        ],
+        "type" = "Microsoft.Sql/managedInstances"
+      },
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+#corp-SQL servers deploys a specific min TLS version requirement
+resource "azurerm_policy_definition" "deploy_sql_min_tls" {
+  name                = "Deploy-SQL-minTLS"
+  display_name        = "SQL servers deploys a specific min TLS version requirement."
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Deploys a specific min TLS version requirement and enforce SSL on SQL servers. Enables secure server to client by enforcing minimal TLS Version to secure the connection between your database server and your client applications. This configuration enforces that SSL is always enabled for accessing your database server."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category   = "SQL",
+    source     = "https://github.com/Azure/Enterprise-Scale/",
+    version    = "1.2.0",
+    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
+    createdOn  = "2025-06-06T12:21:10.8028366Z",
+    updatedBy  = null,
+    updatedOn  = null
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "Enable or disable the execution of the policy minimum TLS version SQL servers",
+        displayName = "Effect SQL servers"
+      },
+      allowedValues = [
+        "DeployIfNotExists",
+        "Disabled"
+      ],
+      defaultValue = "DeployIfNotExists"
+    },
+    minimalTlsVersion = {
+      type = "String",
+      metadata = {
+        description = "Select version minimum TLS version SQL servers to enforce",
+        displayName = "Select version for SQL server"
+      },
+      allowedValues = [
+        "1.2",
+        "1.1",
+        "1.0"
+      ],
+      defaultValue = "1.2"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          equals = "Microsoft.Sql/servers",
+          field  = "type"
+        },
+        {
+          field = "Microsoft.Sql/servers/minimalTlsVersion",
+          notEquals = "[parameters('minimalTlsVersion')]"
+        }
+      ]
+    },
+    then = {
+      details = {
+        deployment = {
+          properties = {
+            mode = "Incremental",
+            parameters = {
+              location = {
+                value = "[field('location')]"
+              },
+              minimalTlsVersion = {
+                value = "[parameters('minimalTlsVersion')]"
+              },
+              resourceName = {
+                value = "[field('name')]"
+              }
+            },
+            template = {
+              "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+              contentVersion = "1.0.0.0",
+              outputs = {},
+              parameters = {
+                location = {
+                  type = "String"
+                },
+                minimalTlsVersion = {
+                  type = "String"
+                },
+                resourceName = {
+                  type = "String"
+                }
+              },
+              resources = [
+                {
+                  apiVersion = "2019-06-01-preview",
+                  location   = "[parameters('location')]",
+                  name       = "[parameters('resourceName')]",
+                  properties = {
+                    minimalTlsVersion = "[parameters('minimalTlsVersion')]"
+                  },
+                  type = "Microsoft.Sql/servers"
+                }
+              ],
+              variables = {}
+            }
+          }
+        },
+        existenceCondition = {
+          allOf = [
+            {
+              equals = "[parameters('minimalTlsVersion')]",
+              field  = "Microsoft.Sql/servers/minimalTlsVersion"
+            }
+          ]
+        },
+        name = "current",
+        roleDefinitionIds = [
+          "/providers/microsoft.authorization/roleDefinitions/6d8ee4ec-f05a-4a1d-8b00-a9b17e38b437"
+        ],
+        type = "Microsoft.Sql/servers"
+      },
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#prod-Additional Parameters-Do not allow deletion of specified resource and resource type
+resource "azurerm_policy_definition" "denyaction_delete_resources" {
+  name                = "DenyAction-DeleteResources"
+  display_name        = "Do not allow deletion of specified resource and resource type"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy enables you to specify the resource and resource type that your organization can protect from accidentals deletion by blocking delete calls using the deny action effect."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category   = "General",
+    source     = "https://github.com/Azure/Enterprise-Scale/",
+    version    = "1.0.0",
+    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
+    createdOn  = "2025-06-06T12:21:29.9000301Z",
+    updatedBy  = null,
+    updatedOn  = null
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "Enable or disable the execution of the policy",
+        displayName = "Effect"
+      },
+      allowedValues = [
+        "DenyAction",
+        "Disabled"
+      ],
+      defaultValue = "DenyAction"
+    },
+    resourceName = {
+      type = "String",
+      metadata = {
+        description = "Provide the name of the resource that you want to protect from accidental deletion.",
+        displayName = "Resource Name"
+      }
+    },
+    resourceType = {
+      type = "String",
+      metadata = {
+        description = "Provide the resource type that you want to protect from accidental deletion.",
+        displayName = "Resource Type"
+      }
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          equals = "[parameters('resourceType')]",
+          field  = "type"
+        },
+        {
+          field = "name",
+          like  = "[parameters('resourceName')]"
+        }
+      ]
+    },
+    then = {
+      details = {
+        actionNames = [
+          "delete"
+        ]
+      },
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#prod-Additional Parameters-Prod-Encryption for storage services should be enforced for Storage Accounts
+resource "azurerm_policy_definition" "enforce_storage_encryption" {
+  name                = "Enforce-Storage-Encryption"
+  display_name        = "Encryption for storage services should be enforced for Storage Accounts"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy enables you to specify the resource and resource type that your organization can protect from accidental deletion by blocking delete calls using the deny action effect."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+  
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category  = "General",
+    source    = "https://github.com/Azure/Enterprise-Scale/",
+    version   = "1.0.0"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "Enable or disable the execution of the policy",
+        displayName = "Effect"
+      },
+      allowedValues = [
+        "DenyAction",
+        "Disabled"
+      ],
+      defaultValue = "DenyAction"
+    },
+    resourceName = {
+      type = "String",
+      metadata = {
+        description = "Provide the name of the resource that you want to protect from accidental deletion.",
+        displayName = "Resource Name"
+      }
+    },
+    resourceType = {
+      type = "String",
+      metadata = {
+        description = "Provide the resource type that you want to protect from accidental deletion.",
+        displayName = "Resource Type"
+      }
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "equals" = "[parameters('resourceType')]",
+          "field"  = "type"
+        },
+        {
+          "field" = "name",
+          "like"  = "[parameters('resourceName')]"
+        }
+      ]
+    },
+    "then" = {
+      "details" = {
+        "actionNames" = [
+          "delete"
+        ]
+      },
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+#prod-Deny enabling anonymous access on individual storage containers
+resource "azurerm_policy_definition" "deny_storage_account_public_access" {
+  name                = "Deny-Storage-Container-Anonymous-Access"
+  display_name        = "Deny enabling public access on storage accounts"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Prevents enabling public (anonymous) access on Azure Storage accounts."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Storage"
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Storage/storageAccounts"
+        },
+        {
+          field  = "Microsoft.Storage/storageAccounts/allowBlobPublicAccess",
+          equals = true
+        }
+      ]
+    }
+    then = {
+      effect = "deny"
+    }
+  })
+}
+#prod-Deny public network access to Key Vault
+resource "azurerm_policy_definition" "deny_key_vault_public_access" {
+  name                = "Deny-KeyVault-Public-Network-Access"
+  display_name        = "Deny public network access to Key Vault"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensures that public network access to Azure Key Vault is disabled."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Key Vault"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type          = "String",
+      allowedValues = ["Deny", "Disabled"],
+      defaultValue  = "Deny",
+      metadata = {
+        description = "Enable or disable the execution of the policy",
+        displayName = "Effect"
+      }
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.KeyVault/vaults"
+        },
+        {
+          field  = "Microsoft.KeyVault/vaults/publicNetworkAccess",
+          notEquals = "Disabled"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#prod-DenyAction implementation on Activity Logs
+resource "azurerm_policy_definition" "denyaction_activity_logs" {
+  name                = "DenyAction-ActivityLogs"
+  display_name        = "DenyAction implementation on Activity Logs"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "This is a DenyAction implementation policy on Activity Logs."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category   = "Monitoring",
+    deprecated = false,
+    source     = "https://github.com/Azure/Enterprise-Scale/",
+    version    = "1.0.0",
+    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
+    createdOn  = "2025-06-06T12:21:03.19153Z",
+    updatedBy  = null,
+    updatedOn  = null
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      equals = "Microsoft.Resources/subscriptions/providers/diagnosticSettings",
+      field  = "type"
+    },
+    then = {
+      details = {
+        actionNames = [
+          "delete"
+        ]
+      },
+      effect = "denyAction"
+    }
+  })
+}
+#prod-DenyAction implementation on Diagnostic Logs
+resource "azurerm_policy_definition" "denyaction_diagnostic_logs" {
+  name                = "DenyAction-DiagnosticLogs"
+  display_name        = "DenyAction implementation on Diagnostic Logs."
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "DenyAction implementation on Diagnostic Logs."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category   = "Monitoring",
+    deprecated = false,
+    source     = "https://github.com/Azure/Enterprise-Scale/",
+    version    = "1.0.0",
+    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
+    createdOn  = "2025-06-06T12:21:04.2778154Z",
+    updatedBy  = null,
+    updatedOn  = null
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      equals = "Microsoft.Insights/diagnosticSettings",
+      field  = "type"
+    },
+    then = {
+      details = {
+        actionNames = [
+          "delete"
+        ]
+      },
+      effect = "denyAction"
+    }
+  })
+}
+#prod-Enforce Azure DDoS Network Protection while creating vNets
+resource "azurerm_policy_definition" "enforce_ddos_protection_on_vnet" {
+  name                = "enforce-ddos-protection-on-vnet"
+  display_name        = "Enforce Azure DDoS Network Protection on Virtual Networks"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy ensures that every Virtual Network has Azure DDoS Network Protection enabled."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Network"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        displayName = "Effect",
+        description = "Enable or disable the execution of the policy"
+      },
+      allowedValues = [
+        "Deny",
+        "Audit",
+        "Disabled"
+      ],
+      defaultValue = "Deny"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Network/virtualNetworks"
+        },
+        {
+          "field"     = "Microsoft.Network/virtualNetworks/ddosProtectionPlan.id",
+          "exists"    = "false"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+#prod-Enforce Virtual Network Encryption while creating vNets
+resource "azurerm_policy_definition" "force_vnet_encryption" {
+  name                = "Force-Virtual-Network-Encryption"
+  display_name        = "Enforce Virtual Network Encryption"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy ensures that encryption is enabled on all Virtual Networks."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Network"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        displayName = "Effect",
+        description = "Enable or disable the execution of the policy"
+      },
+      allowedValues = [
+        "Deny",
+        "Audit",
+        "Disabled"
+      ],
+      defaultValue = "Deny"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Network/virtualNetworks"
+        },
+        {
+          "field"     = "Microsoft.Network/virtualNetworks/encryption.enabled",
+          "notEquals" = "true"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+#prod-Ensure `User consent for applications` is set to `Do not allow user consent
+resource "azurerm_policy_definition" "deny_user_consent_for_applications" {
+  name                = "Deny-User-Consent-For-Applications"
+  display_name        = "Ensure `User consent for applications` is set to `Do not allow user consent`"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensures that user consent for applications is set to 'Do not allow user consent'."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Authorization/policyAssignments"
+        },
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "/providers/Microsoft.Authorization/policyDefinitions/userConsent"
+        },
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "Allow"
+        }
+      ]
+    },
+    then = {
+      effect = "Deny"
+    }
+  })
+}
+#prod-Ensure 'Cross Region Restore' is set to 'Enabled' on Recovery Services vaults
+resource "azurerm_policy_definition" "cross_region_restore_enabled" {
+  name                = "Cross-Region-Restore-Enabled"
+  display_name        = "Ensure 'Cross Region Restore' is set to 'Enabled' on Recovery Services vaults"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure 'Cross Region Restore' is set to 'Enabled' on Recovery Services vaults"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Backup"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Deny"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.RecoveryServices/vaults"
+        },
+        {
+          field     = "Microsoft.RecoveryServices/vaults/redundancySettings.crossRegionRestore",
+          notEquals = "Enabled"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#prod-Ensure Guest users access restrictions is set to 'Guest user access is restricted to own directory
+resource "azurerm_policy_definition" "deny_guest_user_access" {
+  name                = "Deny-Guest-User-Access"
+  display_name        = "Ensure That Guest users access restrictions is set to 'Guest user access is restricted to their own directory objects'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensures that guest user access is restricted to their own directory objects."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "Microsoft.Authorization/roleAssignments/principalType",
+          equals = "Guest"
+        },
+        {
+          field    = "Microsoft.Authorization/roleAssignments/roleDefinitionId",
+          notEquals = "/providers/Microsoft.Authorization/roleDefinitions/{roleDefinitionId}"
+        }
+      ]
+    },
+    then = {
+      effect = "deny"
+    }
+  })
+}
+#prod-Ensure MFA is Required for Windows Azure Service Management API
+resource "azurerm_policy_definition" "require_mfa_for_azure_management_api" {
+  name                = "Require-MFA-For-Azure-Management-API"
+  display_name        = "Ensure Multi-factor Authentication is Required for Windows Azure Service Management API"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy ensures that MFA is required for accessing the Azure Management API."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Security"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      field  = "type",
+      equals = "Microsoft.Management/managementGroups"
+    },
+    then = {
+      effect = "deny"
+    }
+  })
+}
+#prod-Ensure Private Virtual Networks are used for Container Instances
+resource "azurerm_policy_definition" "private_vnet_for_container_instances" {
+  name                = "Private-VNet-For-Container-Instances"
+  display_name        = "Ensure Private Virtual Networks are used for Container Instances"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy ensures that all container services like ACI or AKS are integrated with a private virtual network to enhance security and network isolation."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Network"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      anyOf = [
+        {
+          allOf = [
+            {
+              field  = "type",
+              equals = "Microsoft.ContainerInstance/containerGroups"
+            },
+            {
+              field     = "Microsoft.ContainerInstance/containerGroups/sku",
+              notEquals = "VirtualNetwork"
+            }
+          ]
+        },
+        {
+          allOf = [
+            {
+              field  = "type",
+              equals = "Microsoft.ContainerService/managedClusters"
+            },
+            {
+              field     = "Microsoft.ContainerService/managedClusters/networkProfile.networkPlugin",
+              notEquals = "azure"
+            }
+          ]
+        }
+      ]
+    },
+    then = {
+      effect = "deny"
+    }
+  })
+}
+#prod-Ensure Public Network Access is Disabled-Storage Account
+resource "azurerm_policy_definition" "public_network_access_disabled" {
+  name                = "Public-Network-Access-Disabled"
+  display_name        = "Ensure Public Network Access is Disabled"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Deny storage accounts if public network access is not disabled."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+ 
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "Security"
+  })
+ 
+  parameters = jsonencode({})
+ 
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Storage/storageAccounts"
+        },
+        {
+          field  = "Microsoft.Storage/storageAccounts/publicNetworkAccess",
+          notEquals = "Disabled"
+        }
+      ]
+    }
+    then = {
+      effect = "deny"
+    }
+  })  
+}
+#prod-Ensure public network access on Recovery Services vaults is Disabled
+resource "azurerm_policy_definition" "deny_public_network_access_recovery_vaults" {
+  name                = "Deny-Public-Network-Access-Recovery-Vaults"
+  display_name        = "Ensure public network access on Recovery Services vaults is Disabled"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure public network access on Recovery Services vaults is Disabled"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Backup"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Deny"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.RecoveryServices/vaults"
+        },
+        {
+          field  = "Microsoft.RecoveryServices/vaults/publicNetworkAccess",
+          equals = "Enabled"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#prod-Ensure 'SMB protocol version' is set to 'SMB 3.1.1' or higher for SMB file shares
+resource "azurerm_policy_definition" "smb_protocol_version_required" {
+  name                = "SMB-Protocol-Version-Required"
+  display_name        = "Ensure 'SMB protocol version' is set to 'SMB 3.1.1' or higher for SMB file shares"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure 'SMB protocol version' is set to 'SMB 3.1.1' or higher for SMB file shares"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Storage"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Deny"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Storage/storageAccounts"
+        },
+        {
+          field  = "Microsoft.Storage/storageAccounts/sku.name",
+          equals = "Standard_LRS"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#prod-Ensure soft delete for Azure File Shares is Enabled
+resource "azurerm_policy_definition" "soft_delete_azure_file_shares" {
+  name                = "Soft-Delete-Azure-File-Shares"
+  display_name        = "Ensure soft delete for Azure File Shares is Enabled"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure soft delete for Azure File Shares is Enabled"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Storage"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Deny"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Storage/storageAccounts/fileServices/shares"
+        },
+        {
+          field  = "Microsoft.Storage/storageAccounts/fileServices/shares/deleted",
+          equals = "true"
+        },
+        {
+          field  = "Microsoft.Storage/storageAccounts/fileServices/shares/remainingRetentionDays",
+          exists = "true"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#prod-Ensure That ‘Users Can Register Applications’ Is Set to ‘No’
+resource "azurerm_policy_definition" "deny_users_can_register_applications" {
+  name                = "Deny-Users-Can-Register-Applications"
+  display_name        = "Ensure That ‘Users Can Register Applications’ Is Set to ‘No’"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensures that 'Users Can Register Applications' is set to 'No'."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      field  = "Microsoft.Authorization/policyDefinitions/parameters",
+      equals = "UsersCanRegisterApplications"
+    },
+    then = {
+      effect = "deny"
+    }
+  })
+}
+#prod-Ensure that A Multi factor Authentication Policy Exists for All Users
+resource "azurerm_policy_definition" "mfa_policy_for_all_users" {
+  name                = "MFA-Policy-For-All-Users"
+  display_name        = "Ensure that A Multi-factor Authentication Policy Exists for All Users"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure that a Multi-factor Authentication Policy exists for all users."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Authorization/policyAssignments"
+        },
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "/providers/Microsoft.Authorization/policyDefinitions/mfa"
+        }
+      ]
+    },
+    then = {
+      effect = "Deny"
+    }
+  })
+}
+#prod-Ensure that 'Allow users to remember MFA on devices they trust' is Disabled
+resource "azurerm_policy_definition" "deny_remember_mfa_on_trusted_devices" {
+  name                = "Deny-Remember-MFA-On-Trusted-Devices"
+  display_name        = "Ensure that 'Allow users to remember multi-factor authentication on devices they trust' is Disabled"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy ensures that the option to allow users to remember multi-factor authentication on devices they trust is disabled."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Security"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      field  = "type",
+      equals = "Microsoft.AzureActiveDirectory/b2cPolicies"
+    },
+    then = {
+      effect = "deny"
+    }
+  })
+}
+#prod-Ensure that 'Minimum TLS version' is set to TLS v1.2
+resource "azurerm_policy_definition" "minimum_tls_version_redis" {
+  name                = "Minimum-TLS-Version-Redis"
+  display_name        = "Ensure that 'Minimum TLS version' is set to TLS v1.2 (or higher)-Redis"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure that 'Minimum TLS version' is set to TLS v1.2 (or higher)"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Security"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Deny"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Cache/Redis"
+        },
+        {
+          field  = "Microsoft.Cache/Redis/sslPort",
+          exists = "true"
+        },
+        {
+          field     = "Microsoft.Cache/Redis/minimumTlsVersion",
+          notEquals = "1.2"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#prod-Ensure that 'Owners can manage group membership requests in My Groups' is set to 'No'
+resource "azurerm_policy_definition" "deny_owners_manage_group_membership_requests" {
+  name                = "Deny-Owners-Manage-Group-Membership-Requests"
+  display_name        = "Ensure that 'Owners can manage group membership requests in My Groups' is set to 'No'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy ensures that 'Owners can manage group membership requests in My Groups' is set to 'No'."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "/providers/Microsoft.Authorization/policyDefinitions/ownersCanManageGroupMembershipRequests"
+        },
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "No"
+        }
+      ]
+    },
+    then = {
+      effect = "deny"
+    }
+  })
+}
+#prod-Ensure that 'Public Network Access' is 'Disabled'-Redis
+resource "azurerm_policy_definition" "public_network_access_disabled_redis" {
+  name                = "Public-Network-Access-Disabled-Redis"
+  display_name        = "Ensure that 'Public Network Access' is 'Disabled'-Redis"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure that 'Public Network Access' is 'Disabled'"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Security"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Deny"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Cache/Redis"
+        },
+        {
+          field  = "Microsoft.Cache/Redis/enableNonSslPort",
+          exists = "true"
+        },
+        {
+          field  = "Microsoft.Cache/Redis/enableNonSslPort",
+          equals = "true"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#prod-Ensure that 'Restrict non admin users from creating tenants' is set to 'Yes'
+resource "azurerm_policy_definition" "restrict_non_admin_tenant_creation" {
+  name                = "Restrict-Non-Admin-Tenant-Creation"
+  display_name        = "Ensure that 'Restrict non-admin users from creating tenants' is set to 'Yes'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure that only admin users can create tenants."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      field     = "Microsoft.Authorization/roleAssignments/roleDefinitionId",
+      notEquals = "/providers/Microsoft.Authorization/roleDefinitions/{roleIdForTenantCreator}"
+    },
+    then = {
+      effect = "deny"
+    }
+  })
+}
+#prod-Ensure that SKU BasicConsumption is not used on artifacts that need to be monitored
+resource "azurerm_policy_definition" "deny_basic_consumption_sku" {
+  name                = "Deny-Basic-Consumption-SKU"
+  display_name        = "Ensure that SKU Basic Consumption is not used on artifacts that need to be monitored"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "Prevents deployment of resources using 'Basic' or 'Consumption' SKUs to ensure high availability and monitoring capabilities."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "General"
+  })
+
+  parameters = jsonencode({
+    disallowedSkus = {
+      type = "Array",
+      metadata = {
+        description = "List of disallowed SKUs.",
+        displayName = "Disallowed SKUs"
+      },
+      defaultValue = [
+        "Basic",
+        "Consumption"
+      ]
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      anyOf = [
+        {
+          allOf = [
+            {
+              field  = "type",
+              equals = "Microsoft.Web/serverfarms"
+            },
+            {
+              field = "Microsoft.Web/serverfarms/sku.name",
+              in    = "[parameters('disallowedSkus')]"
+            }
+          ]
+        },
+        {
+          allOf = [
+            {
+              field  = "type",
+              equals = "Microsoft.ApiManagement/service"
+            },
+            {
+              field = "Microsoft.ApiManagement/service/sku.name",
+              in    = "[parameters('disallowedSkus')]"
+            }
+          ]
+        },
+        {
+          allOf = [
+            {
+              field  = "type",
+              equals = "Microsoft.Logic/workflows"
+            },
+            {
+              field  = "Microsoft.Logic/workflows/integrationServiceEnvironment.id",
+              exists = "false"
+            }
+          ]
+        }
+      ]
+    },
+    then = {
+      effect = "deny"
+    }
+  })
+}
+#prod-Ensure that soft delete for blobs on Azure Blob Storage storage accounts is Enabled
+resource "azurerm_policy_definition" "soft_delete_blobs_enabled" {
+  name                = "Soft-Delete-Blobs-Enabled"
+  display_name        = "Ensure that soft delete for blobs on Azure Blob Storage storage accounts is Enabled"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure that soft delete for blobs on Azure Blob Storage storage accounts is Enabled"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Storage"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Deny"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Storage/storageAccounts/blobServices"
+        },
+        {
+          field  = "Microsoft.Storage/storageAccounts/blobServices/deleteRetentionPolicy",
+          exists = "false"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#prod-Ensure That 'Subscription leaving and entering Entra tenant' Is Set To 'Permit no one'
+resource "azurerm_policy_definition" "restrict_subscription_movement" {
+  name                = "restrict_Subscription_Movement"
+  display_name        = "Ensure That 'Subscription leaving & entering Entra tenant' Is Set To 'Permit no one'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure that subscription movement in and out of the Microsoft Entra tenant is restricted."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Subscription Management"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Authorization/policyAssignments"
+        },
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "/providers/Microsoft.Authorization/policyDefinitions/allowSubscriptionMovement"
+        },
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "enbaled"
+        }
+      ]
+    },
+    then = {
+      effect = "deny"
+    }
+  })
+}
+#prod-Ensure that 'Users can create Microsoft 365 groups in Azure portals, API or PowerShell' is set to 'No'
+resource "azurerm_policy_definition" "deny_users_create_m365_groups" {
+  name                = "Deny-Users-Create-M365-Groups"
+  display_name        = "Ensure that 'Users can create Microsoft 365 groups in Azure portals, API or PowerShell' is set to 'No'"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure that users cannot create Microsoft 365 groups in Azure portals, API, or PowerShell."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Identity"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "/providers/Microsoft.Authorization/policyDefinitions/creation"
+        },
+        {
+          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
+          equals = "true"
+        }
+      ]
+    },
+    then = {
+      effect = "deny"
+    }
+  })
+}
+#prod-Ensure the web app has 'Client Certificates (Incoming client certificates)' set to 'On'
+resource "azurerm_policy_definition" "webapp_client_cert_required" {
+  name                = "WebApp-Client-Cert-Required"
+  display_name        = "Ensure the web app has 'Client Certificates (Incoming client certificates)' set to 'On'"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "This policy ensures that Web Apps require incoming client certificates for mutual TLS authentication."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    version  = "1.0.0",
+    category = "App Service"
+  })
+
+  parameters = jsonencode({})
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Web/sites"
+        },
+        {
+          field     = "Microsoft.Web/sites/clientCertEnabled",
+          notEquals = true
+        }
+      ]
+    },
+    then = {
+      effect = "deny"
+    }
+  })
+}
+#prod-Ensure 'Versioning' is set to 'Enabled' on Azure Blob Storage storage accounts
+resource "azurerm_policy_definition" "blob_versioning_enabled" {
+  name                = "Blob-Versioning-Enabled"
+  display_name        = "Ensure 'Versioning' is set to 'Enabled' on Azure Blob Storage storage accounts"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Ensure 'Versioning' is set to 'Enabled' on Azure Blob Storage storage accounts"
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    category = "Storage"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect of the policy."
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Deny"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type",
+          equals = "Microsoft.Storage/storageAccounts/blobServices"
+        },
+        {
+          field  = "Microsoft.Storage/storageAccounts/blobServices/isVersioningEnabled",
+          equals = "false"
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#prod-Storage Accounts with custom domains assigned should be denied
+resource "azurerm_policy_definition" "deny_storageaccount_customdomain" {
+  name                = "Deny-StorageAccount-CustomDomain"
+  display_name        = "Storage Accounts with custom domains assigned should be denied"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy denies the creation of Storage Accounts with custom domains assigned as communication cannot be encrypted, and always uses HTTP."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category   = "Storage",
+    source     = "https://github.com/Azure/Enterprise-Scale/",
+    version    = "1.0.0",
+    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
+    createdOn  = "2025-06-06T12:21:12.7438781Z",
+    updatedBy  = null,
+    updatedOn  = null
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect determines what happens when the policy rule is evaluated to match",
+        displayName = "Effect"
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Deny"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          equals = "Microsoft.Storage/storageAccounts",
+          field  = "type"
+        },
+        {
+          anyOf = [
+            {
+              exists = "true",
+              field  = "Microsoft.Storage/storageAccounts/customDomain"
+            },
+            {
+              equals = "true",
+              field  = "Microsoft.Storage/storageAccounts/customDomain.useSubDomainName"
+            }
+          ]
+        }
+      ]
+    },
+    then = {
+          effect = "[parameters('effect')]"
+        }
+      })
+    }
+#prod-Storage Accounts with SFTP enabled should be denied
+resource "azurerm_policy_definition" "deny_storage_sftp" {
+  name                = "Deny-Storage-SFTP"
+  display_name        = "Storage Accounts with SFTP enabled should be denied"
+  policy_type         = "Custom"
+  mode                = "Indexed"
+  description         = "This policy denies the creation of Storage Accounts with SFTP enabled for Blob Storage."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category  = "Storage",
+    source    = "https://github.com/Azure/Enterprise-Scale/",
+    version   = "1.0.0"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect determines what happens when the policy rule is evaluated to match",
+        displayName = "Effect"
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Deny"
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "allOf" = [
+        {
+          "field"  = "type",
+          "equals" = "Microsoft.Storage/storageAccounts"
+        },
+        {
+          "field"  = "Microsoft.Storage/storageAccounts/isSftpEnabled",
+          "equals" = "true"
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+#prod-Subnets should have a Network Security Group
+resource "azurerm_policy_definition" "deny_subnet_without_nsg" {
+  name                = "Deny-Subnet-Without-Nsg"
+  display_name        = "Subnets should have a Network Security Group (Manual)"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy denies the creation of a subnet without a Network Security Group. NSG help to protect traffic across subnet-level."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category   = "Network",
+    source     = "https://github.com/Azure/Enterprise-Scale/",
+    version    = "2.0.0",
+    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
+    createdOn  = "2025-06-06T12:21:07.3557624Z",
+    updatedBy  = null,
+    updatedOn  = null
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "Enable or disable the execution of the policy",
+        displayName = "Effect"
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Deny"
+    },
+    excludedSubnets = {
+      type = "Array",
+      metadata = {
+        description = "Array of subnet names that are excluded from this policy",
+        displayName = "Excluded Subnets"
+      },
+      defaultValue = [
+        "GatewaySubnet",
+        "AzureFirewallSubnet",
+        "AzureFirewallManagementSubnet"
+      ]
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      anyOf = [
+        {
+          allOf = [
+            {
+              equals = "Microsoft.Network/virtualNetworks",
+              field  = "type"
+            },
+            {
+              count = {
+                field = "Microsoft.Network/virtualNetworks/subnets[*]",
+                where = {
+                  allOf = [
+                    {
+                      exists = "false",
+                      field  = "Microsoft.Network/virtualNetworks/subnets[*].networkSecurityGroup.id"
+                    },
+                    {
+                      field = "Microsoft.Network/virtualNetworks/subnets[*].name",
+                      notIn = "[parameters('excludedSubnets')]"
+                    }
+                  ]
+                }
+              },
+              notEquals = 0
+            }
+          ]
+        },
+        {
+          allOf = [
+            {
+              equals = "Microsoft.Network/virtualNetworks/subnets",
+              field  = "type"
+            },
+            {
+              field = "name",
+              notIn = "[parameters('excludedSubnets')]"
+            },
+            {
+              exists = "false",
+              field  = "Microsoft.Network/virtualNetworks/subnets/networkSecurityGroup.id"
+            }
+          ]
+        }
+      ]
+    },
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
+}
+#prod-Subnets should have a User Defined Route
+resource "azurerm_policy_definition" "deny_subnet_without_udr" {
+  name                = "Deny-Subnet-Without-Udr"
+  display_name        = "Subnets should have a User Defined Route"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy denies the creation of a subnet without a User Defined Route (UDR)."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category   = "Network",
+    source     = "https://github.com/Azure/Enterprise-Scale/",
+    version    = "2.0.0",
+    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
+    createdOn  = "2025-06-06T12:20:59.2405589Z",
+    updatedBy  = null,
+    updatedOn  = null
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "Enable or disable the execution of the policy",
+        displayName = "Effect"
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Deny"
+    },
+    excludedSubnets = {
+      type = "Array",
+      metadata = {
+        description = "Array of subnet names that are excluded from this policy",
+        displayName = "Excluded Subnets"
+      },
+      defaultValue = [
+        "AzureBastionSubnet"
+      ]
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      anyOf = [
+        {
+          allOf = [
+            {
+              equals = "Microsoft.Network/virtualNetworks",
+              field  = "type"
+            },
+            {
+              count = {
+                field = "Microsoft.Network/virtualNetworks/subnets[*]",
+                where = {
+                  allOf = [
+                    {
+                      exists = "false",
+                      field  = "Microsoft.Network/virtualNetworks/subnets[*].routeTable.id"
+                    },
+                    {
+                      field = "Microsoft.Network/virtualNetworks/subnets[*].name",
+                      notIn = "[parameters('excludedSubnets')]"
+                    }
+                  ]
+                }
+              },
+              notEquals = 0
+            }
+          ]
+        },
+        {
+          allOf = [
+            {
+              equals = "Microsoft.Network/virtualNetworks/subnets",
+              field  = "type"
+            },
+            {
+              field = "name",
+              notIn = "[parameters('excludedSubnets')]"
+            },
+            {
+              exists = "false",
+              field  = "Microsoft.Network/virtualNetworks/subnets/routeTable.id"
+            }
+          ]
+        }
+      ]
+    },
+      then = {
+        effect = "[parameters('effect')]"
+      }
+    })
+  }
+#prod-User Defined Routes with 'Next Hop Type' set to 'Internet' or 'VirtualNet
+resource "azurerm_policy_definition" "deny_udr_with_specific_nexthop" {
+  name                = "Deny-UDR-With-Specific-NextHop"
+  display_name        = "User Defined Routes with 'Next Hop Type' set to 'Internet' or 'VirtualNetworkGateway' should be denied"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "This policy denies the creation of a User Defined Route with 'Next Hop Type' set to 'Internet' or 'VirtualNetworkGateway'."
+  management_group_id = azurerm_management_group.IMS_Root1.id
+
+  depends_on = [
+    azurerm_management_group.IMS_Root1
+  ]
+
+  metadata = jsonencode({
+    alzCloudEnvironments = [
+      "AzureCloud",
+      "AzureChinaCloud",
+      "AzureUSGovernment"
+    ],
+    category  = "Network",
+    source    = "https://github.com/Azure/Enterprise-Scale/",
+    version   = "1.0.0"
+  })
+
+  parameters = jsonencode({
+    effect = {
+      type = "String",
+      metadata = {
+        description = "The effect determines what happens when the policy rule is evaluated to match",
+        displayName = "Effect"
+      },
+      allowedValues = [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      defaultValue = "Deny"
+    },
+    excludedDestinations = {
+      type = "Array",
+      metadata = {
+        description = "Array of route destinations that are to be denied",
+        displayName = "Excluded Destinations"
+      },
+      defaultValue = [
+        "Internet",
+        "VirtualNetworkGateway"
+      ]
+    }
+  })
+
+  policy_rule = jsonencode({
+    "if" = {
+      "anyOf" = [
+        {
+          "allOf" = [
+            {
+              "equals" = "Microsoft.Network/routeTables",
+              "field"  = "type"
+            },
+            {
+              "count" = {
+                "field" = "Microsoft.Network/routeTables/routes[*]",
+                "where" = {
+                  "field" = "Microsoft.Network/routeTables/routes[*].nextHopType",
+                  "in"    = "[parameters('excludedDestinations')]"
+                }
+              },
+              "notEquals" = 0
+            }
+          ]
+        },
+        {
+          "allOf" = [
+            {
+              "equals" = "Microsoft.Network/routeTables/routes",
+              "field"  = "type"
+            },
+            {
+              "field" = "Microsoft.Network/routeTables/routes/nextHopType",
+              "in"    = "[parameters('excludedDestinations')]"
+            }
+          ]
+        }
+      ]
+    },
+    "then" = {
+      "effect" = "[parameters('effect')]"
+    }
+  })
+}
+#Initiative ims-builtin-corp-initiative-231
 # Create ims-builtin-corp-initiative with built-in definitions, assigned to IMS_Root MG
 locals {
   ims_builtin_corp_policy_ids = [
@@ -258,9 +8060,7 @@ resource "azurerm_policy_set_definition" "ims-builtin-corp-initiative" {
   }
 }
 
-# --- End of Initiative ims-builtin-corp-initiative-231.tf ---
-
-# --- Start of Initiative ims-builtin-prod-initiative-167-169.tf ---
+#Initiative ims-builtin-prod-initiative-167-169
 # Create ims-fsi-builtin-prod-deny-initiative with built-in definitions, assigned to IMS_Root MG
 locals {
   ims_builtin_prod_policy_ids = [
@@ -626,12 +8426,7 @@ resource "azurerm_policy_set_definition" "ims-builtin-prod-initiative" {
 
 # Default option for 35f9c03a-cc27-418e-9c0c-539ff999d010, 88c0b9da-ce96-4b03-9635-f29a937e2900, 83a86a26-fd1f-447c-b59d-e51f44264114 is "deny"
 
-
-
-
-# --- End of Initiative ims-builtin-prod-initiative-167-169.tf ---
-
-# --- Start of Initiative ims-builtin-prod-location-initiative 2-169.tf ---
+#Initiative ims-builtin-prod-location-initiative 2-169
 # Create ims-builtin-prod-location-initiative with built-in definitions, assigned to IMS_Root MG
 resource "azurerm_policy_set_definition" "ims-builtin-prod-location-initiative" {
   name                = "ims-builtin-prod-location-initiative"
@@ -665,12 +8460,7 @@ depends_on = [
    }
 }
 
-
-
-
-# --- End of Initiative ims-builtin-prod-location-initiative 2-169.tf ---
-
-# --- Start of Initiative ims-custom-corp-initiative-66-77.tf ---
+#Initiative ims-custom-corp-initiative-66-77
 # Create ims-custom-corp-initiative with custom definitions
 resource "azurerm_policy_set_definition" "ims-custom-corp-initiative" {
   name                = "ims-custom-corp-initiative"
@@ -1079,9 +8869,7 @@ policy_definition_reference {
     }
 */
 }
-# --- End of Initiative ims-custom-corp-initiative-66-77.tf ---
-
-# --- Start of Initiative ims-custom-prod-initiative-33-38.tf ---
+#Initiative ims-custom-prod-initiative-33-38
 # Create ims-custom-prod-initiative with custom definitions
 resource "azurerm_policy_set_definition" "ims-custom-prod-initiative" {
   name                = "ims-custom-prod-initiative"
@@ -1279,8085 +9067,3 @@ policy_definition_reference {
   }
   */
 }
-
-
-
-# --- End of Initiative ims-custom-prod-initiative-33-38.tf ---
-
-# --- Start of corp-Additional Parameters-Deploy Azure Firewall Manager policy in the subscription.tf ---
-resource "azurerm_policy_definition" "deploy_firewall_policy" {
-  name                = "Deploy-FirewallPolicy"
-  display_name        = "Deploy Azure Firewall Manager policy in the subscription"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Deploys Azure Firewall Manager policy in subscription where the policy is assigned."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category   = "Network",
-    source     = "https://github.com/Azure/Enterprise-Scale/",
-    version    = "1.0.0",
-    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
-    createdOn  = "2025-06-06T12:21:22.8627252Z",
-    updatedBy  = null,
-    updatedOn  = null
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String"
-      metadata = {
-        description = "Enable or disable the execution of the policy"
-        displayName = "Effect"
-      }
-      allowedValues = [
-        "DeployIfNotExists",
-        "Disabled"
-      ]
-      defaultValue = "DeployIfNotExists"
-    }
-    fwPolicyRegion = {
-      type = "String"
-      metadata = {
-        description = "Select Azure region for Azure Firewall Policy"
-        displayName = "fwPolicyRegion"
-        strongType  = "location"
-      }
-    }
-    fwpolicy = {
-      type = "Object"
-      metadata = {
-        description = "Object describing Azure Firewall Policy"
-        displayName = "fwpolicy"
-      }
-      defaultValue = {}
-    }
-    rgName = {
-      type = "String"
-      metadata = {
-        description = "Provide name for resource group."
-        displayName = "rgName"
-      }
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          equals = "Microsoft.Resources/subscriptions"
-          field  = "type"
-        }
-      ]
-    }
-    then = {
-      details = {
-        deployment = {
-          location = "northeurope"
-          properties = {
-            mode = "Incremental"
-            parameters = {
-              fwPolicy = {
-                value = "[parameters('fwPolicy')]"
-              }
-              fwPolicyRegion = {
-                value = "[parameters('fwPolicyRegion')]"
-              }
-              rgName = {
-                value = "[parameters('rgName')]"
-              }
-            }
-            template = {
-              "$schema" = "http://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json"
-              contentVersion = "1.0.0.0"
-              outputs = {}
-              parameters = {
-                fwPolicy = {
-                  type = "object"
-                }
-                fwPolicyRegion = {
-                  type = "String"
-                }
-                rgName = {
-                  type = "String"
-                }
-              }
-              resources = [
-                {
-                  apiVersion = "2018-05-01"
-                  location   = "[deployment().location]"
-                  name       = "[parameters('rgName')]"
-                  properties = {}
-                  type       = "Microsoft.Resources/resourceGroups"
-                },
-                {
-                  apiVersion = "2018-05-01"
-                  dependsOn  = [
-                    "[resourceId('Microsoft.Resources/resourceGroups/', parameters('rgName'))]"
-                  ]
-                  name = "fwpolicies"
-                  properties = {
-                    mode = "Incremental"
-                    template = {
-                      "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json"
-                      contentVersion = "1.0.0.0"
-                      outputs = {}
-                      parameters = {}
-                      resources = [
-                        {
-                          apiVersion = "2019-09-01"
-                          dependsOn = []
-                          location   = "[parameters('fwpolicy').location]"
-                          name       = "[parameters('fwpolicy').firewallPolicyName]"
-                          properties = {}
-                          resources = [
-                            {
-                              apiVersion = "2019-09-01"
-                              dependsOn = [
-                                "[resourceId('Microsoft.Network/firewallPolicies',parameters('fwpolicy').firewallPolicyName)]"
-                              ]
-                              name = "[parameters('fwpolicy').ruleGroups.name]"
-                              properties = {
-                                priority = "[parameters('fwpolicy').ruleGroups.properties.priority]"
-                                rules    = "[parameters('fwpolicy').ruleGroups.properties.rules]"
-                              }
-                              type = "ruleGroups"
-                            }
-                          ]
-                          tags = {}
-                          type = "Microsoft.Network/firewallPolicies"
-                        }
-                      ]
-                      variables = {}
-                    }
-                  }
-                  resourceGroup = "[parameters('rgName')]"
-                  type          = "Microsoft.Resources/deployments"
-                }
-              ]
-            }
-          }
-        }
-        deploymentScope = "subscription"
-        existenceScope  = "resourceGroup"
-        resourceGroupName = "[parameters('rgName')]"
-        roleDefinitionIds = [
-          "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
-        ]
-        type = "Microsoft.Network/firewallPolicies"
-      }
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Additional Parameters-Deploy Azure Firewall Manager policy in the subscription.tf ---
-
-# --- Start of corp-Additional Parameters-Deploy Microsoft Defender for Cloud Security Contacts.tf ---
-resource "azurerm_policy_definition" "deploy_asc_security_contacts" {
-  name                = "Deploy-ASC-SecurityContacts"
-  display_name        = "Deploy Microsoft Defender for Cloud Security Contacts"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Deploy Microsoft Defender for Cloud Security Contacts"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category   = "Security Center",
-    source     = "https://github.com/Azure/Enterprise-Scale/",
-    version    = "2.0.0",
-    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
-    createdOn  = "2025-06-06T12:21:09.1770467Z",
-    updatedBy  = null,
-    updatedOn  = null
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String"
-      metadata = {
-        description = "Enable or disable the execution of the policy"
-        displayName = "Effect"
-      }
-      allowedValues = [
-        "DeployIfNotExists",
-        "Disabled"
-      ]
-      defaultValue = "DeployIfNotExists"
-    }
-    emailSecurityContact = {
-      type = "String"
-      metadata = {
-        description = "Provide email addresses (semi-colon separated) for Defender for Cloud contact details"
-        displayName = "Security contacts email address"
-      }
-    }
-    minimalSeverity = {
-      type = "String"
-      metadata = {
-        description = "Defines the minimal alert severity which will be sent as email notifications"
-        displayName = "Minimal severity"
-      }
-      allowedValues = [
-        "High",
-        "Medium",
-        "Low"
-      ]
-      defaultValue = "High"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          equals = "Microsoft.Resources/subscriptions"
-          field  = "type"
-        }
-      ]
-    }
-    then = {
-      details = {
-        deployment = {
-          location = "northeurope"
-          properties = {
-            mode = "incremental"
-            parameters = {
-              emailSecurityContact = {
-                value = "[parameters('emailSecurityContact')]"
-              }
-              minimalSeverity = {
-                value = "[parameters('minimalSeverity')]"
-              }
-            }
-            template = {
-              "$schema" = "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
-              contentVersion = "1.0.0.0"
-              outputs = {}
-              parameters = {
-                emailSecurityContact = {
-                  type = "string"
-                  metadata = {
-                    description = "Security contacts email address"
-                  }
-                }
-                minimalSeverity = {
-                  type = "string"
-                  metadata = {
-                    description = "Minimal severity level reported"
-                  }
-                }
-              }
-              resources = [
-                {
-                  apiVersion = "2023-12-01-preview"
-                  name       = "default"
-                  type       = "Microsoft.Security/securityContacts"
-                  properties = {
-                    emails = "[parameters('emailSecurityContact')]"
-                    isEnabled = true
-                    notificationsByRole = {
-                      roles = [
-                        "Owner"
-                      ]
-                      state = "On"
-                    }
-                    notificationsSources = [
-                      {
-                        minimalSeverity = "[parameters('minimalSeverity')]"
-                        sourceType = "Alert"
-                      }
-                    ]
-                  }
-                }
-              ]
-              variables = {}
-            }
-          }
-        }
-        deploymentScope = "subscription"
-        existenceCondition = {
-          allOf = [
-            {
-              contains = "[parameters('emailSecurityContact')]"
-              field    = "Microsoft.Security/securityContacts/email"
-            },
-            {
-              equals = true
-              field  = "Microsoft.Security/securityContacts/isEnabled"
-            },
-            {
-              contains = "[parameters('minimalSeverity')]"
-              field    = "Microsoft.Security/securityContacts/notificationsSources[*].Alert.minimalSeverity"
-            }
-          ]
-        }
-        existenceScope = "subscription"
-        roleDefinitionIds = [
-          "/providers/Microsoft.Authorization/roleDefinitions/fb1c8493-542b-48eb-b624-b4c8fea62acd"
-        ]
-        type = "Microsoft.Security/securityContacts"
-      }
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Additional Parameters-Deploy Microsoft Defender for Cloud Security Contacts.tf ---
-
-# --- Start of corp-Additional Parameters-Deploy Private DNS Generic.tf ---
-resource "azurerm_policy_definition" "private_dns_generic" {
-  name         = "Deploy-Private-DNS-Generic"
-  policy_type  = "Custom"
-  mode         = "All"
-  display_name = "Deploy-Private-DNS-Generic"
-  description  = "Configure private DNS zone group to override the DNS resolution for PaaS services private endpoint. See https://aka.ms/pepdnszones for information on values to provide to parameters in this policy."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-  
-metadata     = jsonencode({
-    category = "Networking"
-    version  = "2.0.0"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String"
-      metadata = {
-        description = "Enable or disable the execution of the policy"
-        displayName = "Effect"
-      }
-      allowedValues = ["DeployIfNotExists", "Disabled"]
-      defaultValue  = "DeployIfNotExists"
-    }
-    evaluationDelay = {
-      type = "String"
-      metadata = {
-        description = "The delay in evaluation of the policy. Review delay options at https://learn.microsoft.com/en-us/azure/governance/policy/concepts/effect-deploy-if-not-exists"
-        displayName = "Evaluation Delay"
-      }
-      defaultValue = "PT10M"
-    }
-    groupId = {
-      type = "String"
-      metadata = {
-        description = "The group ID of the PaaS private endpoint. Also referred to as subresource."
-        displayName = "PaaS Private endpoint group ID (subresource)"
-      }
-    }
-    location = {
-      type = "String"
-      metadata = {
-        description = "Specify the Private Endpoint location"
-        displayName = "Location (Specify the Private Endpoint location)"
-        strongType  = "location"
-      }
-      defaultValue = "northeurope"
-    }
-    privateDnsZoneId = {
-      type = "String"
-      metadata = {
-        assignPermissions = true
-        description       = "The private DNS zone name required for specific PaaS Services to resolve a private DNS Zone."
-        displayName       = "Private DNS Zone ID for PaaS services"
-        strongType        = "Microsoft.Network/privateDnsZones"
-      }
-    }
-    resourceType = {
-      type = "String"
-      metadata = {
-        description = "The PaaS endpoint resource type."
-        displayName = "PaaS private endpoint resource type"
-      }
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          equals = "[parameters('location')]"
-          field  = "location"
-        },
-        {
-          equals = "Microsoft.Network/privateEndpoints"
-          field  = "type"
-        },
-        {
-          count = {
-            field = "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*]"
-            where = {
-              allOf = [
-                {
-                  contains = "[parameters('resourceType')]"
-                  field    = "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].privateLinkServiceId"
-                },
-                {
-                  equals = "[parameters('groupId')]"
-                  field  = "Microsoft.Network/privateEndpoints/privateLinkServiceConnections[*].groupIds[*]"
-                }
-              ]
-            }
-          }
-          greaterOrEquals = 1
-        }
-      ]
-    }
-    then = {
-      details = {
-        deployment = {
-          properties = {
-            mode = "incremental"
-            parameters = {
-              location = {
-                value = "[field('location')]"
-              }
-              privateDnsZoneId = {
-                value = "[parameters('privateDnsZoneId')]"
-              }
-              privateEndpointName = {
-                value = "[field('name')]"
-              }
-            }
-            template = {
-              "$schema" = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#"
-              contentVersion = "1.0.0.0"
-              parameters = {
-                location = {
-                  type = "string"
-                }
-                privateDnsZoneId = {
-                  type = "string"
-                }
-                privateEndpointName = {
-                  type = "string"
-                }
-              }
-              resources = [
-                {
-                  apiVersion = "2020-03-01"
-                  location   = "[parameters('location')]"
-                  name       = "[concat(parameters('privateEndpointName'), '/deployedByPolicy')]"
-                  properties = {
-                    privateDnsZoneConfigs = [
-                      {
-                        name = "PaaS-Service-Private-DNS-Zone-Config"
-                        properties = {
-                          privateDnsZoneId = "[parameters('privateDnsZoneId')]"
-                        }
-                      }
-                    ]
-                  }
-                  type = "Microsoft.Network/privateEndpoints/privateDnsZoneGroups"
-                }
-              ]
-            }
-          }
-        }
-        evaluationDelay = "[parameters('evaluationDelay')]"
-        roleDefinitionIds = [
-          "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
-        ]
-        type = "Microsoft.Network/privateEndpoints/privateDnsZoneGroups"
-      }
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Additional Parameters-Deploy Private DNS Generic.tf ---
-
-# --- Start of corp-Additional Parameters-Deploy SQL database auditing settings.tf ---
-resource "azurerm_policy_definition" "deploy_sql_vulnerability_assessments" {
-  name                = "Deploy-Sql-vulnerabilityAssessments"
-  display_name        = "Deploy SQL Database Vulnerability Assessments"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Deploy SQL Database Vulnerability Assessments when it does not exist in the deployment, and save results to the storage account specified in the parameters."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "SQL",
-    version  = "1.0.0",
-    source   = "https://github.com/Azure/Enterprise-Scale/"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "Enable or disable the execution of the policy"
-        displayName = "Effect"
-      },
-      allowedValues = [
-        "DeployIfNotExists",
-        "Disabled"
-      ],
-      defaultValue = "DeployIfNotExists"
-    },
-    vulnerabilityAssessmentsEmail = {
-      type = "Array",
-      metadata = {
-        description = "The email address(es) to send alerts."
-        displayName = "The email address(es) to send alerts."
-      }
-    },
-    vulnerabilityAssessmentsStorageID = {
-      type = "String",
-      metadata = {
-        assignPermissions = true,
-        description = "The storage account ID to store assessments",
-        displayName = "The storage account ID to store assessments"
-      }
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      field  = "type",
-      equals = "Microsoft.Sql/servers/databases"
-    },
-    then = {
-      details = {
-        deployment = {
-          properties = {
-            mode = "Incremental",
-            parameters = {
-              location = {
-                value = "[field('location')]"
-              },
-              sqlServerDataBaseName = {
-                value = "[field('name')]"
-              },
-              sqlServerName = {
-                value = "[first(split(field('fullname'),'/'))]"
-              },
-              vulnerabilityAssessmentsEmail = {
-                value = "[parameters('vulnerabilityAssessmentsEmail')]"
-              },
-              vulnerabilityAssessmentsStorageID = {
-                value = "[parameters('vulnerabilityAssessmentsStorageID')]"
-              }
-            },
-            template = {
-              "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-              contentVersion = "1.0.0.0",
-              outputs = {},
-              parameters = {
-                location = {
-                  type = "String"
-                },
-                sqlServerDataBaseName = {
-                  type = "String"
-                },
-                sqlServerName = {
-                  type = "String"
-                },
-                vulnerabilityAssessmentsEmail = {
-                  type = "Array"
-                },
-                vulnerabilityAssessmentsStorageID = {
-                  type = "String"
-                }
-              },
-              resources = [
-                {
-                  apiVersion = "2017-03-01-preview",
-                  name = "[concat(parameters('sqlServerName'),'/',parameters('sqlServerDataBaseName'),'/default')]",
-                  type = "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
-                  properties = {
-                    recurringScans = {
-                      emailSubscriptionAdmins = false,
-                      emails = "[parameters('vulnerabilityAssessmentsEmail')]",
-                      isEnabled = true
-                    },
-                    storageAccountAccessKey = "[listKeys(parameters('vulnerabilityAssessmentsStorageID'), '2019-06-01').keys[0].value]",
-                    storageContainerPath = "[concat('https://', last(split(parameters('vulnerabilityAssessmentsStorageID'), '/')), '.blob.core.windows.net/vulnerabilitylogs')]"
-                  }
-                }
-              ],
-              variables = {}
-            }
-          }
-        },
-        existenceCondition = {
-          allOf = [
-            {
-              equals = true,
-              field  = "Microsoft.Sql/servers/databases/vulnerabilityAssessments/recurringScans.isEnabled"
-            }
-          ]
-        },
-        roleDefinitionIds = [
-          "/providers/Microsoft.Authorization/roleDefinitions/056cd41c-7e88-42e1-933e-88ba6a50c9c3",
-          "/providers/Microsoft.Authorization/roleDefinitions/749f88d5-cbae-40b8-bcfc-e573ddc772fa",
-          "/providers/Microsoft.Authorization/roleDefinitions/17d1049b-9a84-46fb-8f53-869881c3d3ab"
-        ],
-              type = "Microsoft.Sql/servers/databases/vulnerabilityAssessments"
-            },
-            effect = "[parameters('effect')]"
-          }
-        })
-      }
-# --- End of corp-Additional Parameters-Deploy SQL database auditing settings.tf ---
-
-# --- Start of corp-Additional Parameters-Deploy Virtual Network with peering to the hub.tf ---
-resource "azurerm_policy_definition" "deploy_vnet_hubspoke" {
-  name                = "Deploy-VNET-HubSpoke"
-  display_name        = "Deploy Virtual Network with peering to the hub"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy deploys virtual network and peer to the hub"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category   = "Network",
-    source     = "https://github.com/Azure/Enterprise-Scale/",
-    version    = "1.1.0",
-    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
-    createdOn  = "2025-06-06T12:21:21.4492159Z",
-    updatedBy  = null,
-    updatedOn  = null
-  })
-
-  parameters = jsonencode({
-    dnsServers = {
-      type = "Array",
-      metadata = {
-        description = "Default domain servers for the vNET.",
-        displayName = "DNSServers"
-      },
-      defaultValue = []
-    },
-    hubResourceId = {
-      type = "String",
-      metadata = {
-        description = "Resource ID for the HUB vNet",
-        displayName = "hubResourceId"
-      }
-    },
-    vNetCidrRange = {
-      type = "String",
-      metadata = {
-        description = "CIDR Range for the vNet",
-        displayName = "vNetCidrRange"
-      }
-    },
-    vNetLocation = {
-      type = "String",
-      metadata = {
-        description = "Location for the vNet",
-        displayName = "vNetLocation"
-      }
-    },
-    vNetName = {
-      type = "String",
-      metadata = {
-        description = "Name of the landing zone vNet",
-        displayName = "vNetName"
-      }
-    },
-    vNetPeerUseRemoteGateway = {
-      type = "Boolean",
-      metadata = {
-        description = "Enable gateway transit for the LZ network",
-        displayName = "vNetPeerUseRemoteGateway"
-      },
-      defaultValue = false
-    },
-    vNetRgName = {
-      type = "String",
-      metadata = {
-        description = "Name of the landing zone vNet RG",
-        displayName = "vNetRgName"
-      }
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          equals = "Microsoft.Resources/subscriptions",
-          field  = "type"
-        }
-      ]
-    },
-    then = {
-      details = {
-        ResourceGroupName = "[parameters('vNetRgName')]",
-        deployment = {
-          location = "northeurope",
-          properties = {
-            mode = "Incremental",
-            parameters = {
-              dnsServers = {
-                value = "[parameters('dnsServers')]"
-              },
-              hubResourceId = {
-                value = "[parameters('hubResourceId')]"
-              },
-              vNetCidrRange = {
-                value = "[parameters('vNetCidrRange')]"
-              },
-              vNetLocation = {
-                value = "[parameters('vNetLocation')]"
-              },
-              vNetName = {
-                value = "[parameters('vNetName')]"
-              },
-              vNetPeerUseRemoteGateway = {
-                value = "[parameters('vNetPeerUseRemoteGateway')]"
-              },
-              vNetRgName = {
-                value = "[parameters('vNetRgName')]"
-              }
-            },
-            template = {
-              "$schema" = "http://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json",
-              contentVersion = "1.0.0.0",
-              outputs = {},
-              parameters = {
-                dnsServers = {
-                  defaultValue = [],
-                  type = "Array"
-                },
-                hubResourceId = {
-                  type = "String"
-                },
-                vNetCidrRange = {
-                  type = "String"
-                },
-                vNetLocation = {
-                  type = "String"
-                },
-                vNetName = {
-                  type = "String"
-                },
-                vNetPeerUseRemoteGateway = {
-                  defaultValue = false,
-                  type = "bool"
-                },
-                vNetRgName = {
-                  type = "String"
-                }
-              },
-              resources = [
-                {
-                  apiVersion = "2021-02-01",
-                  location = "[parameters('vNetLocation')]",
-                  name = "[parameters('vNetName')]",
-                  properties = {
-                    addressSpace = {
-                      addressPrefixes = [
-                        "[parameters('vNetCidrRange')]"
-                      ]
-                    },
-                    dhcpOptions = {
-                      dnsServers = "[parameters('dnsServers')]"
-                    }
-                  },
-                  type = "Microsoft.Network/virtualNetworks"
-                },
-                {
-                  apiVersion = "2021-02-01",
-                  name = "[concat(parameters('vNetName'), '/peerToHub')]",
-                  properties = {
-                    allowForwardedTraffic = true,
-                    allowGatewayTransit = false,
-                    allowVirtualNetworkAccess = true,
-                    remoteVirtualNetwork = {
-                      id = "[parameters('hubResourceId')]"
-                    },
-                    useRemoteGateways = "[parameters('vNetPeerUseRemoteGateway')]"
-                  },
-                  type = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings"
-                }
-              ],
-              variables = {}
-            }
-          }
-        },
-        deploymentScope = "resourceGroup",
-        existenceCondition = {
-          allOf = [
-            {
-              field = "name",
-              like = "[parameters('vNetName')]"
-            },
-            {
-              equals = "[parameters('vNetLocation')]",
-              field = "location"
-            }
-          ]
-        },
-        existenceScope = "resourceGroup",
-        name = "[parameters('vNetName')]",
-        roleDefinitionIds = [
-          "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
-        ],
-        type = "Microsoft.Network/virtualNetworks"
-      },
-      effect = "DeployIfNotExists"
-    }
-  })
-}
-# --- End of corp-Additional Parameters-Deploy Virtual Network with peering to the hub.tf ---
-
-# --- Start of corp-Additional Parameters-Deploy Windows Domain Join Extension with keyvault configuration.tf ---
-resource "azurerm_policy_definition" "deploy_windows_domainjoin_extension_with_keyvault" {
-  name                = "Deploy-Windows-DomainJoin"
-  display_name        = "Deploy Windows Domain Join Extension with keyvault configuration"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Deploy Windows Domain Join Extension with keyvault configuration when the extension does not exist on a given Windows Virtual Machine"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category = "Guest Configuration",
-    source   = "https://github.com/Azure/Enterprise-Scale/",
-    version  = "1.0.0"
-  })
-
-  parameters = jsonencode({
-    domainFQDN = {
-      type = "String",
-      metadata = {
-        displayName = "domainFQDN"
-      }
-    },
-    domainOUPath = {
-      type = "String",
-      metadata = {
-        displayName = "domainOUPath"
-      }
-    },
-    domainPassword = {
-      type = "String",
-      metadata = {
-        displayName = "domainPassword"
-      }
-    },
-    domainUsername = {
-      type = "String",
-      metadata = {
-        displayName = "domainUsername"
-      }
-    },
-    effect = {
-      type = "String",
-      metadata = {
-        description = "Enable or disable the execution of the policy",
-        displayName = "Effect"
-      },
-      allowedValues = [
-        "DeployIfNotExists",
-        "Disabled"
-      ],
-      defaultValue = "DeployIfNotExists"
-    },
-    keyVaultResourceId = {
-      type = "String",
-      metadata = {
-        displayName = "keyVaultResourceId"
-      }
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "equals" = "Microsoft.Compute/virtualMachines",
-          "field"  = "type"
-        },
-        {
-          "equals" = "MicrosoftWindowsServer",
-          "field"  = "Microsoft.Compute/imagePublisher"
-        },
-        {
-          "equals" = "WindowsServer",
-          "field"  = "Microsoft.Compute/imageOffer"
-        },
-        {
-          "field" = "Microsoft.Compute/imageSKU",
-          "in" = [
-            "2008-R2-SP1",
-            "2008-R2-SP1-smalldisk",
-            "2008-R2-SP1-zhcn",
-            "2012-Datacenter",
-            "2012-datacenter-gensecond",
-            "2012-Datacenter-smalldisk",
-            "2012-datacenter-smalldisk-g2",
-            "2012-Datacenter-zhcn",
-            "2012-datacenter-zhcn-g2",
-            "2012-R2-Datacenter",
-            "2012-r2-datacenter-gensecond",
-            "2012-R2-Datacenter-smalldisk",
-            "2012-r2-datacenter-smalldisk-g2",
-            "2012-R2-Datacenter-zhcn",
-            "2012-r2-datacenter-zhcn-g2",
-            "2016-Datacenter",
-            "2016-datacenter-gensecond",
-            "2016-datacenter-gs",
-            "2016-Datacenter-Server-Core",
-            "2016-datacenter-server-core-g2",
-            "2016-Datacenter-Server-Core-smalldisk",
-            "2016-datacenter-server-core-smalldisk-g2",
-            "2016-Datacenter-smalldisk",
-            "2016-datacenter-smalldisk-g2",
-            "2016-Datacenter-with-Containers",
-            "2016-datacenter-with-containers-g2",
-            "2016-Datacenter-with-RDSH",
-            "2016-Datacenter-zhcn",
-            "2016-datacenter-zhcn-g2",
-            "2019-Datacenter",
-            "2019-Datacenter-Core",
-            "2019-datacenter-core-g2",
-            "2019-Datacenter-Core-smalldisk",
-            "2019-datacenter-core-smalldisk-g2",
-            "2019-Datacenter-Core-with-Containers",
-            "2019-datacenter-core-with-containers-g2",
-            "2019-Datacenter-Core-with-Containers-smalldisk",
-            "2019-datacenter-core-with-containers-smalldisk-g2",
-            "2019-datacenter-gensecond",
-            "2019-datacenter-gs",
-            "2019-Datacenter-smalldisk",
-            "2019-datacenter-smalldisk-g2",
-            "2019-Datacenter-with-Containers",
-            "2019-datacenter-with-containers-g2",
-            "2019-Datacenter-with-Containers-smalldisk",
-            "2019-datacenter-with-containers-smalldisk-g2",
-            "2019-Datacenter-zhcn",
-            "2019-datacenter-zhcn-g2",
-            "Datacenter-Core-1803-with-Containers-smalldisk",
-            "datacenter-core-1803-with-containers-smalldisk-g2",
-            "Datacenter-Core-1809-with-Containers-smalldisk",
-            "datacenter-core-1809-with-containers-smalldisk-g2",
-            "Datacenter-Core-1903-with-Containers-smalldisk",
-            "datacenter-core-1903-with-containers-smalldisk-g2",
-            "datacenter-core-1909-with-containers-smalldisk",
-            "datacenter-core-1909-with-containers-smalldisk-g1",
-            "datacenter-core-1909-with-containers-smalldisk-g2"
-          ]
-        }
-      ]
-    },
-    "then" = {
-      "details" = {
-        "deployment" = {
-          "properties" = {
-            "mode" = "Incremental",
-            "parameters" = {
-              "domainFQDN" = {
-                "value" = "[parameters('domainFQDN')]"
-              },
-              "domainOUPath" = {
-                "value" = "[parameters('domainOUPath')]"
-              },
-              "domainPassword" = {
-                "reference" = {
-                  "keyVault" = {
-                    "id" = "[parameters('keyVaultResourceId')]"
-                  },
-                  "secretName" = "[parameters('domainPassword')]"
-                }
-              },
-              "domainUsername" = {
-                "reference" = {
-                  "keyVault" = {
-                    "id" = "[parameters('keyVaultResourceId')]"
-                  },
-                  "secretName" = "[parameters('domainUsername')]"
-                }
-              },
-              "keyVaultResourceId" = {
-                "value" = "[parameters('keyVaultResourceId')]"
-              },
-              "location" = {
-                "value" = "[field('location')]"
-              },
-              "vmName" = {
-                "value" = "[field('name')]"
-              }
-            },
-            "template" = {
-              "$schema" = "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-              "contentVersion" = "1.0.0.0",
-              "outputs" = {},
-              "parameters" = {
-                "domainFQDN" = {
-                  "type" = "String"
-                },
-                "domainOUPath" = {
-                  "type" = "String"
-                },
-                "domainPassword" = {
-                  "type" = "securestring"
-                },
-                "domainUsername" = {
-                  "type" = "String"
-                },
-                "keyVaultResourceId" = {
-                  "type" = "String"
-                },
-                "location" = {
-                  "type" = "String"
-                },
-                "vmName" = {
-                  "type" = "String"
-                }
-              },
-              "resources" = [
-                {
-                  "apiVersion" = "2015-06-15",
-                  "location"   = "[resourceGroup().location]",
-                  "name"       = "[concat(variables('vmName'),'/joindomain')]",
-                  "properties" = {
-                    "autoUpgradeMinorVersion" = true,
-                    "protectedSettings" = {
-                      "Password" = "[parameters('domainPassword')]"
-                    },
-                    "publisher" = "Microsoft.Compute",
-                    "settings" = {
-                      "Name"    = "[parameters('domainFQDN')]",
-                      "OUPath"  = "[parameters('domainOUPath')]",
-                      "Options" = "[variables('domainJoinOptions')]",
-                      "Restart" = "true",
-                      "User"    = "[parameters('domainUsername')]"
-                    },
-                    "type" = "JsonADDomainExtension",
-                    "typeHandlerVersion" = "1.3"
-                  },
-                  "type" = "Microsoft.Compute/virtualMachines/extensions"
-                }
-              ],
-              "variables" = {
-                "domainJoinOptions" = 3,
-                "vmName" = "[parameters('vmName')]"
-              }
-            }
-          }
-        },
-        "existenceCondition" = {
-          "allOf" = [
-            {
-              "equals" = "JsonADDomainExtension",
-              "field"  = "Microsoft.Compute/virtualMachines/extensions/type"
-            },
-            {
-              "equals" = "Microsoft.Compute",
-              "field"  = "Microsoft.Compute/virtualMachines/extensions/publisher"
-            }
-          ]
-        },
-        "roleDefinitionIds" = [
-          "/providers/Microsoft.Authorization/roleDefinitions/9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
-        ],
-        "type" = "Microsoft.Compute/virtualMachines/extensions"
-      },
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Additional Parameters-Deploy Windows Domain Join Extension with keyvault configuration.tf ---
-
-# --- Start of corp-Additional Parameters-Deploy a route table with specific user defined routes.tf ---
-resource "azurerm_policy_definition" "deploy_custom_route_table" {
-  name                = "Deploy-Custom-Route-Table"
-  display_name        = "Deploy a route table with specific user defined routes"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Deploys a route table with specific user defined routes when one does not exist. The route table deployed by the policy must be manually associated to subnet(s)"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category   = "Network",
-    source     = "https://github.com/Azure/Enterprise-Scale/",
-    version    = "1.0.0",
-    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
-    createdOn  = "2025-06-06T12:21:20.9813071Z",
-    updatedBy  = null,
-    updatedOn  = null
-  })
-
-  parameters = jsonencode({
-    disableBgpPropagation = {
-      type        = "Boolean"
-      metadata    = {
-        description = "Disable BGP Propagation"
-        displayName = "DisableBgpPropagation"
-      }
-      defaultValue = false
-    }
-    effect = {
-      type = "String"
-      metadata = {
-        description = "Enable or disable the execution of the policy"
-        displayName = "Effect"
-      }
-      allowedValues = [
-        "DeployIfNotExists",
-        "Disabled"
-      ]
-      defaultValue = "DeployIfNotExists"
-    }
-    requiredRoutes = {
-      type = "Array"
-      metadata = {
-        description = "Routes that must exist in compliant route tables deployed by this policy"
-        displayName = "requiredRoutes"
-      }
-    }
-    routeTableName = {
-      type = "String"
-      metadata = {
-        description = "Name of the route table automatically deployed by this policy"
-        displayName = "routeTableName"
-      }
-    }
-    vnetRegion = {
-      type = "String"
-      metadata = {
-        description = "Only VNets in this region will be evaluated against this policy"
-        displayName = "vnetRegion"
-      }
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          equals = "Microsoft.Network/virtualNetworks"
-          field  = "type"
-        },
-        {
-          equals = "[parameters('vnetRegion')]"
-          field  = "location"
-        }
-      ]
-    }
-    then = {
-      details = {
-        deployment = {
-          properties = {
-            mode = "incremental"
-            parameters = {
-              disableBgpPropagation = {
-                value = "[parameters('disableBgpPropagation')]"
-              }
-              requiredRoutes = {
-                value = "[parameters('requiredRoutes')]"
-              }
-              routeTableName = {
-                value = "[parameters('routeTableName')]"
-              }
-              vnetRegion = {
-                value = "[parameters('vnetRegion')]"
-              }
-            }
-            template = {
-              "$schema" = "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
-              contentVersion = "1.0.0.0"
-              parameters = {
-                disableBgpPropagation = {
-                  type = "bool"
-                }
-                requiredRoutes = {
-                  type = "array"
-                }
-                routeTableName = {
-                  type = "string"
-                }
-                vnetRegion = {
-                  type = "string"
-                }
-              }
-              resources = [
-                {
-                  apiVersion = "2021-02-01"
-                  location   = "[parameters('vnetRegion')]"
-                  name       = "[parameters('routeTableName')]"
-                  properties = {
-                    disableBgpRoutePropagation = "[parameters('disableBgpPropagation')]"
-                  }
-                  type = "Microsoft.Network/routeTables"
-                }
-              ]
-            }
-          }
-        }
-        existenceCondition = {
-          allOf = [
-            {
-              equals = "[parameters('routeTableName')]"
-              field  = "name"
-            },
-            {
-              count = {
-                field = "Microsoft.Network/routeTables/routes[*]"
-                where = {
-                  in = "[parameters('requiredRoutes')]"
-                  value = "[concat(current('Microsoft.Network/routeTables/routes[*].addressPrefix'), ';', current('Microsoft.Network/routeTables/routes[*].nextHopType'), if(equals(toLower(current('Microsoft.Network/routeTables/routes[*].nextHopType')),'virtualappliance'), concat(';', current('Microsoft.Network/routeTables/routes[*].nextHopIpAddress')), ''))]"
-                }
-              }
-              equals = "[length(parameters('requiredRoutes'))]"
-            }
-          ]
-        }
-        roleDefinitionIds = [
-          "/subscriptions/e867a45d-e513-44ac-931e-4741cef80b24/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
-        ]
-        type = "Microsoft.Network/routeTables"
-      }
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Additional Parameters-Deploy a route table with specific user defined routes.tf ---
-
-# --- Start of corp-Additional Parameters-Deploy an Azure DDoS Network Protection.tf ---
-resource "azurerm_policy_definition" "deploy_ddos_network_protection" {
-  name                = "Deploy-DDoSProtection"
-  display_name        = "Deploy an Azure DDoS Network Protection"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Deploys an Azure DDoS Network Protection"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category   = "Network",
-    source     = "https://github.com/Azure/Enterprise-Scale/",
-    version    = "1.0.1",
-    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
-    createdOn  = "2025-06-06T12:21:16.4527194Z",
-    updatedBy  = null,
-    updatedOn  = null
-  })
-
-  parameters = jsonencode({
-    ddosName = {
-      type = "String"
-      metadata = {
-        description = "DDoSVnet"
-        displayName = "ddosName"
-      }
-    }
-    ddosRegion = {
-      type = "String"
-      metadata = {
-        description = "DDoSVnet location"
-        displayName = "ddosRegion"
-        strongType  = "location"
-      }
-    }
-    effect = {
-      type = "String"
-      metadata = {
-        description = "Enable or disable the execution of the policy"
-        displayName = "Effect"
-      }
-      allowedValues = [
-        "DeployIfNotExists",
-        "Disabled"
-      ]
-      defaultValue = "DeployIfNotExists"
-    }
-    rgName = {
-      type = "String"
-      metadata = {
-        description = "Provide name for resource group."
-        displayName = "rgName"
-      }
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          equals = "Microsoft.Resources/subscriptions"
-          field  = "type"
-        }
-      ]
-    }
-    then = {
-      details = {
-        deployment = {
-          location = "northeurope"
-          properties = {
-            mode = "Incremental"
-            parameters = {
-              ddosname = {
-                value = "[parameters('ddosname')]"
-              }
-              ddosregion = {
-                value = "[parameters('ddosRegion')]"
-              }
-              rgName = {
-                value = "[parameters('rgName')]"
-              }
-            }
-            template = {
-              "$schema" = "http://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json"
-              contentVersion = "1.0.0.0"
-              outputs = {}
-              parameters = {
-                ddosRegion = {
-                  type = "String"
-                }
-                ddosname = {
-                  type = "String"
-                }
-                rgName = {
-                  type = "String"
-                }
-              }
-              resources = [
-                {
-                  apiVersion = "2018-05-01"
-                  location   = "[deployment().location]"
-                  name       = "[parameters('rgName')]"
-                  properties = {}
-                  type       = "Microsoft.Resources/resourceGroups"
-                },
-                {
-                  apiVersion = "2018-05-01"
-                  dependsOn  = [
-                    "[resourceId('Microsoft.Resources/resourceGroups/', parameters('rgName'))]"
-                  ]
-                  name = "ddosprotection"
-                  properties = {
-                    mode = "Incremental"
-                    template = {
-                      "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json"
-                      contentVersion = "1.0.0.0"
-                      outputs = {}
-                      parameters = {}
-                      resources = [
-                        {
-                          apiVersion = "2019-12-01"
-                          location   = "[parameters('ddosRegion')]"
-                          name       = "[parameters('ddosName')]"
-                          properties = {}
-                          type       = "Microsoft.Network/ddosProtectionPlans"
-                        }
-                      ]
-                    }
-                  }
-                  resourceGroup = "[parameters('rgName')]"
-                  type          = "Microsoft.Resources/deployments"
-                }
-              ]
-            }
-          }
-        }
-        deploymentScope = "subscription"
-        existenceScope  = "resourceGroup"
-        name            = "[parameters('ddosName')]"
-        resourceGroupName = "[parameters('rgName')]"
-        roleDefinitionIds = [
-          "/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
-        ]
-        type = "Microsoft.Network/ddosProtectionPlans"
-      }
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Additional Parameters-Deploy an Azure DDoS Network Protection.tf ---
-
-# --- Start of corp-Additional Parameters-Enforce specific configuration of User Defined Routes (UDR).tf ---
-resource "azurerm_policy_definition" "modify_udr" {
-  name                = "Modify-UDR"
-  display_name        = "Enforce specific configuration of User-Defined Routes (UDR)"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy enforces the configuration of User-Defined Routes (UDR) within a subnet."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category   = "Network",
-    source     = "https://github.com/Azure/Enterprise-Scale/",
-    version    = "1.0.0",
-    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
-    createdOn  = "2025-06-06T12:21:24.0971427Z",
-    updatedBy  = null,
-    updatedOn  = null
-  })
-
-  parameters = jsonencode({
-    addressPrefix = {
-      type = "String",
-      metadata = {
-        description = "The destination IP address range in CIDR notation that this Policy checks for within the UDR. Example: 0.0.0.0/0 to check for the presence of a default route.",
-        displayName = "Address Prefix"
-      }
-    },
-    effect = {
-      type = "String",
-      metadata = {
-        description = "Enable or disable the execution of the policy",
-        displayName = "Effect"
-      },
-      allowedValues = [
-        "Modify",
-        "Disabled"
-      ],
-      defaultValue = "Modify"
-    },
-    nextHopIpAddress = {
-      type = "String",
-      metadata = {
-        description = "The IP address packets should be forwarded to.",
-        displayName = "Next Hop IP Address"
-      }
-    },
-    nextHopType = {
-      type = "String",
-      metadata = {
-        description = "The next hope type that the policy checks for within the inspected route. The value can be Virtual Network, Virtual Network Gateway, Internet, Virtual Appliance, or None.",
-        displayName = "Next Hop Type"
-      },
-      allowedValues = [
-        "VnetLocal",
-        "VirtualNetworkGateway",
-        "Internet",
-        "VirtualAppliance",
-        "None"
-      ]
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          equals = "Microsoft.Network/routeTables",
-          field  = "type"
-        },
-        {
-          count = {
-            field = "Microsoft.Network/routeTables/routes[*]"
-          },
-          equals = 0
-        }
-      ]
-    },
-    then = {
-      details = {
-        conflictEffect = "audit",
-        operations = [
-          {
-            field     = "Microsoft.Network/routeTables/routes[*]",
-            operation = "add",
-            value = {
-              name = "default",
-              properties = {
-                addressPrefix    = "[parameters('addressPrefix')]",
-                nextHopIpAddress = "[parameters('nextHopIpAddress')]",
-                nextHopType      = "[parameters('nextHopType')]"
-              }
-            }
-          }
-        ],
-        roleDefinitionIds = [
-          "/providers/microsoft.authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
-        ]
-      },
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Additional Parameters-Enforce specific configuration of User Defined Routes (UDR).tf ---
-
-# --- Start of corp-Additional Parameters-Ensure Trusted Locations Are Defined.tf ---
-resource "azurerm_policy_definition" "trusted_locations_defined" {
-  name                = "Trusted-Locations-Defined"
-  display_name        = "Ensure Trusted Locations Are Defined"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy audits resources that are deployed outside of the specified trusted locations."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Security"
-  })
-
-  parameters = jsonencode({
-    allowedLocations = {
-      type = "Array",
-      metadata = {
-        description = "The list of allowed locations.",
-        displayName = "Allowed Locations"
-      }
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "location",
-          "notIn"  = "[parameters('allowedLocations')]"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "audit"
-    }
-  })
-}
-# --- End of corp-Additional Parameters-Ensure Trusted Locations Are Defined.tf ---
-
-# --- Start of corp-Additional Parameters-Ensure a Custom Role is Assigned Permissions for Administering Resource Locks.tf ---
-resource "azurerm_policy_definition" "custom_role_administer_resource_locks" {
-  name                = "Custom-Role-Administer-Resource-Locks"
-  display_name        = "Ensure a Custom Role is Assigned Permissions for Administering Resource Locks"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy ensures that a custom role with permissions to administer resource locks is assigned."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Authorization"
-  })
-
-  parameters = jsonencode({
-    roleDefinitionId = {
-      type = "String",
-      metadata = {
-        description = "The ID of the custom role that should have permissions for resource locks.",
-        displayName = "Role Definition ID"
-      }
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Authorization/roleAssignments"
-        },
-        {
-          field  = "Microsoft.Authorization/roleAssignments/roleDefinitionId",
-          equals = "[parameters('roleDefinitionId')]"
-        }
-      ]
-    },
-    then = {
-      effect = "audit"
-    }
-  })
-}
-# --- End of corp-Additional Parameters-Ensure a Custom Role is Assigned Permissions for Administering Resource Locks.tf ---
-
-# --- Start of corp-Audit-Subnet-Without-Penp-Audit Subnets without Private Endpoint Network Policies enabled.tf ---
-resource "azurerm_policy_definition" "audit_subnet_without_penp" {
-  name                = "Audit-Subnet-Without-Penp"
-  display_name        = "Subnets without Private Endpoint Network Policies enabled should be audited"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy audits the subnet without Private Endpoint Network Policies enabled. This policy is intended for 'workload' subnets, not 'central infrastructure' (aka, 'hub') subnets."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category  = "Network",
-    source    = "https://github.com/Azure/Enterprise-Scale/",
-    version   = "1.0.0"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect determines what happens when the policy rule is evaluated to match",
-        displayName = "Effect"
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Audit"
-    },
-    excludedSubnets = {
-      type = "Array",
-      metadata = {
-        description = "Array of subnet names that are excluded from this policy",
-        displayName = "Excluded Subnets"
-      },
-      defaultValue = [
-        "GatewaySubnet",
-        "AzureFirewallSubnet",
-        "AzureFirewallManagementSubnet",
-        "AzureBastionSubnet"
-      ]
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "anyOf" = [
-        {
-          "allOf" = [
-            {
-              "equals" = "Microsoft.Network/virtualNetworks",
-              "field"  = "type"
-            },
-            {
-              "count" = {
-                "field" = "Microsoft.Network/virtualNetworks/subnets[*]",
-                "where" = {
-                  "allOf" = [
-                    {
-                      "field"     = "Microsoft.Network/virtualNetworks/subnets[*].privateEndpointNetworkPolicies",
-                      "notEquals" = "Enabled"
-                    },
-                    {
-                      "field"     = "Microsoft.Network/virtualNetworks/subnets[*].name",
-                      "notIn"     = "[parameters('excludedSubnets')]"
-                    }
-                  ]
-                }
-              },
-              "notEquals" = 0
-            }
-          ]
-        },
-        {
-          "allOf" = [
-            {
-              "equals" = "Microsoft.Network/virtualNetworks/subnets",
-              "field"  = "type"
-            },
-            {
-              "field"  = "name",
-              "notIn"  = "[parameters('excludedSubnets')]"
-            },
-            {
-              "field"     = "Microsoft.Network/virtualNetworks/subnets/privateEndpointNetworkPolicies",
-              "notEquals" = "Enabled"
-            }
-          ]
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-
-# --- End of corp-Audit-Subnet-Without-Penp-Audit Subnets without Private Endpoint Network Policies enabled.tf ---
-
-# --- Start of corp-Azure DB for PostgreSQL server deploy a specific min TLS version re.tf ---
-resource "azurerm_policy_definition" "postgresql_min_tls_and_ssl" {
-  name                = "Deploy-PostgreSQL-sslEnforcement"
-  display_name        = "Azure Database for PostgreSQL server deploy a specific min TLS version requirement and enforce SSL"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Deploy a specific min TLS version requirement and enforce SSL on Azure Database for PostgreSQL server. Enforces that SSL is always enabled and a minimum TLS version is set to help protect against 'man in the middle' attacks."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category = "SQL",
-    source   = "https://github.com/Azure/Enterprise-Scale/",
-    version  = "1.2.0"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "Enable or disable the execution of the policy minimum TLS version Azure Database for PostgreSQL server",
-        displayName = "Effect Azure Database for PostgreSQL server"
-      },
-      allowedValues = [
-        "DeployIfNotExists",
-        "Disabled"
-      ],
-      defaultValue = "DeployIfNotExists"
-    },
-    minimalTlsVersion = {
-      type = "String",
-      metadata = {
-        description = "Select version minimum TLS version Azure Database for PostgreSQL server to enforce",
-        displayName = "Select version for PostgreSQL server"
-      },
-      allowedValues = [
-        "TLS1_2",
-        "TLS1_0",
-        "TLS1_1",
-        "TLSEnforcementDisabled"
-      ],
-      defaultValue = "TLS1_2"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "equals" = "Microsoft.DBforPostgreSQL/servers",
-          "field"  = "type"
-        },
-        {
-          "anyOf" = [
-            {
-              "field"     = "Microsoft.DBforPostgreSQL/servers/sslEnforcement",
-              "notEquals" = "Enabled"
-            },
-            {
-              "field" = "Microsoft.DBforPostgreSQL/servers/minimalTlsVersion",
-              "less"  = "[parameters('minimalTlsVersion')]"
-            }
-          ]
-        }
-      ]
-    },
-    "then" = {
-      "details" = {
-        "deployment" = {
-          "properties" = {
-            "mode" = "Incremental",
-            "parameters" = {
-              "location" = {
-                "value" = "[field('location')]"
-              },
-              "minimalTlsVersion" = {
-                "value" = "[parameters('minimalTlsVersion')]"
-              },
-              "resourceName" = {
-                "value" = "[field('name')]"
-              }
-            },
-            "template" = {
-              "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-              "contentVersion" = "1.0.0.0",
-              "outputs" = {},
-              "parameters" = {
-                "location" = {
-                  "type" = "String"
-                },
-                "minimalTlsVersion" = {
-                  "type" = "String"
-                },
-                "resourceName" = {
-                  "type" = "String"
-                }
-              },
-              "resources" = [
-                {
-                  "apiVersion" = "2017-12-01",
-                  "location"   = "[parameters('location')]",
-                  "name"       = "[concat(parameters('resourceName'))]",
-                  "properties" = {
-                    "minimalTlsVersion" = "[parameters('minimalTlsVersion')]",
-                    "sslEnforcement"    = "[if(equals(parameters('minimalTlsVersion'), 'TLSEnforcementDisabled'),'Disabled', 'Enabled')]"
-                  },
-                  "type" = "Microsoft.DBforPostgreSQL/servers"
-                }
-              ],
-              "variables" = {}
-            }
-          }
-        },
-        "existenceCondition" = {
-          "allOf" = [
-            {
-              "equals" = "Enabled",
-              "field"  = "Microsoft.DBforPostgreSQL/servers/sslEnforcement"
-            },
-            {
-              "equals" = "[parameters('minimalTlsVersion')]",
-              "field"  = "Microsoft.DBforPostgreSQL/servers/minimalTlsVersion"
-            }
-          ]
-        },
-        "roleDefinitionIds" = [
-          "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
-        ],
-        "type" = "Microsoft.DBforPostgreSQL/servers"
-      },
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Azure DB for PostgreSQL server deploy a specific min TLS version re.tf ---
-
-# --- Start of corp-Azure Database for MySQL server deploy a specific min TLS version and enforce SSL.tf ---
-resource "azurerm_policy_definition" "deploy_mysql_ssl_min_tls" {
-  name         = "Deploy-MySQL-sslEnforcement"
-  display_name = "Azure Database for MySQL server deploy a specific min TLS version and enforce SSL."
-  policy_type  = "Custom"
-  mode         = "Indexed"
-  description  = "Deploy a specific min TLS version requirement and enforce SSL on Azure Database for MySQL server. Enforce the Server to client applications using minimum version of Tls to secure the connection between your database server and your client applications helps protect against 'man in the middle' attacks by encrypting the data stream between the server and your application. This configuration enforces that SSL is always enabled for accessing your database server."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-  
-  metadata     = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ]
-    category = "SQL"
-    source   = "https://github.com/Azure/Enterprise-Scale/"
-    version  = "1.2.0"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String"
-      metadata = {
-        description = "Enable or disable the execution of the policy minimum TLS version Azure Database for MySQL server"
-        displayName = "Effect minimum TLS version Azure Database for MySQL server"
-      }
-      allowedValues = [
-        "DeployIfNotExists",
-        "Disabled"
-      ]
-      defaultValue = "DeployIfNotExists"
-    }
-    minimalTlsVersion = {
-      type = "String"
-      metadata = {
-        description = "Select version  minimum TLS version Azure Database for MySQL server to enforce"
-        displayName = "Select version minimum TLS for MySQL server"
-      }
-      allowedValues = [
-        "TLS1_2",
-        "TLS1_0",
-        "TLS1_1",
-        "TLSEnforcementDisabled"
-      ]
-      defaultValue = "TLS1_2"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          equals = "Microsoft.DBforMySQL/servers"
-          field  = "type"
-        },
-        {
-          anyOf = [
-            {
-              field     = "Microsoft.DBforMySQL/servers/sslEnforcement"
-              notEquals = "Enabled"
-            },
-            {
-              field = "Microsoft.DBforMySQL/servers/minimalTlsVersion"
-              less  = "[parameters('minimalTlsVersion')]"
-            }
-          ]
-        }
-      ]
-    }
-    then = {
-      effect = "[parameters('effect')]"
-      details = {
-        deployment = {
-          properties = {
-            mode = "Incremental"
-            parameters = {
-              location = {
-                value = "[field('location')]"
-              }
-              minimalTlsVersion = {
-                value = "[parameters('minimalTlsVersion')]"
-              }
-              resourceName = {
-                value = "[field('name')]"
-              }
-            }
-            template = {
-              "$schema"        = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
-              contentVersion   = "1.0.0.0"
-              outputs          = {}
-              parameters = {
-                location = {
-                  type = "String"
-                }
-                minimalTlsVersion = {
-                  type = "String"
-                }
-                resourceName = {
-                  type = "String"
-                }
-              }
-              resources = [
-                {
-                  apiVersion = "2017-12-01"
-                  location   = "[parameters('location')]"
-                  name       = "[concat(parameters('resourceName'))]"
-                  properties = {
-                    minimalTlsVersion = "[parameters('minimalTlsVersion')]"
-                    sslEnforcement    = "[if(equals(parameters('minimalTlsVersion'), 'TLSEnforcementDisabled'),'Disabled', 'Enabled')]"
-                  }
-                  type = "Microsoft.DBforMySQL/servers"
-                }
-              ]
-              variables = {}
-            }
-          }
-        }
-        existenceCondition = {
-          allOf = [
-            {
-              equals = "Enabled"
-              field  = "Microsoft.DBforMySQL/servers/sslEnforcement"
-            },
-            {
-              equals = "[parameters('minimalTlsVersion')]"
-              field  = "Microsoft.DBforMySQL/servers/minimalTlsVersion"
-            }
-          ]
-        }
-        roleDefinitionIds = [
-          "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
-        ]
-        type = "Microsoft.DBforMySQL/servers"
-      }
-    }
-  })
-}
-# --- End of corp-Azure Database for MySQL server deploy a specific min TLS version and enforce SSL.tf ---
-
-# --- Start of corp-Azure Storage deploy a specific min TLS version requirement and enforce SSLHTTPS.tf ---
-resource "azurerm_policy_definition" "deploy_storage_ssl_enforcement" {
-  name                = "Deploy-Storage-sslEnforcement"
-  display_name        = "Azure Storage deploy a specific min TLS version requirement and enforce SSL/HTTPS"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Deploy a specific min TLS version requirement and enforce SSL on Azure Storage. Enables secure server to client by enforce minimal Tls Version to secure the connection between your database server and your client applications helps protect against 'man in the middle' attacks by encrypting the data stream between the server and your application. This configuration enforces that SSL is always enabled for accessing your Azure Storage."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category   = "Storage",
-    source     = "https://github.com/Azure/Enterprise-Scale/",
-    version    = "1.3.0",
-    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
-    createdOn  = "2025-06-06T12:21:06.7604768Z",
-    updatedBy  = null,
-    updatedOn  = null
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String"
-      metadata = {
-        description = "Enable or disable the execution of the policy minimum TLS version Azure STorage"
-        displayName = "Effect Azure Storage"
-      }
-      allowedValues = [
-        "DeployIfNotExists",
-        "Disabled"
-      ]
-      defaultValue = "DeployIfNotExists"
-    }
-    minimumTlsVersion = {
-      type = "String"
-      metadata = {
-        description = "Select version minimum TLS version Azure STorage to enforce"
-        displayName = "Select TLS version for Azure Storage server"
-      }
-      allowedValues = [
-        "TLS1_2",
-        "TLS1_1",
-        "TLS1_0"
-      ]
-      defaultValue = "TLS1_2"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          equals = "Microsoft.Storage/storageAccounts"
-          field  = "type"
-        },
-        {
-          anyOf = [
-            {
-              field     = "Microsoft.Storage/storageAccounts/supportsHttpsTrafficOnly"
-              notEquals = "true"
-            },
-            {
-              field = "Microsoft.Storage/storageAccounts/minimumTlsVersion"
-              less  = "[parameters('minimumTlsVersion')]"
-            }
-          ]
-        }
-      ]
-    }
-    then = {
-      details = {
-        deployment = {
-          properties = {
-            mode = "Incremental"
-            parameters = {
-              location = {
-                value = "[field('location')]"
-              }
-              minimumTlsVersion = {
-                value = "[parameters('minimumTlsVersion')]"
-              }
-              resourceName = {
-                value = "[field('name')]"
-              }
-            }
-            template = {
-              "$schema"      = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
-              contentVersion = "1.0.0.0"
-              outputs        = {}
-              parameters = {
-                location = {
-                  type = "String"
-                }
-                minimumTlsVersion = {
-                  type = "String"
-                }
-                resourceName = {
-                  type = "String"
-                }
-              }
-              resources = [
-                {
-                  apiVersion = "2019-06-01"
-                  location   = "[parameters('location')]"
-                  name       = "[concat(parameters('resourceName'))]"
-                  properties = {
-                    minimumTlsVersion        = "[parameters('minimumTlsVersion')]"
-                    supportsHttpsTrafficOnly = true
-                  }
-                  type = "Microsoft.Storage/storageAccounts"
-                }
-              ]
-              variables = {}
-            }
-          }
-        }
-        existenceCondition = {
-          allOf = [
-            {
-              equals = "true"
-              field  = "Microsoft.Storage/storageAccounts/supportsHttpsTrafficOnly"
-            },
-            {
-              equals = "[parameters('minimumTlsVersion')]"
-              field  = "Microsoft.Storage/storageAccounts/minimumTlsVersion"
-            }
-          ]
-        }
-        name              = "current"
-        roleDefinitionIds = [
-          "/providers/microsoft.authorization/roleDefinitions/17d1049b-9a84-46fb-8f53-869881c3d3ab"
-        ]
-        type = "Microsoft.Storage/storageAccounts"
-      }
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Azure Storage deploy a specific min TLS version requirement and enforce SSLHTTPS.tf ---
-
-# --- Start of corp-Configure Logic apps to use the latest TLS version.tf ---
-resource "azurerm_policy_definition" "logic_apps_latest_tls" {
-  name                = "Configure-Logic-Apps-Latest-TLS"
-  display_name        = "Configure Logic apps to use the latest TLS version"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Periodically, newer versions are released for TLS either due to security flaws, include additional functionality, and enhance speed. Upgrade to the latest TLS version for Logic Apps to take advantage of security fixes and new functionalities."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category  = "Logic Apps",
-    source    = "https://github.com/Azure/Enterprise-Scale/",
-    version   = "1.0.0"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "Enable or disable the execution of the policy",
-        displayName = "Effect"
-      },
-      allowedValues = [
-        "DeployIfNotExists",
-        "Disabled"
-      ],
-      defaultValue = "DeployIfNotExists"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field   = "type",
-          equals  = "Microsoft.Web/sites"
-        },
-        {
-          field   = "kind",
-          contains = "workflowapp"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]",
-      details = {
-        type = "Microsoft.Web/sites/config",
-        name = "web",
-        roleDefinitionIds = [
-          "/providers/microsoft.authorization/roleDefinitions/de139f84-1756-47ae-9be6-808fbbe84772"
-        ],
-        existenceCondition = {
-          field  = "Microsoft.Web/sites/config/minTlsVersion",
-          equals = "1.2"
-        },
-        deployment = {
-          properties = {
-            mode = "incremental",
-            parameters = {
-              siteName = {
-                value = "[field('name')]"
-              }
-            },
-            template = {
-              "$schema" = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-              contentVersion = "1.0.0.0",
-              parameters = {
-                siteName = {
-                  type = "string"
-                }
-              },
-              resources = [
-                {
-                  type = "Microsoft.Web/sites/config",
-                  apiVersion = "2021-02-01",
-                  name = "[concat(parameters('siteName'), '/web')]",
-                  properties = {
-                    minTlsVersion = "1.2"
-                  }
-                }
-              ],
-              outputs = {},
-              variables = {}
-            }
-          }
-        }
-      }
-    }
-  })
-}
-# --- End of corp-Configure Logic apps to use the latest TLS version.tf ---
-
-# --- Start of corp-Deploy SQL DB security Alert Policies configuration with email admin accounts.tf ---
-resource "azurerm_policy_definition" "deploy_sql_security_alert_policies" {
-  name                = "Deploy-Sql-SecurityAlertPolicies"
-  display_name        = "Deploy SQL Database security Alert Policies configuration with email admin accounts"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Deploy the security Alert Policies configuration with email admin accounts when it does not exist in current configuration"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category = "SQL",
-    source   = "https://github.com/Azure/Enterprise-Scale/",
-    version  = "1.1.1"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "Enable or disable the execution of the policy",
-        displayName = "Effect"
-      },
-      allowedValues = [
-        "DeployIfNotExists",
-        "Disabled"
-      ],
-      defaultValue = "DeployIfNotExists"
-    },
-    emailAddresses = {
-      type = "Array",
-      defaultValue = [
-        "admin@contoso.com",
-        "admin@fabrikam.com"
-      ]
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "equals" = "Microsoft.Sql/servers/databases",
-      "field"  = "type"
-    },
-    "then" = {
-      "details" = {
-        "deployment" = {
-          "properties" = {
-            "mode" = "Incremental",
-            "parameters" = {
-              "emailAddresses" = {
-                "value" = "[parameters('emailAddresses')]"
-              },
-              "location" = {
-                "value" = "[field('location')]"
-              },
-              "sqlServerDataBaseName" = {
-                "value" = "[field('name')]"
-              },
-              "sqlServerName" = {
-                "value" = "[first(split(field('fullname'),'/'))]"
-              }
-            },
-            "template" = {
-              "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-              "contentVersion" = "1.0.0.0",
-              "outputs" = {},
-              "parameters" = {
-                "emailAddresses" = {
-                  "type" = "Array"
-                },
-                "location" = {
-                  "type" = "String"
-                },
-                "sqlServerDataBaseName" = {
-                  "type" = "String"
-                },
-                "sqlServerName" = {
-                  "type" = "String"
-                }
-              },
-              "resources" = [
-                {
-                  "apiVersion" = "2018-06-01-preview",
-                  "name" = "[concat(parameters('sqlServerName'),'/',parameters('sqlServerDataBaseName'),'/default')]",
-                  "properties" = {
-                    "disabledAlerts" = [
-                      ""
-                    ],
-                    "emailAccountAdmins" = true,
-                    "emailAddresses" = "[parameters('emailAddresses')]",
-                    "retentionDays" = 0,
-                    "state" = "Enabled",
-                    "storageAccountAccessKey" = "",
-                    "storageEndpoint" = null
-                  },
-                  "type" = "Microsoft.Sql/servers/databases/securityAlertPolicies"
-                }
-              ],
-              "variables" = {}
-            }
-          }
-        },
-        "existenceCondition" = {
-          "allOf" = [
-            {
-              "equals" = "Enabled",
-              "field"  = "Microsoft.Sql/servers/databases/securityAlertPolicies/state"
-            }
-          ]
-        },
-        "roleDefinitionIds" = [
-          "/providers/Microsoft.Authorization/roleDefinitions/056cd41c-7e88-42e1-933e-88ba6a50c9c3"
-        ],
-        "type" = "Microsoft.Sql/servers/databases/securityAlertPolicies"
-      },
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Deploy SQL DB security Alert Policies configuration with email admin accounts.tf ---
-
-# --- Start of corp-Deploy SQL Database Vulnerability Assessments.tf ---
-resource "azurerm_policy_definition" "deploy_sql_database_auditing_settings" {
-  name                = "Deploy-Sql-AuditingSettings"
-  display_name        = "Deploy SQL database auditing settings"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Deploy auditing settings to SQL Database when it does not exist in the deployment."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "SQL",
-    version  = "1.0.0",
-    source   = "https://github.com/Azure/Enterprise-Scale/"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "Enable or disable the execution of the policy"
-        displayName = "Effect"
-      },
-      allowedValues = [
-        "DeployIfNotExists",
-        "Disabled"
-      ],
-      defaultValue = "DeployIfNotExists"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      field  = "type",
-      equals = "Microsoft.Sql/servers/databases"
-    },
-    then = {
-      details = {
-        deployment = {
-          properties = {
-            mode = "Incremental",
-            parameters = {
-              location = {
-                value = "[field('location')]"
-              },
-              sqlServerDataBaseName = {
-                value = "[field('name')]"
-              },
-              sqlServerName = {
-                value = "[first(split(field('fullname'),'/'))]"
-              }
-            },
-            template = {
-              "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-              contentVersion = "1.0.0.0",
-              outputs = {},
-              parameters = {
-                location = {
-                  type = "String"
-                },
-                sqlServerDataBaseName = {
-                  type = "String"
-                },
-                sqlServerName = {
-                  type = "String"
-                }
-              },
-              resources = [
-                {
-                  apiVersion = "2017-03-01-preview",
-                  name = "[concat(parameters('sqlServerName'),'/',parameters('sqlServerDataBaseName'),'/default')]",
-                  type = "Microsoft.Sql/servers/databases/auditingSettings",
-                  properties = {
-                    auditActionsAndGroups = [
-                      "BATCH_COMPLETED_GROUP",
-                      "DATABASE_OBJECT_CHANGE_GROUP",
-                      "SCHEMA_OBJECT_CHANGE_GROUP",
-                      "BACKUP_RESTORE_GROUP",
-                      "APPLICATION_ROLE_CHANGE_PASSWORD_GROUP",
-                      "DATABASE_PRINCIPAL_CHANGE_GROUP",
-                      "DATABASE_PRINCIPAL_IMPERSONATION_GROUP",
-                      "DATABASE_ROLE_MEMBER_CHANGE_GROUP",
-                      "USER_CHANGE_PASSWORD_GROUP",
-                      "DATABASE_OBJECT_OWNERSHIP_CHANGE_GROUP",
-                      "DATABASE_OBJECT_PERMISSION_CHANGE_GROUP",
-                      "DATABASE_PERMISSION_CHANGE_GROUP",
-                      "SCHEMA_OBJECT_PERMISSION_CHANGE_GROUP",
-                      "SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP",
-                      "FAILED_DATABASE_AUTHENTICATION_GROUP"
-                    ],
-                    isAzureMonitorTargetEnabled = true,
-                    state = "enabled"
-                  }
-                }
-              ],
-              variables = {}
-            }
-          }
-        },
-        existenceCondition = {
-          allOf = [
-            {
-              equals = "enabled",
-              field  = "Microsoft.Sql/servers/databases/auditingSettings/state"
-            },
-            {
-              equals = "true",
-              field  = "Microsoft.Sql/servers/databases/auditingSettings/isAzureMonitorTargetEnabled"
-            }
-          ]
-        },
-        name = "default",
-        roleDefinitionIds = [
-          "/providers/Microsoft.Authorization/roleDefinitions/056cd41c-7e88-42e1-933e-88ba6a50c9c3"
-        ],
-        type = "Microsoft.Sql/servers/databases/auditingSettings"
-      },
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Deploy SQL Database Vulnerability Assessments.tf ---
-
-# --- Start of corp-Deploy Virtual Machine Auto Shutdown Schedule.tf ---
-resource "azurerm_policy_definition" "deploy_vm_auto_shutdown" {
-  name                = "Deploy-Vm-autoShutdown"
-  display_name        = "Deploy Virtual Machine Auto Shutdown Schedule"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Deploys an auto shutdown schedule to a virtual machine"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category   = "Compute",
-    source     = "https://github.com/Azure/Enterprise-Scale/",
-    version    = "1.0.0"
-  })
-
-  parameters = jsonencode({
-    EnableNotification = {
-      type = "String",
-      metadata = {
-        description = "If notifications are enabled for this schedule (i.e. Enabled, Disabled).",
-        displayName = "Send Notification before auto-shutdown"
-      },
-      allowedValues = [
-        "Disabled",
-        "Enabled"
-      ],
-      defaultValue = "Disabled"
-    },
-    NotificationEmailRecipient = {
-      type = "String",
-      metadata = {
-        description = "Email address to be used for notification",
-        displayName = "Email Address"
-      },
-      defaultValue = ""
-    },
-    NotificationWebhookUrl = {
-      type = "String",
-      metadata = {
-        description = "A notification will be posted to the specified webhook endpoint when the auto-shutdown is about to happen.",
-        displayName = "Webhook URL"
-      },
-      defaultValue = ""
-    },
-    time = {
-      type = "String",
-      metadata = {
-        description = "Daily Scheduled shutdown time. i.e. 2300 = 11:00 PM",
-        displayName = "Scheduled Shutdown Time"
-      },
-      defaultValue = "0000"
-    },
-    timeZoneId = {
-      type = "String",
-      metadata = {
-        description = "The time zone ID (e.g. Pacific Standard time).",
-        displayName = "Time zone"
-      },
-      defaultValue = "UTC"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      equals = "Microsoft.Compute/virtualMachines",
-      field  = "type"
-    },
-    then = {
-      details = {
-        deployment = {
-          properties = {
-            mode = "incremental",
-            parameters = {
-              EnableNotification = {
-                value = "[parameters('EnableNotification')]"
-              },
-              NotificationEmailRecipient = {
-                value = "[parameters('NotificationEmailRecipient')]"
-              },
-              NotificationWebhookUrl = {
-                value = "[parameters('NotificationWebhookUrl')]"
-              },
-              location = {
-                value = "[field('location')]"
-              },
-              time = {
-                value = "[parameters('time')]"
-              },
-              timeZoneId = {
-                value = "[parameters('timeZoneId')]"
-              },
-              vmName = {
-                value = "[field('name')]"
-              },
-              vmResourceId = {
-                value = "[field('id')]"
-              }
-            },
-            template = {
-              "$schema" = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-              contentVersion = "1.0.0.0",
-              outputs = {},
-              parameters = {
-                EnableNotification = {
-                  type = "string",
-                  defaultValue = "",
-                  metadata = {
-                    description = "If notifications are enabled for this schedule (i.e. Enabled, Disabled)."
-                  }
-                },
-                NotificationEmailRecipient = {
-                  type = "string",
-                  defaultValue = "",
-                  metadata = {
-                    description = "Email address to be used for notification"
-                  }
-                },
-                NotificationWebhookUrl = {
-                  type = "string",
-                  defaultValue = "",
-                  metadata = {
-                    description = "A notification will be posted to the specified webhook endpoint when the auto-shutdown is about to happen."
-                  }
-                },
-                location = {
-                  type = "string"
-                },
-                time = {
-                  type = "string",
-                  defaultValue = "",
-                  metadata = {
-                    description = "Daily Scheduled shutdown time. i.e. 2300 = 11:00 PM"
-                  }
-                },
-                timeZoneId = {
-                  type = "string",
-                  defaultValue = "",
-                  metadata = {
-                    description = "The time zone ID (e.g. Pacific Standard time)."
-                  }
-                },
-                vmName = {
-                  type = "string"
-                },
-                vmResourceId = {
-                  type = "string"
-                }
-              },
-              resources = [
-                {
-                  apiVersion = "2018-09-15",
-                  location   = "[parameters('location')]",
-                  name       = "[concat('shutdown-computevm-',parameters('vmName'))]",
-                  type       = "Microsoft.DevTestLab/schedules",
-                  properties = {
-                    dailyRecurrence = {
-                      time = "[parameters('time')]"
-                    },
-                    notificationSettings = {
-                      emailRecipient = "[parameters('NotificationEmailRecipient')]",
-                      notificationLocale = "en",
-                      status = "[parameters('EnableNotification')]",
-                      timeInMinutes = 30,
-                      webhookUrl = "[parameters('NotificationWebhookUrl')]"
-                    },
-                    status = "Enabled",
-                    targetResourceId = "[parameters('vmResourceId')]",
-                    taskType = "ComputeVmShutdownTask",
-                    timeZoneId = "[parameters('timeZoneId')]"
-                  }
-                }
-              ],
-              variables = {}
-            }
-          }
-        },
-        existenceCondition = {
-          allOf = [
-            {
-              equals = "ComputeVmShutdownTask",
-              field  = "Microsoft.DevTestLab/schedules/taskType"
-            },
-            {
-              equals = "[field('id')]",
-              field  = "Microsoft.DevTestLab/schedules/targetResourceId"
-            }
-          ]
-        },
-        roleDefinitionIds = [
-          "/providers/microsoft.authorization/roleDefinitions/9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
-        ],
-        type = "Microsoft.DevTestLab/schedules"
-      },
-      effect = "DeployIfNotExists"
-    }
-  })
-}
-# --- End of corp-Deploy Virtual Machine Auto Shutdown Schedule.tf ---
-
-# --- Start of corp-Deploy a default budget on all subscriptions under the assigned scope.tf ---
-resource "azurerm_policy_definition" "deploy_default_budget" {
-  name                = "Deploy-Budget"
-  display_name        = "Deploy a default budget on all subscriptions under the assigned scope"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Deploy a default budget on all subscriptions under the assigned scope"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureUSGovernment"
-    ],
-    category  = "Budget",
-    source    = "https://github.com/Azure/Enterprise-Scale/",
-    version   = "1.1.0"
-  })
-
-  parameters = jsonencode({
-    amount = {
-      type = "String",
-      metadata = {
-        description = "The total amount of cost or usage to track with the budget"
-      },
-      defaultValue = "1000"
-    },
-    budgetName = {
-      type = "String",
-      metadata = {
-        description = "The name for the budget to be created"
-      },
-      defaultValue = "budget-set-by-policy"
-    },
-    contactEmails = {
-      type = "Array",
-      metadata = {
-        description = "The list of email addresses, in an array, to send the budget notification to when the threshold is exceeded."
-      },
-      defaultValue = []
-    },
-    contactGroups = {
-      type = "Array",
-      metadata = {
-        description = "The list of action groups, in an array, to send the budget notification to when the threshold is exceeded. It accepts array of strings."
-      },
-      defaultValue = []
-    },
-    contactRoles = {
-      type = "Array",
-      metadata = {
-        description = "The list of contact RBAC roles, in an array, to send the budget notification to when the threshold is exceeded."
-      },
-      defaultValue = [
-        "Owner",
-        "Contributor"
-      ]
-    },
-    effect = {
-      type = "String",
-      metadata = {
-        description = "Enable or disable the execution of the policy"
-      },
-      allowedValues = [
-        "DeployIfNotExists",
-        "AuditIfNotExists",
-        "Disabled"
-      ],
-      defaultValue = "DeployIfNotExists"
-    },
-    firstThreshold = {
-      type = "String",
-      metadata = {
-        description = "Threshold value associated with a notification. Notification is sent when the cost exceeded the threshold. It is always percent and has to be between 0 and 1000."
-      },
-      defaultValue = "90"
-    },
-    secondThreshold = {
-      type = "String",
-      metadata = {
-        description = "Threshold value associated with a notification. Notification is sent when the cost exceeded the threshold. It is always percent and has to be between 0 and 1000."
-      },
-      defaultValue = "100"
-    },
-    timeGrain = {
-      type = "String",
-      metadata = {
-        description = "The time covered by a budget. Tracking of the amount will be reset based on the time grain."
-      },
-      allowedValues = [
-        "Monthly",
-        "Quarterly",
-        "Annually",
-        "BillingMonth",
-        "BillingQuarter",
-        "BillingAnnual"
-      ],
-      defaultValue = "Monthly"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "equals" = "Microsoft.Resources/subscriptions",
-          "field"  = "type"
-        }
-      ]
-    },
-    "then" = {
-      "details" = {
-        "deployment" = {
-          "location" = "northeurope",
-          "properties" = {
-            "mode" = "Incremental",
-            "parameters" = {
-              "amount" = {
-                "value" = "[parameters('amount')]"
-              },
-              "budgetName" = {
-                "value" = "[parameters('budgetName')]"
-              },
-              "contactEmails" = {
-                "value" = "[parameters('contactEmails')]"
-              },
-              "contactGroups" = {
-                "value" = "[parameters('contactGroups')]"
-              },
-              "contactRoles" = {
-                "value" = "[parameters('contactRoles')]"
-              },
-              "firstThreshold" = {
-                "value" = "[parameters('firstThreshold')]"
-              },
-              "secondThreshold" = {
-                "value" = "[parameters('secondThreshold')]"
-              },
-              "timeGrain" = {
-                "value" = "[parameters('timeGrain')]"
-              }
-            },
-            "template" = {
-              "$schema" = "http://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json",
-              "contentVersion" = "1.0.0.0",
-              "parameters" = {
-                "amount" = {
-                  "type" = "String"
-                },
-                "budgetName" = {
-                  "type" = "String"
-                },
-                "contactEmails" = {
-                  "type" = "Array"
-                },
-                "contactGroups" = {
-                  "type" = "Array"
-                },
-                "contactRoles" = {
-                  "type" = "Array"
-                },
-                "firstThreshold" = {
-                  "type" = "String"
-                },
-                "secondThreshold" = {
-                  "type" = "String"
-                },
-                "startDate" = {
-                  "defaultValue" = "[concat(utcNow('MM'), '/01/', utcNow('yyyy'))]",
-                  "type" = "String"
-                },
-                "timeGrain" = {
-                  "type" = "String"
-                }
-              },
-              "resources" = [
-                {
-                  "apiVersion" = "2019-10-01",
-                  "name" = "[parameters('budgetName')]",
-                  "properties" = {
-                    "amount" = "[parameters('amount')]",
-                    "category" = "Cost",
-                    "notifications" = {
-                      "NotificationForExceededBudget1" = {
-                        "contactEmails" = "[parameters('contactEmails')]",
-                        "contactGroups" = "[parameters('contactGroups')]",
-                        "contactRoles" = "[parameters('contactRoles')]",
-                        "enabled" = true,
-                        "operator" = "GreaterThan",
-                        "threshold" = "[parameters('firstThreshold')]"
-                      },
-                      "NotificationForExceededBudget2" = {
-                        "contactEmails" = "[parameters('contactEmails')]",
-                        "contactGroups" = "[parameters('contactGroups')]",
-                        "contactRoles" = "[parameters('contactRoles')]",
-                        "enabled" = true,
-                        "operator" = "GreaterThan",
-                        "threshold" = "[parameters('secondThreshold')]"
-                      }
-                    },
-                    "timeGrain" = "[parameters('timeGrain')]",
-                    "timePeriod" = {
-                      "startDate" = "[parameters('startDate')]"
-                    }
-                  },
-                  "type" = "Microsoft.Consumption/budgets"
-                }
-              ]
-            }
-          }
-        },
-        "deploymentScope" = "subscription",
-        "existenceCondition" = {
-          "allOf" = [
-            {
-              "equals" = "[parameters('amount')]",
-              "field"  = "Microsoft.Consumption/budgets/amount"
-            },
-            {
-              "equals" = "[parameters('timeGrain')]",
-              "field"  = "Microsoft.Consumption/budgets/timeGrain"
-            },
-            {
-              "equals" = "Cost",
-              "field"  = "Microsoft.Consumption/budgets/category"
-            }
-          ]
-        },
-        "existenceScope" = "subscription",
-        "roleDefinitionIds" = [
-          "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
-        ],
-        "type" = "Microsoft.Consumption/budgets"
-      },
-      "effect" = "[parameters('effect')]"
-    }
- })
-}
-# --- End of corp-Deploy a default budget on all subscriptions under the assigned scope.tf ---
-
-# --- Start of corp-Enable soft delete for blobs.tf ---
-resource "azurerm_policy_definition" "enable_soft_delete_for_blobs" {
-  name                = "Deploy-Storage-Blob-SoftDelete"
-  display_name        = "Enable soft delete for blobs on storage accounts"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensures that soft delete is enabled for blobs on all storage accounts."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Storage"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type        = "String"
-      allowedValues = ["DeployIfNotExists", "Disabled"]
-      defaultValue = "DeployIfNotExists"
-      metadata = {
-        description = "Enable or disable the execution of the policy"
-        displayName = "Effect"
-      }
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      field = "type"
-      equals = "Microsoft.Storage/storageAccounts"
-    }
-    then = {
-      effect = "[parameters('effect')]"
-      details = {
-        type = "Microsoft.Storage/storageAccounts/blobServices"
-        name = "default"
-        existenceCondition = {
-          field = "Microsoft.Storage/storageAccounts/blobServices/deleteRetentionPolicy.enabled"
-          equals = true
-        }
-        deployment = {
-          properties = {
-            mode = "incremental"
-            template = {
-              "$schema" = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#"
-              contentVersion = "1.0.0.0"
-              resources = [
-                {
-                  type = "Microsoft.Storage/storageAccounts/blobServices"
-                  apiVersion = "2021-04-01"
-                  name = "[concat(parameters('storageAccountName'), '/default')]"
-                  properties = {
-                    deleteRetentionPolicy = {
-                      enabled = true
-                      days    = 7
-                    }
-                  }
-                }
-              ]
-              parameters = {
-                storageAccountName = {
-                  type = "string"
-                }
-              }
-            }
-            parameters = {
-              storageAccountName = {
-                value = "[field('name')]"
-              }
-            }
-          }
-        }
-      }
-    }
-  })
-}
-# --- End of corp-Enable soft delete for blobs.tf ---
-
-# --- Start of corp-Enable soft delete for containers.tf ---
-resource "azurerm_policy_definition" "enable_soft_delete_for_containers" {
-  name                = "Deploy-Storage-Container-SoftDelete"
-  display_name        = "Enable soft delete for containers on storage accounts"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensures that soft delete is enabled for containers on all storage accounts."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Storage"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type          = "String"
-      allowedValues = ["DeployIfNotExists", "Disabled"]
-      defaultValue  = "DeployIfNotExists"
-      metadata = {
-        description = "Enable or disable the execution of the policy"
-        displayName = "Effect"
-      }
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      field  = "type"
-      equals = "Microsoft.Storage/storageAccounts"
-    }
-    then = {
-      effect = "[parameters('effect')]"
-      details = {
-        type = "Microsoft.Storage/storageAccounts/blobServices"
-        name = "default"
-        existenceCondition = {
-          field  = "Microsoft.Storage/storageAccounts/blobServices/containerDeleteRetentionPolicy.enabled"
-          equals = true
-        }
-        deployment = {
-          properties = {
-            mode = "incremental"
-            template = {
-              "$schema"      = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#"
-              contentVersion = "1.0.0.0"
-              resources = [
-                {
-                  type       = "Microsoft.Storage/storageAccounts/blobServices"
-                  apiVersion = "2021-04-01"
-                  name       = "[concat(parameters('storageAccountName'), '/default')]"
-                  properties = {
-                    containerDeleteRetentionPolicy = {
-                      enabled = true
-                      days    = 7
-                    }
-                  }
-                }
-              ]
-              parameters = {
-                storageAccountName = {
-                  type = "string"
-                }
-              }
-            }
-            parameters = {
-              storageAccountName = {
-                value = "[field('name')]"
-              }
-            }
-          }
-        }
-      }
-    }
-  })
-}
-# --- End of corp-Enable soft delete for containers.tf ---
-
-# --- Start of corp-Enable soft delete for file shares.tf ---
-resource "azurerm_policy_definition" "enable_soft_delete_for_file_shares" {
-  name                = "Deploy-Storage-File-SoftDelete"
-  display_name        = "Enable soft delete for file shares on storage accounts"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensures that soft delete is enabled for file shares on all storage accounts."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Storage"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type          = "String",
-      allowedValues = ["DeployIfNotExists", "Disabled"],
-      defaultValue  = "DeployIfNotExists",
-      metadata = {
-        description = "Enable or disable the execution of the policy",
-        displayName = "Effect"
-      }
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      field  = "type",
-      equals = "Microsoft.Storage/storageAccounts"
-    },
-    then = {
-      effect = "[parameters('effect')]",
-      details = {
-        type = "Microsoft.Storage/storageAccounts/fileServices",
-        name = "default",
-        existenceCondition = {
-          field  = "Microsoft.Storage/storageAccounts/fileServices/shareDeleteRetentionPolicy.enabled",
-          equals = true
-        },
-        deployment = {
-          properties = {
-            mode = "incremental",
-            template = {
-              "$schema"      = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-              contentVersion = "1.0.0.0",
-              resources = [
-                {
-                  type       = "Microsoft.Storage/storageAccounts/fileServices",
-                  apiVersion = "2021-04-01",
-                  name       = "[concat(parameters('storageAccountName'), '/default')]",
-                  properties = {
-                    shareDeleteRetentionPolicy = {
-                      enabled = true,
-                      days    = 7
-                    }
-                  }
-                }
-              ],
-              parameters = {
-                storageAccountName = {
-                  type = "string"
-                }
-              }
-            },
-            parameters = {
-              storageAccountName = {
-                value = "[field('name')]"
-              }
-            }
-          }
-        }
-      }
-    }
-  })
-}
-# --- End of corp-Enable soft delete for file shares.tf ---
-
-# --- Start of corp-Enforce specific configuration of Network Security Groups (NSG).tf ---
-resource "azurerm_policy_definition" "modify_nsg" {
-  name                = "Modify-NSG"
-  display_name        = "Enforce specific configuration of Network Security Groups (NSG)"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy enforces the configuration of Network Security Groups (NSG)."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category = "Network",
-    source   = "https://github.com/Azure/Enterprise-Scale/",
-    version  = "1.0.0"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "Enable or disable the execution of the policy",
-        displayName = "Effect"
-      },
-      allowedValues = [
-        "Modify",
-        "Disabled"
-      ],
-      defaultValue = "Modify"
-    },
-    nsgRuleAccess = {
-      type = "String",
-      allowedValues = [
-        "Allow",
-        "Deny"
-      ],
-      defaultValue = "Deny"
-    },
-    nsgRuleDescription = {
-      type = "String",
-      defaultValue = "Deny any outbound traffic to the Internet"
-    },
-    nsgRuleDestinationAddressPrefix = {
-      type = "String",
-      defaultValue = "Internet"
-    },
-    nsgRuleDestinationPortRange = {
-      type = "String",
-      defaultValue = "*"
-    },
-    nsgRuleDirection = {
-      type = "String",
-      allowedValues = [
-        "Inbound",
-        "Outbound"
-      ],
-      defaultValue = "Outbound"
-    },
-    nsgRuleName = {
-      type = "String",
-      defaultValue = "DenyAnyInternetOutbound"
-    },
-    nsgRulePriority = {
-      type = "Integer",
-      defaultValue = 1000
-    },
-    nsgRuleProtocol = {
-      type = "String",
-      defaultValue = "*"
-    },
-    nsgRuleSourceAddressPrefix = {
-      type = "String",
-      defaultValue = "*"
-    },
-    nsgRuleSourcePortRange = {
-      type = "String",
-      defaultValue = "*"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "equals" = "Microsoft.Network/networkSecurityGroups",
-          "field"  = "type"
-        },
-        {
-          "count" = {
-            "field" = "Microsoft.Network/networkSecurityGroups/securityRules[*]"
-          },
-          "equals" = 0
-        }
-      ]
-    },
-    "then" = {
-      "details" = {
-        "conflictEffect" = "audit",
-        "operations" = [
-          {
-            "field"     = "Microsoft.Network/networkSecurityGroups/securityRules[*]",
-            "operation" = "add",
-            "value" = {
-              "name" = "[parameters('nsgRuleName')]",
-              "properties" = {
-                "access"                  = "[parameters('nsgRuleAccess')]",
-                "description"             = "[parameters('nsgRuleDescription')]",
-                "destinationAddressPrefix"= "[parameters('nsgRuleDestinationAddressPrefix')]",
-                "destinationPortRange"    = "[parameters('nsgRuleDestinationPortRange')]",
-                "direction"               = "[parameters('nsgRuleDirection')]",
-                "priority"                = "[parameters('nsgRulePriority')]",
-                "protocol"                = "[parameters('nsgRuleProtocol')]",
-                "sourceAddressPrefix"     = "[parameters('nsgRuleSourceAddressPrefix')]",
-                "sourcePortRange"         = "[parameters('nsgRuleSourcePortRange')]"
-              }
-            }
-          }
-        ],
-        "roleDefinitionIds" = [
-          "/providers/microsoft.authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
-        ]
-      },
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Enforce specific configuration of Network Security Groups (NSG).tf ---
-
-# --- Start of corp-Ensure 'Microsoft Entra Authentication' is 'Enabled'.tf ---
-resource "azurerm_policy_definition" "entra_authentication_enabled"  {
-  name                = "Entra-Authentication-Enabled"
-  display_name        = "Ensure 'Microsoft Entra Authentication' is 'Enabled'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure 'Microsoft Entra Authentication' is 'Enabled'"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Security"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Audit"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Cache/Redis"
-        },
-        {
-          "field"  = "Microsoft.Cache/Redis/sslPort",
-          "exists" = "false"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Ensure 'Microsoft Entra Authentication' is 'Enabled'.tf ---
-
-# --- Start of corp-Ensure 'SMB channel encryption' is set to 'AES 256 GCM' or higher for SMB file shares.tf ---
-resource "azurerm_policy_definition" "smb_channel_encryption_aes256gcm" {
-  name                = "SMB-Channel-Encryption-AES256GCM"
-  display_name        = "Ensure 'SMB channel encryption' is set to 'AES-256-GCM' or higher for SMB file shares"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Audit file services that do not use AES-256-GCM for SMB channel encryption."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Storage"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Storage/storageAccounts/fileServices"
-        },
-        {
-          "field"     = "Microsoft.Storage/storageAccounts/fileServices/protocolSettings.smb.channelEncryption",
-          "notEquals" = "AES-256-GCM"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "audit"
-    }
-  })
-}
-# --- End of corp-Ensure 'SMB channel encryption' is set to 'AES 256 GCM' or higher for SMB file shares.tf ---
-
-# --- Start of corp-Ensure Application Insights are Configured.tf ---
-resource "azurerm_policy_definition" "app_insights_configured" {
-  name                = "App-Insights-Configured"
-  display_name        = "Ensure Application Insights are Configured"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "This policy audits Azure App Services that do not have Application Insights or any diagnostic extension configured. It ensures that telemetry collection is enabled."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Monitoring"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Web/sites"
-        },
-        {
-          "anyOf" = [
-            {
-              "field"     = "Microsoft.Web/sites/siteConfig.appSettings[*].name",
-              "notEquals" = "APPINSIGHTS_INSTRUMENTATIONKEY"
-            },
-            {
-              "field"     = "Microsoft.Web/sites/siteConfig.appSettings[*].name",
-              "notEquals" = "APPLICATIONINSIGHTS_CONNECTION_STRING"
-            }
-          ]
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "audit"
-    }
-  })
-}
-# --- End of corp-Ensure Application Insights are Configured.tf ---
-
-# --- Start of corp-Ensure Azure Key Vaults are Used to Store Secrets.tf ---
-resource "azurerm_policy_definition" "key_vaults_used_to_store_secrets" {
-  name                = "Key-Vaults-Used-To-Store-Secrets"
-  display_name        = "Ensure Azure Key Vaults are Used to Store Secrets"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Audits resources to ensure that secrets are stored in Azure Key Vault and not in other less secure locations."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Security"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      field = "type",
-      in = [
-        "Microsoft.Web/sites",
-        "Microsoft.Compute/virtualMachines",
-        "Microsoft.Sql/servers",
-        "Microsoft.Storage/storageAccounts"
-      ]
-    },
-    then = {
-      effect = "auditIfNotExists",
-      details = {
-        type = "Microsoft.KeyVault/vaults",
-        existenceCondition = {
-          field  = "Microsoft.Web/sites/hostNameSslStates[*].sslState",
-          exists = "true"
-        }
-      }
-    }
-  })
-}
-# --- End of corp-Ensure Azure Key Vaults are Used to Store Secrets.tf ---
-
-# --- Start of corp-Ensure Azure Resource Manager Delete locks are applied to Azure Storage Accounts.tf ---
-resource "azurerm_policy_definition" "arm_delete_locks_storage_accounts" {
-  name                = "ARM-Delete-Locks-Storage-Accounts"
-  display_name        = "Ensure Azure Resource Manager Delete locks are applied to Azure Storage Accounts"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure Azure Resource Manager Delete locks are applied to Azure Storage Accounts"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Storage"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Audit"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Storage/storageAccounts"
-        },
-        {
-          field     = "Microsoft.Storage/storageAccounts/sku.name",
-          notEquals = "Premium"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Ensure Azure Resource Manager Delete locks are applied to Azure Storage Accounts.tf ---
-
-# --- Start of corp-Ensure Azure Resource Manager ReadOnly locks are considered for Storage Accounts.tf ---
-resource "azurerm_policy_definition" "readonly_locks_storage_accounts" {
-  name                = "ReadOnly-Locks-Storage-Accounts"
-  display_name        = "Ensure Azure Resource Manager ReadOnly locks are considered for Azure Storage Accounts"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure Azure Resource Manager ReadOnly locks are considered for Azure Storage Accounts"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Storage"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Audit"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Storage/storageAccounts"
-        },
-        {
-          "field"     = "Microsoft.Storage/storageAccounts/sku.name",
-          "notEquals" = "Premium"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Ensure Azure Resource Manager ReadOnly locks are considered for Storage Accounts.tf ---
-
-# --- Start of corp-Ensure Multi factor Authentication is Required for Risky Sign ins.tf ---
-resource "azurerm_policy_definition" "mfa_required_risky_signins" {
-  name                = "MFA-Required-Risky-Signins"
-  display_name        = "Ensure Multi-factor Authentication is Required for Risky Sign-ins"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy audits to ensure Multi-factor Authentication is required for risky sign-ins (Manual)."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Authorization/policyAssignments"
-        },
-        {
-          "field"  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          "equals" = "/providers/Microsoft.Authorization/policyDefinitions/signInRisk"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "Audit"
-    }
-  })
-}
-# --- End of corp-Ensure Multi factor Authentication is Required for Risky Sign ins.tf ---
-
-# --- Start of corp-Ensure Multi factor Authentication is Required to access Microsoft Admin Portals.tf ---
-resource "azurerm_policy_definition" "mfa_required_admin_portals" {
-  name                = "MFA-Required-Admin-Portals"
-  display_name        = "Ensure Multi-factor Authentication is Required to access Microsoft Admin Portals"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy audits if MFA is required for admin portals."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Authorization/policyAssignments"
-        },
-        {
-          "field"  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          "equals" = "/providers/Microsoft.Authorization/policyDefinitions/RequireMFAForAdmins"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "Audit"
-    }
-  })
-}
-# --- End of corp-Ensure Multi factor Authentication is Required to access Microsoft Admin Portals.tf ---
-
-# --- Start of corp-Ensure Security Defaults is enabled on Microsoft Entra ID.tf ---
-resource "azurerm_policy_definition" "security_defaults_enabled" {
-  name                = "Security-Defaults-Enabled"
-  display_name        = "Ensure Security Defaults is enabled on Microsoft Entra ID"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy ensures that Security Defaults are enabled on Microsoft Entra ID."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Security"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Authorization/policyAssignments"
-        },
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "/providers/Microsoft.Authorization/policyDefinitions/securityDefaults"
-        },
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "Disabled"
-        }
-      ]
-    },
-    then = {
-      effect = "audit"
-    }
-  })
-}
-# --- End of corp-Ensure Security Defaults is enabled on Microsoft Entra ID.tf ---
-
-# --- Start of corp-Ensure Soft Delete is Enabled for Azure Containers and Blob Storage.tf ---
-resource "azurerm_policy_definition" "soft_delete_enabled_blob_storage" {
-  name                = "Soft-Delete-Enabled-Blob-Storage"
-  display_name        = "Ensure Soft Delete is Enabled for Azure Containers and Blob Storage"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Audits blob services under storage accounts that do not have soft delete enabled or configured properly."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.3",
-    category = "Storage"
-  })
-
-  parameters = jsonencode({
-    minimumRetentionDays = {
-      type = "Integer",
-      metadata = {
-        displayName = "Minimum Retention Days",
-        description = "Minimum number of days for soft delete retention",
-        strongType = "Integer"
-      },
-      defaultValue = 7
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      anyOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Storage/storageAccounts/blobServices"
-        }
-      ]
-    },
-    then = {
-      effect = "auditIfNotExists",
-      details = {
-        type = "Microsoft.Storage/storageAccounts/blobServices",
-        existenceCondition = {
-          anyOf = [
-            {
-              field     = "Microsoft.Storage/storageAccounts/blobServices/deleteRetentionPolicy.enabled",
-              notEquals = true
-            },
-            {
-              allOf = [
-                {
-                  field  = "Microsoft.Storage/storageAccounts/blobServices/deleteRetentionPolicy.enabled",
-                  equals = true
-                },
-                {
-                  field = "Microsoft.Storage/storageAccounts/blobServices/deleteRetentionPolicy.days",
-                  less  = "[parameters('minimumRetentionDays')]"
-                }
-              ]
-            },
-            {
-              field     = "Microsoft.Storage/storageAccounts/blobServices/containerDeleteRetentionPolicy.enabled",
-              notEquals = true
-            },
-            {
-              allOf = [
-                {
-                  field  = "Microsoft.Storage/storageAccounts/blobServices/containerDeleteRetentionPolicy.enabled",
-                  equals = true
-                },
-                {
-                  field = "Microsoft.Storage/storageAccounts/blobServices/containerDeleteRetentionPolicy.days",
-                  less  = "[parameters('minimumRetentionDays')]"
-                }
-              ]
-            }
-          ]
-        }
-      }
-    }
-  })
-}
-# --- End of corp-Ensure Soft Delete is Enabled for Azure Containers and Blob Storage.tf ---
-
-# --- Start of corp-Ensure That 'All users with the following roles' is set to 'Owner'.tf ---
-resource "azurerm_policy_definition" "all_users_roles_set_to_owner" {
-  name                = "All-Users-Roles-Set-To-Owner"
-  display_name        = "Ensure That 'All users with the following roles' is set to 'Owner'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure That 'All users with the following roles' is set to 'Owner'"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Security"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Audit"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Authorization/roleAssignments"
-        },
-        {
-          "field"  = "Microsoft.Authorization/roleAssignments/roleDefinitionId",
-          "equals" = "/subscriptions/{subscription-id}/providers/Microsoft.Authorization/roleDefinitions/{owner-role-definition-id}"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Ensure That 'All users with the following roles' is set to 'Owner'.tf ---
-
-# --- Start of corp-Ensure That 'Notify all admins when other admins reset their password' is set to 'Yes'.tf ---
-resource "azurerm_policy_definition" "notify_admins_on_password_reset" {
-  name                = "Notify-Admins-On-Password-Reset"
-  display_name        = "Ensure That 'Notify all admins when other admins reset their password?' is set to 'Yes'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy ensures that the setting 'Notify all admins when other admins reset their password' is enabled."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "/providers/Microsoft.Authorization/policyDefinitions/notifyAdminsOnPasswordReset"
-        },
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "No"
-        }
-      ]
-    },
-    then = {
-      effect = "Audit"
-    }
-  })
-}
-# --- End of corp-Ensure That 'Notify all admins when other admins reset their password' is set to 'Yes'.tf ---
-
-# --- Start of corp-Ensure That 'Number of methods required to reset' is set to '2'.tf ---
-resource "azurerm_policy_definition" "number_of_methods_required_to_reset" {
-  name                = "Number-Of-Methods-Required-To-Reset"
-  display_name        = "Ensure That 'Number of methods required to reset' is set to '2'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Manual control: Ensure that the number of methods required to reset is set to 2 for enhanced security. This policy is for documentation and tracking only, as there is no Azure Policy alias for this setting."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  # No valid Azure Policy alias exists for this setting, so the policy rule only audits existence for documentation.
-  policy_rule = jsonencode({
-    if = {
-      field  = "type",
-      equals = "Microsoft.Resources/subscriptions"
-    },
-    then = {
-      effect = "Manual"
-    }
-  })
-}
-# --- End of corp-Ensure That 'Number of methods required to reset' is set to '2'.tf ---
-
-# --- Start of corp-Ensure That 'Restrict access to Microsoft Entra admin center' is Set to 'Yes'.tf ---
-resource "azurerm_policy_definition" "restrict_access_entra_admin_center" {
-  name                = "Restrict-Access-Entra-Admin-Center"
-  display_name        = "Ensure That 'Restrict access to Microsoft Entra admin center' is Set to 'Yes'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy audits if access to the Microsoft Entra admin center is not restricted. Manual remediation is required."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Security"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Authorization/policyAssignments"
-        },
-        {
-          "field"  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          "equals" = "/providers/Microsoft.Authorization/policyDefinitions/adminCenterAccess"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "Audit"
-    }
-  })
-}
-# --- End of corp-Ensure That 'Restrict access to Microsoft Entra admin center' is Set to 'Yes'.tf ---
-
-# --- Start of corp-Ensure That Microsoft Defender for IoT Hub Is Set To 'On'.tf ---
-resource "azurerm_policy_definition" "defender_iot_hub_on" {
-  name                = "Defender-IoT-Hub-On"
-  display_name        = "Ensure That Microsoft Defender for IoT Hub Is Set To 'On'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensures Microsoft Defender for IoT Hub is enabled as per CIS Azure Foundations Benchmark v3.0.0"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Security Center"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        displayName = "Effect",
-        description = "Enable or disable policy execution"
-      },
-      allowedValues = [
-        "DeployIfNotExists",
-        "AuditIfNotExists",
-        "Disabled"
-      ],
-      defaultValue = "DeployIfNotExists"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Security/pricings"
-        },
-        {
-          field  = "name",
-          equals = "IoT"
-        },
-        {
-          field     = "Microsoft.Security/pricings/pricingTier",
-          notEquals = "Standard"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]",
-      details = {
-        type = "Microsoft.Security/pricings",
-        existenceCondition = {
-          allOf = [
-            {
-              field  = "Microsoft.Security/pricings/pricingTier",
-              equals = "Standard"
-            }
-          ]
-        },
-        roleDefinitionIds = [
-          "/providers/Microsoft.Authorization/roleDefinitions/fb1c8493-542b-48eb-b624-b4c8fea62acd"
-        ],
-        deployment = {
-          properties = {
-            mode = "incremental",
-            template = {
-              "$schema" = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-              contentVersion = "1.0.0.0",
-              resources = [
-                {
-                  type = "Microsoft.Security/pricings",
-                  apiVersion = "2023-01-01",
-                  name = "IoT",
-                  properties = {
-                    pricingTier = "Standard"
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    }
-  })
-}
-# --- End of corp-Ensure That Microsoft Defender for IoT Hub Is Set To 'On'.tf ---
-
-# --- Start of corp-Ensure a Managed Identity is used for interactions with other Azure services.tf ---
-resource "azurerm_policy_definition" "managed_identity_used_for_azure_services" {
-  name                = "Managed-Identity-Used-For-Azure-Services"
-  display_name        = "Ensure a Managed Identity is used for interactions with other Azure services"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "This policy ensures that resources like Virtual Machines, Container Instances, and App Services use Managed Identities for accessing other Azure resources."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "anyOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Web/sites"
-        },
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Compute/virtualMachines"
-        },
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.ContainerInstance/containerGroups"
-        },
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.ManagedIdentity/userAssignedIdentities"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "auditIfNotExists",
-      "details" = {
-        "type" = "Microsoft.ManagedIdentity/userAssignedIdentities",
-        "existenceCondition" = {
-          "field" = "identity.type",
-          "in" = [
-            "SystemAssigned",
-            "UserAssigned",
-            "SystemAssigned, UserAssigned"
-          ]
-        }
-      }
-    }
-  })
-}
-# --- End of corp-Ensure a Managed Identity is used for interactions with other Azure services.tf ---
-
-# --- Start of corp-Ensure an Azure Bastion Host Exists.tf ---
-resource "azurerm_policy_definition" "azure_bastion_host_exists" {
-  name                = "Azure-Bastion-Host-Exists"
-  display_name        = "Ensure an Azure Bastion Host Exists"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Manual control: Ensure an Azure Bastion Host exists in the virtual network. This policy is for documentation and compliance tracking only."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Network"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "field"  = "type",
-      "equals" = "Microsoft.Network/virtualNetworks"
-    },
-    "then" = {
-      "effect" = "Manual"
-    }
-  })
-}
-# --- End of corp-Ensure an Azure Bastion Host Exists.tf ---
-
-# --- Start of corp-Ensure fewer than 5 users have global administrator assignment.tf ---
-resource "azurerm_policy_definition" "fewer_than_5_global_admins" {
-  name                = "Fewer-Than-5-Global-Admins"
-  display_name        = "Ensure fewer than 5 users have global administrator assignment"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure fewer than 5 users have global administrator assignments."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "field"  = "Microsoft.Authorization/roleAssignments/roleDefinitionId",
-      "equals" = "/providers/Microsoft.Authorization/roleDefinitions/{globalAdminRoleId}"
-    },
-    "then" = {
-      "effect" = "audit"
-    }
-  })
-}
-# --- End of corp-Ensure fewer than 5 users have global administrator assignment.tf ---
-
-# --- Start of corp-Ensure locked immutability policies are used for containers storing business critical blob data.tf ---
-resource "azurerm_policy_definition" "locked_immutability_policy_blob" {
-  name                = "Locked-Immutability-Policy-Blob"
-  display_name        = "Ensure locked immutability policies are used for containers storing business-critical blob data"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure locked immutability policies are used for containers storing business-critical blob data"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Storage"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Audit"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Storage/storageAccounts"
-        },
-        {
-          field     = "Microsoft.Storage/storageAccounts/immutableStorageWithVersioning.enabled",
-          notEquals = "true"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Ensure locked immutability policies are used for containers storing business critical blob data.tf ---
-
-# --- Start of corp-Ensure only MFA enabled identities can access privileged Virtual Machine.tf ---
-resource "azurerm_policy_definition" "mfa_enabled_identities_vm_access" {
-  name                = "MFA-Enabled-Identities-VM-Access"
-  display_name        = "Ensure only MFA enabled identities can access privileged Virtual Machine"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy audits role assignments made to user principals. It is recommended that these identities have MFA enforced via Conditional Access."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Identity & Access"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Authorization/roleAssignments"
-        },
-        {
-          "field"  = "Microsoft.Authorization/roleAssignments/principalType",
-          "equals" = "User"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "audit"
-    }
-  })
-}
-# --- End of corp-Ensure only MFA enabled identities can access privileged Virtual Machine.tf ---
-
-# --- Start of corp-Ensure server parameter 'audit log enabled' is set to 'ON' for MySQL DB.tf ---
-resource "azurerm_policy_definition" "audit_log_enabled_mysql" {
-  name                = "Audit-Log-Enabled-MySQL"
-  display_name        = "Ensure server parameter 'audit_log_enabled' is set to 'ON' for MySQL Database Server"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy ensures that the server parameter 'audit_log_enabled' is set to 'ON' for MySQL Database Servers to capture auditing data."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Database"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Audit"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.DBforMySQL/servers"
-        },
-        {
-          "field"     = "Microsoft.DBforMySQL/servers/sku.name",
-          "notEquals" = "GeneralPurpose"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Ensure server parameter 'audit log enabled' is set to 'ON' for MySQL DB.tf ---
-
-# --- Start of corp-Ensure server parameter 'audit log events' has 'CONNECTION' set for MySQL flexible server.tf ---
-resource "azurerm_policy_definition" "audit_log_events_connection_mysql" {
-  name                = "Audit-Log-Events-Connection-MySQL"
-  display_name        = "Ensure server parameter 'audit_log_events' has 'CONNECTION' set for MySQL flexible server"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure server parameter 'audit_log_events' has 'CONNECTION' set for MySQL flexible server"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Database"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Audit"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.DBforMySQL/flexibleServers"
-        },
-        {
-          field  = "Microsoft.DBforMySQL/flexibleServers/sslEnforcement",
-          equals = "Disabled"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Ensure server parameter 'audit log events' has 'CONNECTION' set for MySQL flexible server.tf ---
-
-# --- Start of corp-Ensure server parameter 'logfiles.retention days' is greater than 3 days for PostgreSQL flexible server.tf ---
-resource "azurerm_policy_definition" "logfiles_retention_days_postgresql" {
-  name                = "Logfiles-Retention-Days-PostgreSQL"
-  display_name        = "Ensure server parameter 'logfiles.retention_days' is greater than 3 days for PostgreSQL flexible server"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Manual control: Ensure server parameter 'logfiles.retention_days' is greater than 3 days for PostgreSQL flexible server. No Azure Policy alias currently exists for this setting, so this policy is for documentation and compliance tracking only."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "PostgreSQL"
-  })
-
-  parameters = jsonencode({})
-
-  # No valid Azure Policy alias exists for this setting, so the policy rule only audits existence for documentation.
-  policy_rule = jsonencode({
-    if = {
-      field  = "type",
-      equals = "Microsoft.DBforPostgreSQL/flexibleServers"
-    },
-    then = {
-      effect = "Manual"
-    }
-  })
-}
-# --- End of corp-Ensure server parameter 'logfiles.retention days' is greater than 3 days for PostgreSQL flexible server.tf ---
-
-# --- Start of corp-Ensure server parameter 'require secure transport' is set to 'ON' for MySQL flexible server.tf ---
-resource "azurerm_policy_definition" "require_secure_transport_mysql" {
-  name                = "Require-Secure-Transport-MySQL"
-  display_name        = "Ensure server parameter 'require_secure_transport' is set to 'ON' for MySQL flexible server"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Manual control: Ensure 'require_secure_transport' is set to 'ON' for MySQL flexible servers. No Azure Policy alias currently exists for this setting, so this policy is for documentation and compliance tracking only."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Database"
-  })
-
-  parameters = jsonencode({})
-
-  # No valid Azure Policy alias exists for this setting, so the policy rule only audits existence for documentation.
-  policy_rule = jsonencode({
-    if = {
-      field  = "type",
-      equals = "Microsoft.DBforMySQL/flexibleServers"
-    },
-    then = {
-      effect = "Manual"
-    }
-  })
-}
-# --- End of corp-Ensure server parameter 'require secure transport' is set to 'ON' for MySQL flexible server.tf ---
-
-# --- Start of corp-Ensure server parameter 'tls version' is set to 'TLSv1.2' (or higher) for MySQL flexible server.tf ---
-resource "azurerm_policy_definition" "tls_version_mysql_flexible_server" {
-  name                = "TLS-Version-MySQL-Flexible-Server"
-  display_name        = "Ensure server parameter 'tls_version' is set to 'TLSv1.2' (or higher) for MySQL flexible server"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Enforces that the 'tls_version' parameter is set to 'TLSv1.2' or higher to ensure secure communication with the MySQL Flexible Server."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Security"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      field  = "type",
-      equals = "Microsoft.DBforMySQL/flexibleServers"
-    },
-    then = {
-      effect = "deployIfNotExists",
-      details = {
-        type = "Microsoft.DBforMySQL/flexibleServers/configurations",
-        name = "tls_version",
-        roleDefinitionIds = [
-          "/providers/Microsoft.Authorization/roleDefinitions/8a1b3204-d7f0-4a3c-9f9e-8c118f51a92c"
-        ],
-        deployment = {
-          properties = {
-            mode = "incremental",
-            template = {
-              "$schema" = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-              contentVersion = "1.0.0.0",
-              parameters = {
-                serverName = {
-                  type = "string"
-                },
-                location = {
-                  type = "string"
-                }
-              },
-              resources = [
-                {
-                  type = "Microsoft.DBforMySQL/flexibleServers/configurations",
-                  apiVersion = "2021-05-01",
-                  name = "[concat(parameters('serverName'), '/tls_version')]",
-                  location = "[parameters('location')]",
-                  properties = {
-                    value = "TLSv1.2",
-                    source = "user-override"
-                  }
-                }
-              ]
-            },
-            parameters = {
-              serverName = {
-                value = "[field('name')]"
-              },
-              location = {
-                value = "[field('location')]"
-              }
-            }
-          }
-        }
-      }
-    }
-  })
-}
-# --- End of corp-Ensure server parameter 'tls version' is set to 'TLSv1.2' (or higher) for MySQL flexible server.tf ---
-
-# --- Start of corp-Ensure that 'Agentless scanning for machines' component status is set to 'On'.tf ---
-resource "azurerm_policy_definition" "agentless_scanning_for_machines" {
-  name                = "Agentless-Scanning-For-Machines"
-  display_name        = "Ensure that 'Agentless scanning for machines' component status is set to 'On'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure that 'Agentless scanning for machines' component status is set to 'On'"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Security"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Audit"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Security/assessments"
-        },
-        {
-          field  = "Microsoft.Security/assessments/status.code",
-          equals = "Enabled"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Ensure that 'Agentless scanning for machines' component status is set to 'On'.tf ---
-
-# --- Start of corp-Ensure that 'Enable Data Access Authentication Mode' is 'Checked'.tf ---
-resource "azurerm_policy_definition" "enable_data_access_auth_mode" {
-  name                = "Enable-Data-Access-Authentication-Mode"
-  display_name        = "Ensure that 'Enable Data Access Authentication Mode' is 'Checked'"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "This policy audits Azure Key Vaults that are not using the RBAC permission model. It helps ensure access control is managed via Azure RBAC instead of access policies."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Key Vault"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      field  = "type",
-      equals = "Microsoft.KeyVault/vaults"
-    },
-    then = {
-      effect = "auditIfNotExists",
-      details = {
-        type = "Microsoft.KeyVault/vaults",
-        existenceCondition = {
-          field  = "Microsoft.KeyVault/vaults/enableRbacAuthorization",
-          equals = true
-        }
-      }
-    }
-  })
-}
-# --- End of corp-Ensure that 'Enable Data Access Authentication Mode' is 'Checked'.tf ---
-
-# --- Start of corp-Ensure that 'Enable key rotation reminders' is enabled for each Storage Account.tf ---
-resource "azurerm_policy_definition" "enable_key_rotation_reminders" {
-  name                = "Enable-Key-Rotation-Reminders"
-  display_name        = "Ensure that 'Enable key rotation reminders' is enabled for each Storage Account"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "This policy ensures that 'Enable key rotation reminders' is enabled for all Storage Accounts."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Storage"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Storage/storageAccounts"
-        },
-        {
-          field     = "Microsoft.Storage/storageAccounts/keyPolicy.keyExpirationPeriodInDays",
-          notEquals = 90
-        }
-      ]
-    },
-    then = {
-      effect = "audit"
-    }
-  })
-}
-# --- End of corp-Ensure that 'Enable key rotation reminders' is enabled for each Storage Account.tf ---
-
-# --- Start of corp-Ensure that 'Endpoint protection' component status is set to On'.tf ---
-resource "azurerm_policy_definition" "endpoint_protection_component_on" {
-  name                = "Endpoint-Protection-Component-On"
-  display_name        = "Ensure that 'Endpoint protection' component status is set to 'On'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure that 'Endpoint protection' component status is set to 'On'"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Security"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Audit"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Security/assessments"
-        },
-        {
-          field  = "Microsoft.Security/assessments/status.code",
-          equals = "Enabled"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Ensure that 'Endpoint protection' component status is set to On'.tf ---
-
-# --- Start of corp-Ensure that 'File Integrity Monitoring' component status is set to 'On'.tf ---
-resource "azurerm_policy_definition" "file_integrity_monitoring_on" {
-  name                = "File-Integrity-Monitoring-On"
-  display_name        = "Ensure that 'File Integrity Monitoring' component status is set to 'On'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure that 'File Integrity Monitoring' component status is set to 'On'"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Security"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Audit"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Security/assessments"
-        },
-        {
-          field  = "Microsoft.Security/assessments/status.code",
-          equals = "Enabled"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Ensure that 'File Integrity Monitoring' component status is set to 'On'.tf ---
-
-# --- Start of corp-Ensure that 'Notify users on password resets' is set to 'Yes'.tf ---
-resource "azurerm_policy_definition" "notify_users_on_password_resets" {
-  name                = "Notify-Users-On-Password-Resets"
-  display_name        = "Ensure that 'Notify users on password resets?' is set to 'Yes'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy ensures that users are notified on password resets."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "/providers/Microsoft.Authorization/policyDefinitions/notifyOnPasswordReset"
-        },
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "No"
-        }
-      ]
-    },
-    then = {
-      effect = "Audit"
-    }
-  })
-}
-# --- End of corp-Ensure that 'Notify users on password resets' is set to 'Yes'.tf ---
-
-# --- Start of corp-Ensure that 'Restrict user ability to access groups features in the Access Pane' is Set to 'Yes'.tf ---
-resource "azurerm_policy_definition" "restrict_access_groups_features_access_pane" {
-  name                = "Restrict-Access-Groups-Features-Access-Pane"
-  display_name        = "Ensure that 'Restrict user ability to access groups features in the Access Pane' is Set to 'Yes'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy audits if user ability to access groups features in the Access Pane is not restricted. Manual remediation is required."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Authorization/policyAssignments"
-        },
-        {
-          "field"  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          "equals" = "/providers/Microsoft.Authorization/policyDefinitions/effect"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "Audit"
-    }
-  })
-}
-# --- End of corp-Ensure that 'Restrict user ability to access groups features in the Access Pane' is Set to 'Yes'.tf ---
-
-# --- Start of corp-Ensure that 'System Assigned Managed Identity' is set to 'On'.tf ---
-resource "azurerm_policy_definition" "system_assigned_managed_identity_on" {
-  name                = "System-Assigned-Managed-Identity-On"
-  display_name        = "Ensure that 'System Assigned Managed Identity' is set to 'On'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure that 'System Assigned Managed Identity' is set to 'On'"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Audit"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Cache/Redis"
-        },
-        {
-          "field"     = "Microsoft.Cache/Redis/sku.name",
-          "notEquals" = "Premium"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Ensure that 'System Assigned Managed Identity' is set to 'On'.tf ---
-
-# --- Start of corp-Ensure that 'Vulnerability assessment for machines' component status is set to 'On'.tf ---
-resource "azurerm_policy_definition" "vulnerability_assessment_for_machines" {
-  name                = "Vulnerability-Assessment-For-Machines"
-  display_name        = "Ensure that 'Vulnerability assessment for machines' component status is set to 'On'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure that 'Vulnerability assessment for machines' component status is set to 'On'"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Security"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Audit"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Security/assessments"
-        },
-        {
-          field     = "Microsoft.Security/assessments/status",
-          notEquals = "On"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Ensure that 'Vulnerability assessment for machines' component status is set to 'On'.tf ---
-
-# --- Start of corp-Ensure that A Multi factor Authentication Policy Exists for Administrative Groups.tf ---
-resource "azurerm_policy_definition" "mfa_policy_admin_groups" {
-  name                = "MFA-Policy-Admin-Groups"
-  display_name        = "Ensure that A Multi-factor Authentication Policy Exists for Administrative Groups"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensures that MFA is enabled for all administrative groups."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Authorization/roleAssignments"
-        },
-        {
-          "field" = "Microsoft.Authorization/roleAssignments/roleDefinitionId",
-          "in" = [
-            "/providers/Microsoft.Authorization/roleDefinitions/{roleId1}",
-            "/providers/Microsoft.Authorization/roleDefinitions/{roleId2}"
-          ]
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "audit"
-    }
-  })
-}
-# --- End of corp-Ensure that A Multi factor Authentication Policy Exists for Administrative Groups.tf ---
-
-# --- Start of corp-Ensure that HTTP(S) access from the Internet is evaluated and restricted.tf ---
-resource "azurerm_policy_definition" "http_https_access_from_internet_restricted" {
-  name                = "HTTP-HTTPS-Access-From-Internet-Restricted"
-  display_name        = "Ensure that HTTP(S) access from the Internet is evaluated and restricted"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy audits NSG rules that allow inbound HTTP or HTTPS (TCP ports 80 or 443) traffic from the Internet."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Network"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Network/networkSecurityGroups/securityRules"
-        },
-        {
-          "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/access",
-          "equals" = "Allow"
-        },
-        {
-          "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/direction",
-          "equals" = "Inbound"
-        },
-        {
-          "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/protocol",
-          "equals" = "Tcp"
-        },
-        {
-          "field" = "Microsoft.Network/networkSecurityGroups/securityRules/sourceAddressPrefix",
-          "in"    = ["*", "Internet"]
-        },
-        {
-          "anyOf" = [
-            {
-              "field" = "Microsoft.Network/networkSecurityGroups/securityRules/destinationPortRange",
-              "in"    = ["80", "443"]
-            },
-            {
-              "field" = "Microsoft.Network/networkSecurityGroups/securityRules/destinationPortRanges[*]",
-              "contains" = "80"
-            },
-            {
-              "field" = "Microsoft.Network/networkSecurityGroups/securityRules/destinationPortRanges[*]",
-              "contains" = "443"
-            }
-          ]
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "audit"
-    }
-  })
-}
-# --- End of corp-Ensure that HTTP(S) access from the Internet is evaluated and restricted.tf ---
-
-# --- Start of corp-Ensure that Microsoft Cloud Security Benchmark policies are not set to 'Disabled'.tf ---
-resource "azurerm_policy_definition" "cloud_security_benchmark_not_disabled" {
-  name                = "Cloud-Security-Benchmark-Not-Disabled"
-  display_name        = "Ensure that Microsoft Cloud Security Benchmark policies are not set to 'Disabled'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure that Microsoft Cloud Security Benchmark policies are not set to 'Disabled'"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Security"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Audit"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Security/assessments"
-        },
-        {
-          "field"  = "Microsoft.Security/assessments/status.code",
-          "equals" = "Disabled"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Ensure that Microsoft Cloud Security Benchmark policies are not set to 'Disabled'.tf ---
-
-# --- Start of corp-Ensure that Microsoft Defender External Attack Surface Monitoring is enabled.tf ---
-resource "azurerm_policy_definition" "defender_easm_enabled" {
-  name                = "Defender-EASM-Enabled"
-  display_name        = "Ensure that Microsoft Defender External Attack Surface Monitoring (EASM) is enabled"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure that Microsoft Defender External Attack Surface Monitoring (EASM) is enabled"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Security"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Audit"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Security/assessments"
-        },
-        {
-          field  = "Microsoft.Security/assessments/status.code",
-          equals = "Enabled"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-Ensure that Microsoft Defender External Attack Surface Monitoring is enabled.tf ---
-
-# --- Start of corp-Ensure that Microsoft Defender for Cloud Apps integration with Microsoft Defender for Cloud is Selected.tf ---
-resource "azurerm_policy_definition" "defender_cloud_apps_integration" {
-  name                = "Defender-Cloud-Apps-Integration"
-  display_name        = "Ensure that Microsoft Defender for Cloud Apps integration with Microsoft Defender for Cloud is Selected"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensures Microsoft Defender for Cloud Apps integration with Microsoft Defender for Cloud is enabled (CIS Microsoft Azure Foundations Benchmark v3.0.0 3.1.1.2)"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Security Center"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        displayName = "Effect",
-        description = "Enable or disable the execution of the policy"
-      },
-      allowedValues = [
-        "DeployIfNotExists",
-        "AuditIfNotExists",
-        "Disabled"
-      ],
-      defaultValue = "DeployIfNotExists"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Security/settings"
-        },
-        {
-          field  = "name",
-          equals = "MCAS"
-        },
-        {
-          field     = "Microsoft.Security/settings/DataExportSettings.enabled",
-          notEquals = "true"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]",
-      details = {
-        type = "Microsoft.Security/settings",
-        existenceCondition = {
-          field  = "Microsoft.Security/settings/DataExportSettings.enabled",
-          equals = "true"
-        },
-        deployment = {
-          properties = {
-            mode = "incremental",
-            template = {
-              "$schema" = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-              contentVersion = "1.0.0.0",
-              resources = [
-                {
-                  type       = "Microsoft.Security/settings",
-                  apiVersion = "2022-01-01-preview",
-                  name       = "MCAS",
-                  properties = {
-                    enabled     = true,
-                    settingKind = "DataExportSettings"
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    }
-  })
-}
-# --- End of corp-Ensure that Microsoft Defender for Cloud Apps integration with Microsoft Defender for Cloud is Selected.tf ---
-
-# --- Start of corp-Ensure that Number of days before users are asked to re confirm their authentication information is not set to 0.tf ---
-resource "azurerm_policy_definition" "number_of_days_reconfirm_auth" {
-  name                = "Number-Of-Days-Reconfirm-Auth"
-  display_name        = "Ensure that Number of days before users are asked to re-confirm their authentication information is not set to 0"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy ensures that the number of days before users are asked to re-confirm their authentication information is not set to 0."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Authorization/policyAssignments"
-        },
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "/providers/Microsoft.Authorization/policyDefinitions/numberOfDays"
-        },
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = 0
-        }
-      ]
-    },
-    then = {
-      effect = "Audit"
-    }
-  })
-}
-# --- End of corp-Ensure that Number of days before users are asked to re confirm their authentication information is not set to 0.tf ---
-
-# --- Start of corp-Ensure that Public IP addresses are Evaluated on a Periodic Basis.tf ---
-resource "azurerm_policy_definition" "public_ip_addresses_periodic_evaluation" {
-  name                = "Public-IP-Addresses-Periodic-Evaluation"
-  display_name        = "Ensure that Public IP addresses are Evaluated on a Periodic Basis"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Audits all Public IP Addresses that are missing a required tag (e.g., 'reviewDate') to support periodic review of public exposure."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Network"
-  })
-
-  parameters = jsonencode({
-    tagName = {
-      type = "String",
-      metadata = {
-        description = "The name of the tag used for periodic review tracking (e.g., reviewDate or owner).",
-        displayName = "Required Tag Name"
-      },
-      defaultValue = "reviewDate"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Network/publicIPAddresses"
-        },
-        {
-          "field"  = "[concat('tags[', parameters('tagName'), ']')]",
-          "exists" = "false"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "audit"
-    }
-  })
-}
-# --- End of corp-Ensure that Public IP addresses are Evaluated on a Periodic Basis.tf ---
-
-# --- Start of corp-Ensure that Register with Azure Active Directory is enabled on App Service.tf ---
-resource "azurerm_policy_definition" "register_with_aad_enabled_app_service" {
-  name                = "Register-With-AAD-Enabled-App-Service"
-  display_name        = "Ensure that Register with Azure Active Directory is enabled on App Service"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "This policy audits deployments of App Services that do not contain an authSettings block, which is required to register with Azure AD."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "App Service"
-  })
-
-  parameters = jsonencode({
-    authConfiguredDeploymentNamePattern = {
-      type = "String",
-      metadata = {
-        description = "Pattern for deployment names that include auth settings (e.g., AAD)",
-        displayName = "Auth-Configured Deployment Name Pattern"
-      },
-      defaultValue = "auth*"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Resources/deployments"
-        },
-        {
-          "field"    = "name",
-          "notLike"  = "[parameters('authConfiguredDeploymentNamePattern')]"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "audit"
-    }
-  })
-}
-# --- End of corp-Ensure that Register with Azure Active Directory is enabled on App Service.tf ---
-
-# --- Start of corp-Ensure that Resource Locks are set for Mission Critical Azure Resources.tf ---
-resource "azurerm_policy_definition" "resource_locks_mission_critical" {
-  name                = "Resource-Locks-Mission-Critical"
-  display_name        = "Ensure that Resource Locks are set for Mission-Critical Azure Resources"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Audits resources that are not tagged as mission-critical. Used to manually cross-check with resource locks."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "CIS",
-    version  = "1.0.0"
-  })
-
-  parameters = jsonencode({
-    tagName = {
-      type = "String",
-      metadata = {
-        displayName = "Tag Name",
-        description = "Name of the tag to identify critical resources"
-      },
-      defaultValue = "critical"
-    },
-    tagValue = {
-      type = "String",
-      metadata = {
-        displayName = "Tag Value",
-        description = "Value of the tag to identify critical resources"
-      },
-      defaultValue = "true"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"     = "[concat('tags[', parameters('tagName'), ']')]",
-          "notEquals" = "[parameters('tagValue')]"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "audit"
-    }
-  })
-}
-# --- End of corp-Ensure that Resource Locks are set for Mission Critical Azure Resources.tf ---
-
-# --- Start of corp-Ensure that Shared Access Signature Tokens Expire Within an Hour.tf ---
-resource "azurerm_policy_definition" "sas_tokens_expire_within_hour" {
-  name                = "SAS-Tokens-Expire-Within-Hour"
-  display_name        = "Ensure that Shared Access Signature Tokens Expire Within an Hour"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy reminds users to set Shared Access Signature tokens to expire within one hour. Due to platform limitations, this must be enforced through manual review or custom automation."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Storage"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      field  = "type",
-      equals = "Microsoft.Storage/storageAccounts"
-    },
-    then = {
-      effect = "auditIfNotExists",
-      details = {
-        type = "Microsoft.Insights/activityLogAlerts",
-        existenceCondition = {
-          allOf = [
-            {
-              field  = "Microsoft.Insights/activityLogAlerts/condition.allOf[*].field",
-              equals = "operationName"
-            },
-            {
-              field  = "Microsoft.Insights/activityLogAlerts/condition.allOf[*].equals",
-              equals = "Microsoft.Storage/storageAccounts/ListAccountSas/action"
-            }
-          ]
-        }
-      }
-    }
-  })
-}
-# --- End of corp-Ensure that Shared Access Signature Tokens Expire Within an Hour.tf ---
-
-# --- Start of corp-Ensure that Storage Account Access Keys are Periodically Regenerated.tf ---
-resource "azurerm_policy_definition" "storage_account_access_keys_regenerated" {
-  name                = "Storage-Account-Access-Keys-Regenerated"
-  display_name        = "Ensure that Storage Account Access Keys are Periodically Regenerated"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Audit Storage Accounts that do not have key expiration policy set. Enforcing key expiration helps ensure keys are regenerated periodically."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Storage"
-  })
-
-  parameters = jsonencode({
-    keyExpirationDays = {
-      type = "Integer",
-      metadata = {
-        displayName = "Maximum Key Age (Days)",
-        description = "Maximum number of days access keys are allowed before they should be regenerated."
-      },
-      defaultValue = 90
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Storage/storageAccounts"
-        },
-        {
-          field     = "Microsoft.Storage/storageAccounts/keyPolicy.keyExpirationPeriodInDays",
-          notEquals = "[parameters('keyExpirationDays')]"
-        }
-      ]
-    },
-    then = {
-      effect = "audit"
-    }
-  })
-}
-# --- End of corp-Ensure that Storage Account Access Keys are Periodically Regenerated.tf ---
-
-# --- Start of corp-Ensure that UDP access from the Internet is evaluated and restricted.tf ---
-resource "azurerm_policy_definition" "udp_access_from_internet_restricted" {
-  name                = "UDP-Access-From-Internet-Restricted"
-  display_name        = "Ensure that UDP access from the Internet is evaluated and restricted"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy audits NSG rules that allow inbound UDP traffic from the Internet. UDP should be restricted unless explicitly required."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Network"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Network/networkSecurityGroups/securityRules"
-        },
-        {
-          "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/access",
-          "equals" = "Allow"
-        },
-        {
-          "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/direction",
-          "equals" = "Inbound"
-        },
-        {
-          "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/protocol",
-          "equals" = "Udp"
-        },
-        {
-          "anyOf" = [
-            {
-              "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/sourceAddressPrefix",
-              "equals" = "*"
-            },
-            {
-              "field"  = "Microsoft.Network/networkSecurityGroups/securityRules/sourceAddressPrefix",
-              "equals" = "Internet"
-            }
-          ]
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "audit"
-    }
-  })
-}
-# --- End of corp-Ensure that UDP access from the Internet is evaluated and restricted.tf ---
-
-# --- Start of corp-Ensure that a 'Diagnostic Setting' exists for Subscription Activity Logs.tf ---
-resource "azurerm_policy_definition" "diagnostic_setting_subscription_activity_logs" {
-  name                = "Diagnostic-Setting-Subscription-Activity-Logs"
-  display_name        = "Ensure that a 'Diagnostic Setting' exists for Subscription Activity Logs"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Audits subscriptions that do not have a diagnostic setting configured to export Activity Logs to Log Analytics, Event Hub, or Storage Account."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Monitoring"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "field"  = "type",
-      "equals" = "Microsoft.Resources/subscriptions"
-    },
-    "then" = {
-      "effect" = "auditIfNotExists",
-      "details" = {
-        "type" = "Microsoft.Insights/diagnosticSettings",
-        "existenceCondition" = {
-          "anyOf" = [
-            {
-              "field"  = "Microsoft.Insights/diagnosticSettings/logs.enabled",
-              "equals" = true
-            },
-            {
-              "field"  = "Microsoft.Insights/diagnosticSettings/metrics.enabled",
-              "equals" = true
-            }
-          ]
-        }
-      }
-    }
-  })
-}
-# --- End of corp-Ensure that a 'Diagnostic Setting' exists for Subscription Activity Logs.tf ---
-
-# --- Start of corp-Ensure that a Custom Bad Password List is set to 'Enforce' for your Organization.tf ---
-resource "azurerm_policy_definition" "custom_bad_password_list_enforce" {
-  name                = "Custom-Bad-Password-List-Enforce"
-  display_name        = "Ensure that a Custom Bad Password List is set to 'Enforce' for your Organization"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy audits if the custom bad password list is not set to 'Enforce' in Microsoft Entra password protection settings. Manual remediation is required."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Authorization/policyAssignments"
-        },
-        {
-          "field"  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          "equals" = "/providers/Microsoft.Authorization/policyDefinitions/customBadPasswordListEnforcementState"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "Audit"
-    }
-  })
-}
-# --- End of corp-Ensure that a Custom Bad Password List is set to 'Enforce' for your Organization.tf ---
-
-# --- Start of corp-Ensure that account 'Lockout Threshold' is less than or equal to '10'.tf ---
-resource "azurerm_policy_definition" "account_lockout_threshold" {
-  name                = "Account-Lockout-Threshold"
-  display_name        = "Ensure that account 'Lockout Threshold' is less than or equal to '10'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy audits to ensure that account 'Lockout Threshold' is less than or equal to '10' (Manual)."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Authorization/policyAssignments"
-        },
-        {
-          "field" = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          "lessOrEquals" = 10
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "Audit"
-    }
-  })
-}
-# --- End of corp-Ensure that account 'Lockout Threshold' is less than or equal to '10'.tf ---
-
-# --- Start of corp-Ensure that account 'Lockout duration in seconds' is greater than or equal to '60'.tf ---
-resource "azurerm_policy_definition" "account_lockout_duration_seconds" {
-  name                = "Account-Lockout-Duration-Seconds"
-  display_name        = "Ensure that account 'Lockout duration in seconds' is greater than or equal to '60'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy audits to ensure that account 'Lockout duration in seconds' is greater than or equal to '60' (Manual)."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Authorization/policyAssignments"
-        },
-        {
-          "field" = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          "less"  = 60
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "Audit"
-    }
-  })
-}
-# --- End of corp-Ensure that account 'Lockout duration in seconds' is greater than or equal to '60'.tf ---
-
-# --- Start of corp-Ensure that logging for Azure AppService 'HTTP logs' is enabled.tf ---
-resource "azurerm_policy_definition" "http_logs_enabled_appservice" {
-  name                = "HTTP-Logs-Enabled-AppService"
-  display_name        = "Ensure that logging for Azure AppService 'HTTP logs' is enabled"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Audits App Services where HTTP Logging (web server logging) is not enabled. This ensures access logs are available for diagnostics and compliance."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "App Service"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Web/sites"
-        },
-        {
-          "field"     = "Microsoft.Web/sites/siteConfig.httpLoggingEnabled",
-          "notEquals" = true
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "audit"
-    }
-  })
-}
-
-# --- End of corp-Ensure that logging for Azure AppService 'HTTP logs' is enabled.tf ---
-
-# --- Start of corp-SQL managed instances deploy a specific min TLS version requirement..tf ---
-resource "azurerm_policy_definition" "sql_managed_instance_min_tls" {
-  name                = "Deploy-SqlMi-minTLS"
-  display_name        = "SQL managed instances deploy a specific min TLS version requirement."
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Deploy a specific min TLS version requirement and enforce SSL on SQL managed instances. Enables secure server to client by enforcing minimal TLS Version to secure the connection between your database server and your client applications. This configuration enforces that SSL is always enabled for accessing your database server."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category = "SQL",
-    source   = "https://github.com/Azure/Enterprise-Scale/",
-    version  = "1.3.0"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "Enable or disable the execution of the policy minimum TLS version SQL servers",
-        displayName = "Effect SQL servers"
-      },
-      allowedValues = [
-        "DeployIfNotExists",
-        "Disabled"
-      ],
-      defaultValue = "DeployIfNotExists"
-    },
-    minimalTlsVersion = {
-      type = "String",
-      metadata = {
-        description = "Select version minimum TLS version SQL servers to enforce",
-        displayName = "Select version for SQL server"
-      },
-      allowedValues = [
-        "1.2",
-        "1.1",
-        "1.0"
-      ],
-      defaultValue = "1.2"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "equals" = "Microsoft.Sql/managedInstances",
-          "field"  = "type"
-        },
-        {
-          "field" = "Microsoft.Sql/managedInstances/minimalTlsVersion",
-          "less"  = "[parameters('minimalTlsVersion')]"
-        }
-      ]
-    },
-    "then" = {
-      "details" = {
-        "deployment" = {
-          "properties" = {
-            "mode" = "Incremental",
-            "parameters" = {
-              "location" = {
-                "value" = "[field('location')]"
-              },
-              "minimalTlsVersion" = {
-                "value" = "[parameters('minimalTlsVersion')]"
-              },
-              "resourceName" = {
-                "value" = "[field('name')]"
-              }
-            },
-            "template" = {
-              "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-              "contentVersion" = "1.0.0.0",
-              "outputs" = {},
-              "parameters" = {
-                "location" = {
-                  "type" = "String"
-                },
-                "minimalTlsVersion" = {
-                  "type" = "String"
-                },
-                "resourceName" = {
-                  "type" = "String"
-                }
-              },
-              "resources" = [
-                {
-                  "apiVersion" = "2020-02-02-preview",
-                  "location"   = "[parameters('location')]",
-                  "name"       = "[concat(parameters('resourceName'))]",
-                  "properties" = {
-                    "minimalTlsVersion" = "[parameters('minimalTlsVersion')]"
-                  },
-                  "type" = "Microsoft.Sql/managedInstances"
-                }
-              ],
-              "variables" = {}
-            }
-          }
-        },
-        "evaluationDelay" = "AfterProvisioningSuccess",
-        "existenceCondition" = {
-          "allOf" = [
-            {
-              "equals" = "[parameters('minimalTlsVersion')]",
-              "field"  = "Microsoft.Sql/managedInstances/minimalTlsVersion"
-            }
-          ]
-        },
-        "roleDefinitionIds" = [
-          "/providers/microsoft.authorization/roleDefinitions/4939a1f6-9ae0-4e48-a1e0-f2cbe897382d"
-        ],
-        "type" = "Microsoft.Sql/managedInstances"
-      },
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-SQL managed instances deploy a specific min TLS version requirement..tf ---
-
-# --- Start of corp-SQL servers deploys a specific min TLS version requirement.tf ---
-resource "azurerm_policy_definition" "deploy_sql_min_tls" {
-  name                = "Deploy-SQL-minTLS"
-  display_name        = "SQL servers deploys a specific min TLS version requirement."
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Deploys a specific min TLS version requirement and enforce SSL on SQL servers. Enables secure server to client by enforcing minimal TLS Version to secure the connection between your database server and your client applications. This configuration enforces that SSL is always enabled for accessing your database server."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category   = "SQL",
-    source     = "https://github.com/Azure/Enterprise-Scale/",
-    version    = "1.2.0",
-    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
-    createdOn  = "2025-06-06T12:21:10.8028366Z",
-    updatedBy  = null,
-    updatedOn  = null
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "Enable or disable the execution of the policy minimum TLS version SQL servers",
-        displayName = "Effect SQL servers"
-      },
-      allowedValues = [
-        "DeployIfNotExists",
-        "Disabled"
-      ],
-      defaultValue = "DeployIfNotExists"
-    },
-    minimalTlsVersion = {
-      type = "String",
-      metadata = {
-        description = "Select version minimum TLS version SQL servers to enforce",
-        displayName = "Select version for SQL server"
-      },
-      allowedValues = [
-        "1.2",
-        "1.1",
-        "1.0"
-      ],
-      defaultValue = "1.2"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          equals = "Microsoft.Sql/servers",
-          field  = "type"
-        },
-        {
-          field = "Microsoft.Sql/servers/minimalTlsVersion",
-          notEquals = "[parameters('minimalTlsVersion')]"
-        }
-      ]
-    },
-    then = {
-      details = {
-        deployment = {
-          properties = {
-            mode = "Incremental",
-            parameters = {
-              location = {
-                value = "[field('location')]"
-              },
-              minimalTlsVersion = {
-                value = "[parameters('minimalTlsVersion')]"
-              },
-              resourceName = {
-                value = "[field('name')]"
-              }
-            },
-            template = {
-              "$schema" = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-              contentVersion = "1.0.0.0",
-              outputs = {},
-              parameters = {
-                location = {
-                  type = "String"
-                },
-                minimalTlsVersion = {
-                  type = "String"
-                },
-                resourceName = {
-                  type = "String"
-                }
-              },
-              resources = [
-                {
-                  apiVersion = "2019-06-01-preview",
-                  location   = "[parameters('location')]",
-                  name       = "[parameters('resourceName')]",
-                  properties = {
-                    minimalTlsVersion = "[parameters('minimalTlsVersion')]"
-                  },
-                  type = "Microsoft.Sql/servers"
-                }
-              ],
-              variables = {}
-            }
-          }
-        },
-        existenceCondition = {
-          allOf = [
-            {
-              equals = "[parameters('minimalTlsVersion')]",
-              field  = "Microsoft.Sql/servers/minimalTlsVersion"
-            }
-          ]
-        },
-        name = "current",
-        roleDefinitionIds = [
-          "/providers/microsoft.authorization/roleDefinitions/6d8ee4ec-f05a-4a1d-8b00-a9b17e38b437"
-        ],
-        type = "Microsoft.Sql/servers"
-      },
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of corp-SQL servers deploys a specific min TLS version requirement.tf ---
-
-# --- Start of prod-Additional Parameters-Do not allow deletion of specified resource and resource type.tf ---
-resource "azurerm_policy_definition" "denyaction_delete_resources" {
-  name                = "DenyAction-DeleteResources"
-  display_name        = "Do not allow deletion of specified resource and resource type"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy enables you to specify the resource and resource type that your organization can protect from accidentals deletion by blocking delete calls using the deny action effect."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category   = "General",
-    source     = "https://github.com/Azure/Enterprise-Scale/",
-    version    = "1.0.0",
-    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
-    createdOn  = "2025-06-06T12:21:29.9000301Z",
-    updatedBy  = null,
-    updatedOn  = null
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "Enable or disable the execution of the policy",
-        displayName = "Effect"
-      },
-      allowedValues = [
-        "DenyAction",
-        "Disabled"
-      ],
-      defaultValue = "DenyAction"
-    },
-    resourceName = {
-      type = "String",
-      metadata = {
-        description = "Provide the name of the resource that you want to protect from accidental deletion.",
-        displayName = "Resource Name"
-      }
-    },
-    resourceType = {
-      type = "String",
-      metadata = {
-        description = "Provide the resource type that you want to protect from accidental deletion.",
-        displayName = "Resource Type"
-      }
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          equals = "[parameters('resourceType')]",
-          field  = "type"
-        },
-        {
-          field = "name",
-          like  = "[parameters('resourceName')]"
-        }
-      ]
-    },
-    then = {
-      details = {
-        actionNames = [
-          "delete"
-        ]
-      },
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of prod-Additional Parameters-Do not allow deletion of specified resource and resource type.tf ---
-
-# --- Start of prod-Additional Parameters-Prod-Encryption for storage services should be enforced for Storage Accounts.tf ---
-resource "azurerm_policy_definition" "enforce_storage_encryption" {
-  name                = "Enforce-Storage-Encryption"
-  display_name        = "Encryption for storage services should be enforced for Storage Accounts"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy enables you to specify the resource and resource type that your organization can protect from accidental deletion by blocking delete calls using the deny action effect."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-  
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category  = "General",
-    source    = "https://github.com/Azure/Enterprise-Scale/",
-    version   = "1.0.0"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "Enable or disable the execution of the policy",
-        displayName = "Effect"
-      },
-      allowedValues = [
-        "DenyAction",
-        "Disabled"
-      ],
-      defaultValue = "DenyAction"
-    },
-    resourceName = {
-      type = "String",
-      metadata = {
-        description = "Provide the name of the resource that you want to protect from accidental deletion.",
-        displayName = "Resource Name"
-      }
-    },
-    resourceType = {
-      type = "String",
-      metadata = {
-        description = "Provide the resource type that you want to protect from accidental deletion.",
-        displayName = "Resource Type"
-      }
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "equals" = "[parameters('resourceType')]",
-          "field"  = "type"
-        },
-        {
-          "field" = "name",
-          "like"  = "[parameters('resourceName')]"
-        }
-      ]
-    },
-    "then" = {
-      "details" = {
-        "actionNames" = [
-          "delete"
-        ]
-      },
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of prod-Additional Parameters-Prod-Encryption for storage services should be enforced for Storage Accounts.tf ---
-
-# --- Start of prod-Deny enabling anonymous access on individual storage containers.tf ---
-resource "azurerm_policy_definition" "deny_storage_account_public_access" {
-  name                = "Deny-Storage-Container-Anonymous-Access"
-  display_name        = "Deny enabling public access on storage accounts"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Prevents enabling public (anonymous) access on Azure Storage accounts."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Storage"
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Storage/storageAccounts"
-        },
-        {
-          field  = "Microsoft.Storage/storageAccounts/allowBlobPublicAccess",
-          equals = true
-        }
-      ]
-    }
-    then = {
-      effect = "deny"
-    }
-  })
-}
-# --- End of prod-Deny enabling anonymous access on individual storage containers.tf ---
-
-# --- Start of prod-Deny public network access to Key Vault.tf ---
-resource "azurerm_policy_definition" "deny_key_vault_public_access" {
-  name                = "Deny-KeyVault-Public-Network-Access"
-  display_name        = "Deny public network access to Key Vault"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensures that public network access to Azure Key Vault is disabled."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Key Vault"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type          = "String",
-      allowedValues = ["Deny", "Disabled"],
-      defaultValue  = "Deny",
-      metadata = {
-        description = "Enable or disable the execution of the policy",
-        displayName = "Effect"
-      }
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.KeyVault/vaults"
-        },
-        {
-          field  = "Microsoft.KeyVault/vaults/publicNetworkAccess",
-          notEquals = "Disabled"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of prod-Deny public network access to Key Vault.tf ---
-
-# --- Start of prod-DenyAction implementation on Activity Logs.tf ---
-resource "azurerm_policy_definition" "denyaction_activity_logs" {
-  name                = "DenyAction-ActivityLogs"
-  display_name        = "DenyAction implementation on Activity Logs"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "This is a DenyAction implementation policy on Activity Logs."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category   = "Monitoring",
-    deprecated = false,
-    source     = "https://github.com/Azure/Enterprise-Scale/",
-    version    = "1.0.0",
-    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
-    createdOn  = "2025-06-06T12:21:03.19153Z",
-    updatedBy  = null,
-    updatedOn  = null
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      equals = "Microsoft.Resources/subscriptions/providers/diagnosticSettings",
-      field  = "type"
-    },
-    then = {
-      details = {
-        actionNames = [
-          "delete"
-        ]
-      },
-      effect = "denyAction"
-    }
-  })
-}
-# --- End of prod-DenyAction implementation on Activity Logs.tf ---
-
-# --- Start of prod-DenyAction implementation on Diagnostic Logs.tf ---
-resource "azurerm_policy_definition" "denyaction_diagnostic_logs" {
-  name                = "DenyAction-DiagnosticLogs"
-  display_name        = "DenyAction implementation on Diagnostic Logs."
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "DenyAction implementation on Diagnostic Logs."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category   = "Monitoring",
-    deprecated = false,
-    source     = "https://github.com/Azure/Enterprise-Scale/",
-    version    = "1.0.0",
-    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
-    createdOn  = "2025-06-06T12:21:04.2778154Z",
-    updatedBy  = null,
-    updatedOn  = null
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      equals = "Microsoft.Insights/diagnosticSettings",
-      field  = "type"
-    },
-    then = {
-      details = {
-        actionNames = [
-          "delete"
-        ]
-      },
-      effect = "denyAction"
-    }
-  })
-}
-# --- End of prod-DenyAction implementation on Diagnostic Logs.tf ---
-
-# --- Start of prod-Enforce Azure DDoS Network Protection while creating vNets.tf ---
-resource "azurerm_policy_definition" "enforce_ddos_protection_on_vnet" {
-  name                = "enforce-ddos-protection-on-vnet"
-  display_name        = "Enforce Azure DDoS Network Protection on Virtual Networks"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy ensures that every Virtual Network has Azure DDoS Network Protection enabled."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Network"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        displayName = "Effect",
-        description = "Enable or disable the execution of the policy"
-      },
-      allowedValues = [
-        "Deny",
-        "Audit",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Network/virtualNetworks"
-        },
-        {
-          "field"     = "Microsoft.Network/virtualNetworks/ddosProtectionPlan.id",
-          "exists"    = "false"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of prod-Enforce Azure DDoS Network Protection while creating vNets.tf ---
-
-# --- Start of prod-Enforce Virtual Network Encryption while creating vNets.tf ---
-resource "azurerm_policy_definition" "force_vnet_encryption" {
-  name                = "Force-Virtual-Network-Encryption"
-  display_name        = "Enforce Virtual Network Encryption"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy ensures that encryption is enabled on all Virtual Networks."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Network"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        displayName = "Effect",
-        description = "Enable or disable the execution of the policy"
-      },
-      allowedValues = [
-        "Deny",
-        "Audit",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Network/virtualNetworks"
-        },
-        {
-          "field"     = "Microsoft.Network/virtualNetworks/encryption.enabled",
-          "notEquals" = "true"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of prod-Enforce Virtual Network Encryption while creating vNets.tf ---
-
-# --- Start of prod-Ensure 'Cross Region Restore' is set to 'Enabled' on Recovery Services vaults.tf ---
-resource "azurerm_policy_definition" "cross_region_restore_enabled" {
-  name                = "Cross-Region-Restore-Enabled"
-  display_name        = "Ensure 'Cross Region Restore' is set to 'Enabled' on Recovery Services vaults"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure 'Cross Region Restore' is set to 'Enabled' on Recovery Services vaults"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Backup"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.RecoveryServices/vaults"
-        },
-        {
-          field     = "Microsoft.RecoveryServices/vaults/redundancySettings.crossRegionRestore",
-          notEquals = "Enabled"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of prod-Ensure 'Cross Region Restore' is set to 'Enabled' on Recovery Services vaults.tf ---
-
-# --- Start of prod-Ensure 'SMB protocol version' is set to 'SMB 3.1.1' or higher for SMB file shares.tf ---
-resource "azurerm_policy_definition" "smb_protocol_version_required" {
-  name                = "SMB-Protocol-Version-Required"
-  display_name        = "Ensure 'SMB protocol version' is set to 'SMB 3.1.1' or higher for SMB file shares"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure 'SMB protocol version' is set to 'SMB 3.1.1' or higher for SMB file shares"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Storage"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Storage/storageAccounts"
-        },
-        {
-          field  = "Microsoft.Storage/storageAccounts/sku.name",
-          equals = "Standard_LRS"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of prod-Ensure 'SMB protocol version' is set to 'SMB 3.1.1' or higher for SMB file shares.tf ---
-
-# --- Start of prod-Ensure 'Versioning' is set to 'Enabled' on Azure Blob Storage storage accounts.tf ---
-resource "azurerm_policy_definition" "blob_versioning_enabled" {
-  name                = "Blob-Versioning-Enabled"
-  display_name        = "Ensure 'Versioning' is set to 'Enabled' on Azure Blob Storage storage accounts"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure 'Versioning' is set to 'Enabled' on Azure Blob Storage storage accounts"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Storage"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Storage/storageAccounts/blobServices"
-        },
-        {
-          field  = "Microsoft.Storage/storageAccounts/blobServices/isVersioningEnabled",
-          equals = "false"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of prod-Ensure 'Versioning' is set to 'Enabled' on Azure Blob Storage storage accounts.tf ---
-
-# --- Start of prod-Ensure Guest users access restrictions is set to 'Guest user access is restricted to own directory.tf ---
-resource "azurerm_policy_definition" "deny_guest_user_access" {
-  name                = "Deny-Guest-User-Access"
-  display_name        = "Ensure That Guest users access restrictions is set to 'Guest user access is restricted to their own directory objects'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensures that guest user access is restricted to their own directory objects."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "Microsoft.Authorization/roleAssignments/principalType",
-          equals = "Guest"
-        },
-        {
-          field    = "Microsoft.Authorization/roleAssignments/roleDefinitionId",
-          notEquals = "/providers/Microsoft.Authorization/roleDefinitions/{roleDefinitionId}"
-        }
-      ]
-    },
-    then = {
-      effect = "deny"
-    }
-  })
-}
-# --- End of prod-Ensure Guest users access restrictions is set to 'Guest user access is restricted to own directory.tf ---
-
-# --- Start of prod-Ensure MFA is Required for Windows Azure Service Management API.tf ---
-resource "azurerm_policy_definition" "require_mfa_for_azure_management_api" {
-  name                = "Require-MFA-For-Azure-Management-API"
-  display_name        = "Ensure Multi-factor Authentication is Required for Windows Azure Service Management API"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy ensures that MFA is required for accessing the Azure Management API."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Security"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      field  = "type",
-      equals = "Microsoft.Management/managementGroups"
-    },
-    then = {
-      effect = "deny"
-    }
-  })
-}
-# --- End of prod-Ensure MFA is Required for Windows Azure Service Management API.tf ---
-
-# --- Start of prod-Ensure Private Virtual Networks are used for Container Instances.tf ---
-resource "azurerm_policy_definition" "private_vnet_for_container_instances" {
-  name                = "Private-VNet-For-Container-Instances"
-  display_name        = "Ensure Private Virtual Networks are used for Container Instances"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy ensures that all container services like ACI or AKS are integrated with a private virtual network to enhance security and network isolation."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Network"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      anyOf = [
-        {
-          allOf = [
-            {
-              field  = "type",
-              equals = "Microsoft.ContainerInstance/containerGroups"
-            },
-            {
-              field     = "Microsoft.ContainerInstance/containerGroups/sku",
-              notEquals = "VirtualNetwork"
-            }
-          ]
-        },
-        {
-          allOf = [
-            {
-              field  = "type",
-              equals = "Microsoft.ContainerService/managedClusters"
-            },
-            {
-              field     = "Microsoft.ContainerService/managedClusters/networkProfile.networkPlugin",
-              notEquals = "azure"
-            }
-          ]
-        }
-      ]
-    },
-    then = {
-      effect = "deny"
-    }
-  })
-}
-# --- End of prod-Ensure Private Virtual Networks are used for Container Instances.tf ---
-
-# --- Start of prod-Ensure Public Network Access is Disabled-Storage Account.tf ---
-resource "azurerm_policy_definition" "public_network_access_disabled" {
-  name                = "Public-Network-Access-Disabled"
-  display_name        = "Ensure Public Network Access is Disabled"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Deny storage accounts if public network access is not disabled."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
- 
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "Security"
-  })
- 
-  parameters = jsonencode({})
- 
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Storage/storageAccounts"
-        },
-        {
-          field  = "Microsoft.Storage/storageAccounts/publicNetworkAccess",
-          notEquals = "Disabled"
-        }
-      ]
-    }
-    then = {
-      effect = "deny"
-    }
-  })  
-}
-# --- End of prod-Ensure Public Network Access is Disabled-Storage Account.tf ---
-
-# --- Start of prod-Ensure That 'Subscription leaving and entering Entra tenant' Is Set To 'Permit no one'.tf ---
-resource "azurerm_policy_definition" "restrict_subscription_movement" {
-  name                = "restrict_Subscription_Movement"
-  display_name        = "Ensure That 'Subscription leaving & entering Entra tenant' Is Set To 'Permit no one'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure that subscription movement in and out of the Microsoft Entra tenant is restricted."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Subscription Management"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Authorization/policyAssignments"
-        },
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "/providers/Microsoft.Authorization/policyDefinitions/allowSubscriptionMovement"
-        },
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "enbaled"
-        }
-      ]
-    },
-    then = {
-      effect = "deny"
-    }
-  })
-}
-# --- End of prod-Ensure That 'Subscription leaving and entering Entra tenant' Is Set To 'Permit no one'.tf ---
-
-# --- Start of prod-Ensure That ‘Users Can Register Applications’ Is Set to ‘No’.tf ---
-resource "azurerm_policy_definition" "deny_users_can_register_applications" {
-  name                = "Deny-Users-Can-Register-Applications"
-  display_name        = "Ensure That ‘Users Can Register Applications’ Is Set to ‘No’"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensures that 'Users Can Register Applications' is set to 'No'."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      field  = "Microsoft.Authorization/policyDefinitions/parameters",
-      equals = "UsersCanRegisterApplications"
-    },
-    then = {
-      effect = "deny"
-    }
-  })
-}
-# --- End of prod-Ensure That ‘Users Can Register Applications’ Is Set to ‘No’.tf ---
-
-# --- Start of prod-Ensure `User consent for applications` is set to `Do not allow user consent.tf ---
-resource "azurerm_policy_definition" "deny_user_consent_for_applications" {
-  name                = "Deny-User-Consent-For-Applications"
-  display_name        = "Ensure `User consent for applications` is set to `Do not allow user consent`"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensures that user consent for applications is set to 'Do not allow user consent'."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Authorization/policyAssignments"
-        },
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "/providers/Microsoft.Authorization/policyDefinitions/userConsent"
-        },
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "Allow"
-        }
-      ]
-    },
-    then = {
-      effect = "Deny"
-    }
-  })
-}
-# --- End of prod-Ensure `User consent for applications` is set to `Do not allow user consent.tf ---
-
-# --- Start of prod-Ensure public network access on Recovery Services vaults is Disabled.tf ---
-resource "azurerm_policy_definition" "deny_public_network_access_recovery_vaults" {
-  name                = "Deny-Public-Network-Access-Recovery-Vaults"
-  display_name        = "Ensure public network access on Recovery Services vaults is Disabled"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure public network access on Recovery Services vaults is Disabled"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Backup"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.RecoveryServices/vaults"
-        },
-        {
-          field  = "Microsoft.RecoveryServices/vaults/publicNetworkAccess",
-          equals = "Enabled"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of prod-Ensure public network access on Recovery Services vaults is Disabled.tf ---
-
-# --- Start of prod-Ensure soft delete for Azure File Shares is Enabled.tf ---
-resource "azurerm_policy_definition" "soft_delete_azure_file_shares" {
-  name                = "Soft-Delete-Azure-File-Shares"
-  display_name        = "Ensure soft delete for Azure File Shares is Enabled"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure soft delete for Azure File Shares is Enabled"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Storage"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Storage/storageAccounts/fileServices/shares"
-        },
-        {
-          field  = "Microsoft.Storage/storageAccounts/fileServices/shares/deleted",
-          equals = "true"
-        },
-        {
-          field  = "Microsoft.Storage/storageAccounts/fileServices/shares/remainingRetentionDays",
-          exists = "true"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of prod-Ensure soft delete for Azure File Shares is Enabled.tf ---
-
-# --- Start of prod-Ensure that 'Allow users to remember MFA on devices they trust' is Disabled.tf ---
-resource "azurerm_policy_definition" "deny_remember_mfa_on_trusted_devices" {
-  name                = "Deny-Remember-MFA-On-Trusted-Devices"
-  display_name        = "Ensure that 'Allow users to remember multi-factor authentication on devices they trust' is Disabled"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy ensures that the option to allow users to remember multi-factor authentication on devices they trust is disabled."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Security"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      field  = "type",
-      equals = "Microsoft.AzureActiveDirectory/b2cPolicies"
-    },
-    then = {
-      effect = "deny"
-    }
-  })
-}
-# --- End of prod-Ensure that 'Allow users to remember MFA on devices they trust' is Disabled.tf ---
-
-# --- Start of prod-Ensure that 'Minimum TLS version' is set to TLS v1.2.tf ---
-resource "azurerm_policy_definition" "minimum_tls_version_redis" {
-  name                = "Minimum-TLS-Version-Redis"
-  display_name        = "Ensure that 'Minimum TLS version' is set to TLS v1.2 (or higher)-Redis"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure that 'Minimum TLS version' is set to TLS v1.2 (or higher)"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Security"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Cache/Redis"
-        },
-        {
-          field  = "Microsoft.Cache/Redis/sslPort",
-          exists = "true"
-        },
-        {
-          field     = "Microsoft.Cache/Redis/minimumTlsVersion",
-          notEquals = "1.2"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-
-# --- End of prod-Ensure that 'Minimum TLS version' is set to TLS v1.2.tf ---
-
-# --- Start of prod-Ensure that 'Owners can manage group membership requests in My Groups' is set to 'No'.tf ---
-resource "azurerm_policy_definition" "deny_owners_manage_group_membership_requests" {
-  name                = "Deny-Owners-Manage-Group-Membership-Requests"
-  display_name        = "Ensure that 'Owners can manage group membership requests in My Groups' is set to 'No'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy ensures that 'Owners can manage group membership requests in My Groups' is set to 'No'."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "/providers/Microsoft.Authorization/policyDefinitions/ownersCanManageGroupMembershipRequests"
-        },
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "No"
-        }
-      ]
-    },
-    then = {
-      effect = "deny"
-    }
-  })
-}
-# --- End of prod-Ensure that 'Owners can manage group membership requests in My Groups' is set to 'No'.tf ---
-
-# --- Start of prod-Ensure that 'Public Network Access' is 'Disabled'-Redis.tf ---
-resource "azurerm_policy_definition" "public_network_access_disabled_redis" {
-  name                = "Public-Network-Access-Disabled-Redis"
-  display_name        = "Ensure that 'Public Network Access' is 'Disabled'-Redis"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure that 'Public Network Access' is 'Disabled'"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Security"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Cache/Redis"
-        },
-        {
-          field  = "Microsoft.Cache/Redis/enableNonSslPort",
-          exists = "true"
-        },
-        {
-          field  = "Microsoft.Cache/Redis/enableNonSslPort",
-          equals = "true"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of prod-Ensure that 'Public Network Access' is 'Disabled'-Redis.tf ---
-
-# --- Start of prod-Ensure that 'Restrict non admin users from creating tenants' is set to 'Yes'.tf ---
-resource "azurerm_policy_definition" "restrict_non_admin_tenant_creation" {
-  name                = "Restrict-Non-Admin-Tenant-Creation"
-  display_name        = "Ensure that 'Restrict non-admin users from creating tenants' is set to 'Yes'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure that only admin users can create tenants."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      field     = "Microsoft.Authorization/roleAssignments/roleDefinitionId",
-      notEquals = "/providers/Microsoft.Authorization/roleDefinitions/{roleIdForTenantCreator}"
-    },
-    then = {
-      effect = "deny"
-    }
-  })
-}
-# --- End of prod-Ensure that 'Restrict non admin users from creating tenants' is set to 'Yes'.tf ---
-
-# --- Start of prod-Ensure that 'Users can create Microsoft 365 groups in Azure portals, API or PowerShell' is set to 'No'.tf ---
-resource "azurerm_policy_definition" "deny_users_create_m365_groups" {
-  name                = "Deny-Users-Create-M365-Groups"
-  display_name        = "Ensure that 'Users can create Microsoft 365 groups in Azure portals, API or PowerShell' is set to 'No'"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure that users cannot create Microsoft 365 groups in Azure portals, API, or PowerShell."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "/providers/Microsoft.Authorization/policyDefinitions/creation"
-        },
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "true"
-        }
-      ]
-    },
-    then = {
-      effect = "deny"
-    }
-  })
-}
-# --- End of prod-Ensure that 'Users can create Microsoft 365 groups in Azure portals, API or PowerShell' is set to 'No'.tf ---
-
-# --- Start of prod-Ensure that A Multi factor Authentication Policy Exists for All Users.tf ---
-resource "azurerm_policy_definition" "mfa_policy_for_all_users" {
-  name                = "MFA-Policy-For-All-Users"
-  display_name        = "Ensure that A Multi-factor Authentication Policy Exists for All Users"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure that a Multi-factor Authentication Policy exists for all users."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Identity"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Authorization/policyAssignments"
-        },
-        {
-          field  = "Microsoft.Authorization/policyAssignments/policyDefinitionId",
-          equals = "/providers/Microsoft.Authorization/policyDefinitions/mfa"
-        }
-      ]
-    },
-    then = {
-      effect = "Deny"
-    }
-  })
-}
-# --- End of prod-Ensure that A Multi factor Authentication Policy Exists for All Users.tf ---
-
-# --- Start of prod-Ensure that SKU BasicConsumption is not used on artifacts that need to be monitored.tf ---
-resource "azurerm_policy_definition" "deny_basic_consumption_sku" {
-  name                = "Deny-Basic-Consumption-SKU"
-  display_name        = "Ensure that SKU Basic Consumption is not used on artifacts that need to be monitored"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "Prevents deployment of resources using 'Basic' or 'Consumption' SKUs to ensure high availability and monitoring capabilities."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "General"
-  })
-
-  parameters = jsonencode({
-    disallowedSkus = {
-      type = "Array",
-      metadata = {
-        description = "List of disallowed SKUs.",
-        displayName = "Disallowed SKUs"
-      },
-      defaultValue = [
-        "Basic",
-        "Consumption"
-      ]
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      anyOf = [
-        {
-          allOf = [
-            {
-              field  = "type",
-              equals = "Microsoft.Web/serverfarms"
-            },
-            {
-              field = "Microsoft.Web/serverfarms/sku.name",
-              in    = "[parameters('disallowedSkus')]"
-            }
-          ]
-        },
-        {
-          allOf = [
-            {
-              field  = "type",
-              equals = "Microsoft.ApiManagement/service"
-            },
-            {
-              field = "Microsoft.ApiManagement/service/sku.name",
-              in    = "[parameters('disallowedSkus')]"
-            }
-          ]
-        },
-        {
-          allOf = [
-            {
-              field  = "type",
-              equals = "Microsoft.Logic/workflows"
-            },
-            {
-              field  = "Microsoft.Logic/workflows/integrationServiceEnvironment.id",
-              exists = "false"
-            }
-          ]
-        }
-      ]
-    },
-    then = {
-      effect = "deny"
-    }
-  })
-}
-# --- End of prod-Ensure that SKU BasicConsumption is not used on artifacts that need to be monitored.tf ---
-
-# --- Start of prod-Ensure that soft delete for blobs on Azure Blob Storage storage accounts is Enabled.tf ---
-resource "azurerm_policy_definition" "soft_delete_blobs_enabled" {
-  name                = "Soft-Delete-Blobs-Enabled"
-  display_name        = "Ensure that soft delete for blobs on Azure Blob Storage storage accounts is Enabled"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "Ensure that soft delete for blobs on Azure Blob Storage storage accounts is Enabled"
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Storage"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect of the policy."
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Storage/storageAccounts/blobServices"
-        },
-        {
-          field  = "Microsoft.Storage/storageAccounts/blobServices/deleteRetentionPolicy",
-          exists = "false"
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of prod-Ensure that soft delete for blobs on Azure Blob Storage storage accounts is Enabled.tf ---
-
-# --- Start of prod-Ensure the web app has 'Client Certificates (Incoming client certificates)' set to 'On'.tf ---
-resource "azurerm_policy_definition" "webapp_client_cert_required" {
-  name                = "WebApp-Client-Cert-Required"
-  display_name        = "Ensure the web app has 'Client Certificates (Incoming client certificates)' set to 'On'"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "This policy ensures that Web Apps require incoming client certificates for mutual TLS authentication."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    version  = "1.0.0",
-    category = "App Service"
-  })
-
-  parameters = jsonencode({})
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          field  = "type",
-          equals = "Microsoft.Web/sites"
-        },
-        {
-          field     = "Microsoft.Web/sites/clientCertEnabled",
-          notEquals = true
-        }
-      ]
-    },
-    then = {
-      effect = "deny"
-    }
-  })
-}
-# --- End of prod-Ensure the web app has 'Client Certificates (Incoming client certificates)' set to 'On'.tf ---
-
-# --- Start of prod-Storage Accounts with SFTP enabled should be denied.tf ---
-resource "azurerm_policy_definition" "deny_storage_sftp" {
-  name                = "Deny-Storage-SFTP"
-  display_name        = "Storage Accounts with SFTP enabled should be denied"
-  policy_type         = "Custom"
-  mode                = "Indexed"
-  description         = "This policy denies the creation of Storage Accounts with SFTP enabled for Blob Storage."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category  = "Storage",
-    source    = "https://github.com/Azure/Enterprise-Scale/",
-    version   = "1.0.0"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect determines what happens when the policy rule is evaluated to match",
-        displayName = "Effect"
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Storage/storageAccounts"
-        },
-        {
-          "field"  = "Microsoft.Storage/storageAccounts/isSftpEnabled",
-          "equals" = "true"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of prod-Storage Accounts with SFTP enabled should be denied.tf ---
-
-# --- Start of prod-Storage Accounts with custom domains assigned should be denied.tf ---
-resource "azurerm_policy_definition" "deny_storageaccount_customdomain" {
-  name                = "Deny-StorageAccount-CustomDomain"
-  display_name        = "Storage Accounts with custom domains assigned should be denied"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy denies the creation of Storage Accounts with custom domains assigned as communication cannot be encrypted, and always uses HTTP."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category   = "Storage",
-    source     = "https://github.com/Azure/Enterprise-Scale/",
-    version    = "1.0.0",
-    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
-    createdOn  = "2025-06-06T12:21:12.7438781Z",
-    updatedBy  = null,
-    updatedOn  = null
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect determines what happens when the policy rule is evaluated to match",
-        displayName = "Effect"
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      allOf = [
-        {
-          equals = "Microsoft.Storage/storageAccounts",
-          field  = "type"
-        },
-        {
-          anyOf = [
-            {
-              exists = "true",
-              field  = "Microsoft.Storage/storageAccounts/customDomain"
-            },
-            {
-              equals = "true",
-              field  = "Microsoft.Storage/storageAccounts/customDomain.useSubDomainName"
-            }
-          ]
-        }
-      ]
-    },
-    then = {
-          effect = "[parameters('effect')]"
-        }
-      })
-    }
-# --- End of prod-Storage Accounts with custom domains assigned should be denied.tf ---
-
-# --- Start of prod-Subnets should have a Network Security Group.tf ---
-resource "azurerm_policy_definition" "deny_subnet_without_nsg" {
-  name                = "Deny-Subnet-Without-Nsg"
-  display_name        = "Subnets should have a Network Security Group (Manual)"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy denies the creation of a subnet without a Network Security Group. NSG help to protect traffic across subnet-level."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category   = "Network",
-    source     = "https://github.com/Azure/Enterprise-Scale/",
-    version    = "2.0.0",
-    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
-    createdOn  = "2025-06-06T12:21:07.3557624Z",
-    updatedBy  = null,
-    updatedOn  = null
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "Enable or disable the execution of the policy",
-        displayName = "Effect"
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    },
-    excludedSubnets = {
-      type = "Array",
-      metadata = {
-        description = "Array of subnet names that are excluded from this policy",
-        displayName = "Excluded Subnets"
-      },
-      defaultValue = [
-        "GatewaySubnet",
-        "AzureFirewallSubnet",
-        "AzureFirewallManagementSubnet"
-      ]
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      anyOf = [
-        {
-          allOf = [
-            {
-              equals = "Microsoft.Network/virtualNetworks",
-              field  = "type"
-            },
-            {
-              count = {
-                field = "Microsoft.Network/virtualNetworks/subnets[*]",
-                where = {
-                  allOf = [
-                    {
-                      exists = "false",
-                      field  = "Microsoft.Network/virtualNetworks/subnets[*].networkSecurityGroup.id"
-                    },
-                    {
-                      field = "Microsoft.Network/virtualNetworks/subnets[*].name",
-                      notIn = "[parameters('excludedSubnets')]"
-                    }
-                  ]
-                }
-              },
-              notEquals = 0
-            }
-          ]
-        },
-        {
-          allOf = [
-            {
-              equals = "Microsoft.Network/virtualNetworks/subnets",
-              field  = "type"
-            },
-            {
-              field = "name",
-              notIn = "[parameters('excludedSubnets')]"
-            },
-            {
-              exists = "false",
-              field  = "Microsoft.Network/virtualNetworks/subnets/networkSecurityGroup.id"
-            }
-          ]
-        }
-      ]
-    },
-    then = {
-      effect = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of prod-Subnets should have a Network Security Group.tf ---
-
-# --- Start of prod-Subnets should have a User Defined Route.tf ---
-resource "azurerm_policy_definition" "deny_subnet_without_udr" {
-  name                = "Deny-Subnet-Without-Udr"
-  display_name        = "Subnets should have a User Defined Route"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy denies the creation of a subnet without a User Defined Route (UDR)."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category   = "Network",
-    source     = "https://github.com/Azure/Enterprise-Scale/",
-    version    = "2.0.0",
-    createdBy  = "54952db3-f0e2-4198-9d11-9deb0514f4c8",
-    createdOn  = "2025-06-06T12:20:59.2405589Z",
-    updatedBy  = null,
-    updatedOn  = null
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "Enable or disable the execution of the policy",
-        displayName = "Effect"
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    },
-    excludedSubnets = {
-      type = "Array",
-      metadata = {
-        description = "Array of subnet names that are excluded from this policy",
-        displayName = "Excluded Subnets"
-      },
-      defaultValue = [
-        "AzureBastionSubnet"
-      ]
-    }
-  })
-
-  policy_rule = jsonencode({
-    if = {
-      anyOf = [
-        {
-          allOf = [
-            {
-              equals = "Microsoft.Network/virtualNetworks",
-              field  = "type"
-            },
-            {
-              count = {
-                field = "Microsoft.Network/virtualNetworks/subnets[*]",
-                where = {
-                  allOf = [
-                    {
-                      exists = "false",
-                      field  = "Microsoft.Network/virtualNetworks/subnets[*].routeTable.id"
-                    },
-                    {
-                      field = "Microsoft.Network/virtualNetworks/subnets[*].name",
-                      notIn = "[parameters('excludedSubnets')]"
-                    }
-                  ]
-                }
-              },
-              notEquals = 0
-            }
-          ]
-        },
-        {
-          allOf = [
-            {
-              equals = "Microsoft.Network/virtualNetworks/subnets",
-              field  = "type"
-            },
-            {
-              field = "name",
-              notIn = "[parameters('excludedSubnets')]"
-            },
-            {
-              exists = "false",
-              field  = "Microsoft.Network/virtualNetworks/subnets/routeTable.id"
-            }
-          ]
-        }
-      ]
-    },
-      then = {
-        effect = "[parameters('effect')]"
-      }
-    })
-  }
-# --- End of prod-Subnets should have a User Defined Route.tf ---
-
-# --- Start of prod-User Defined Routes with 'Next Hop Type' set to 'Internet' or 'VirtualNet.tf ---
-resource "azurerm_policy_definition" "deny_udr_with_specific_nexthop" {
-  name                = "Deny-UDR-With-Specific-NextHop"
-  display_name        = "User Defined Routes with 'Next Hop Type' set to 'Internet' or 'VirtualNetworkGateway' should be denied"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy denies the creation of a User Defined Route with 'Next Hop Type' set to 'Internet' or 'VirtualNetworkGateway'."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    alzCloudEnvironments = [
-      "AzureCloud",
-      "AzureChinaCloud",
-      "AzureUSGovernment"
-    ],
-    category  = "Network",
-    source    = "https://github.com/Azure/Enterprise-Scale/",
-    version   = "1.0.0"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        description = "The effect determines what happens when the policy rule is evaluated to match",
-        displayName = "Effect"
-      },
-      allowedValues = [
-        "Audit",
-        "Deny",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    },
-    excludedDestinations = {
-      type = "Array",
-      metadata = {
-        description = "Array of route destinations that are to be denied",
-        displayName = "Excluded Destinations"
-      },
-      defaultValue = [
-        "Internet",
-        "VirtualNetworkGateway"
-      ]
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "anyOf" = [
-        {
-          "allOf" = [
-            {
-              "equals" = "Microsoft.Network/routeTables",
-              "field"  = "type"
-            },
-            {
-              "count" = {
-                "field" = "Microsoft.Network/routeTables/routes[*]",
-                "where" = {
-                  "field" = "Microsoft.Network/routeTables/routes[*].nextHopType",
-                  "in"    = "[parameters('excludedDestinations')]"
-                }
-              },
-              "notEquals" = 0
-            }
-          ]
-        },
-        {
-          "allOf" = [
-            {
-              "equals" = "Microsoft.Network/routeTables/routes",
-              "field"  = "type"
-            },
-            {
-              "field" = "Microsoft.Network/routeTables/routes/nextHopType",
-              "in"    = "[parameters('excludedDestinations')]"
-            }
-          ]
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-# --- End of prod-User Defined Routes with 'Next Hop Type' set to 'Internet' or 'VirtualNet.tf ---
-
-# --- Start of prod-prod-Enforce Azure DDoS Network Protection while creating Public IP's.tf ---
-resource "azurerm_policy_definition" "enforce_ddos_protection_on_vnet" {
-  name                = "enforce-ddos-protection-on-vnet"
-  display_name        = "Enforce Azure DDoS Network Protection on Virtual Networks"
-  policy_type         = "Custom"
-  mode                = "All"
-  description         = "This policy ensures that every Virtual Network has Azure DDoS Network Protection enabled."
-  management_group_id = azurerm_management_group.IMS_Root1.id
-
-  depends_on = [
-    azurerm_management_group.IMS_Root1
-  ]
-
-  metadata = jsonencode({
-    category = "Network"
-  })
-
-  parameters = jsonencode({
-    effect = {
-      type = "String",
-      metadata = {
-        displayName = "Effect",
-        description = "Enable or disable the execution of the policy"
-      },
-      allowedValues = [
-        "Deny",
-        "Audit",
-        "Disabled"
-      ],
-      defaultValue = "Deny"
-    }
-  })
-
-  policy_rule = jsonencode({
-    "if" = {
-      "allOf" = [
-        {
-          "field"  = "type",
-          "equals" = "Microsoft.Network/virtualNetworks"
-        },
-        {
-          "field"     = "Microsoft.Network/virtualNetworks/ddosProtectionPlan.id",
-          "exists"    = "false"
-        }
-      ]
-    },
-    "then" = {
-      "effect" = "[parameters('effect')]"
-    }
-  })
-}
-
-
-# --- End of prod-prod-Enforce Azure DDoS Network Protection while creating Public IP's.tf ---
