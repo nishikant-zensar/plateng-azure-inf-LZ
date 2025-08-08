@@ -162,6 +162,7 @@ resource "azurerm_virtual_network" "hubvnet" {
   name                = "ims-prd-conn-ne-vnet-hub-01"
   location            = var.location
   address_space       = ["192.168.0.0/22"]
+  dns_servers = ["192.168.0.132"]
 
   encryption {
     enforcement = "AllowUnencrypted" 

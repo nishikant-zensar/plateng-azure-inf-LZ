@@ -41,6 +41,16 @@ resource "azurerm_firewall" "fw" {
   sku_tier            = "Premium"
   firewall_policy_id  = azurerm_firewall_policy.fw_policy.id
   zones               = ["1"]
+  threat_intelligence_mode = "AlertAndDeny"
+  # IDPS configuration
+  intrusion_detection {
+    mode = "AlertAndDeny"
+  }
+
+  # TLS inspection (Explicitly Disabled)
+  tls_inspection {
+    enabled = false
+  }
 
   ip_configuration {
     name                 = "firewallipconfig"
@@ -187,11 +197,22 @@ resource "azurerm_private_dns_resolver_dns_forwarding_ruleset" "dnsfrs" {
   }
 }
 
-# Create Outbound Endpoint Forwarding Rule
+# Create Outbound Endpoint Forwarding Rule 1
 resource "azurerm_private_dns_resolver_forwarding_rule" "dnsfr" {
   name                    = "ims-prd-conn-ne-dnsfrs-rule-01"
   dns_forwarding_ruleset_id = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/dnsForwardingRulesets/ims-prd-conn-ne-dnsfrs-01"
   domain_name             = "tescoims.org."
+  enabled                 = true
+  target_dns_servers {
+    ip_address = "1.1.1.1"
+    port       = 53
+  }
+}
+# Create Outbound Endpoint Forwarding Rule 2
+resource "azurerm_private_dns_resolver_forwarding_rule" "dnsfr2" {
+  name                    = "ims-prd-conn-ne-dnsfrs-rule-02"
+  dns_forwarding_ruleset_id = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/dnsForwardingRulesets/ims-prd-conn-ne-dnsfrs-01"
+  domain_name             = "aws.tescoimscloud.org."
   enabled                 = true
   target_dns_servers {
     ip_address = "1.1.1.1"

@@ -38,6 +38,7 @@ resource "azurerm_public_ip" "pipvpng01" {
   # tier                = var.tier
   domain_name_label   = var.domain_name_label
   idle_timeout_in_minutes = var.idle_timeout_in_minutes
+  ip_protection_mode  = "Enabled"
 
   # Routing Preference (Internet, Microsoft), only valid for Standard SKU with IPv4
   # routing_preference = var.routing_preference
@@ -63,6 +64,7 @@ resource "azurerm_public_ip" "pipvpng02" {
   # tier                = var.tier
   domain_name_label   = var.domain_name_label
   idle_timeout_in_minutes = var.idle_timeout_in_minutes
+  ip_protection_mode = "Enabled"
 
   # Routing Preference (Internet, Microsoft), only valid for Standard SKU with IPv4
   # routing_preference = var.routing_preference
@@ -89,6 +91,7 @@ resource "azurerm_public_ip" "pipafw01" {
   # tier                = var.tier
   domain_name_label   = var.domain_name_label
   idle_timeout_in_minutes = var.idle_timeout_in_minutes
+  ip_protection_mode = "Enabled"
 
   # Routing Preference (Internet, Microsoft), only valid for Standard SKU with IPv4
   # routing_preference = var.routing_preference
@@ -166,7 +169,29 @@ resource "azurerm_local_network_gateway" "aws_lgw2" {
   ]
 }
 
-# 4. Create Gateway Connection 1 on VPN Gateway
+# 4. Create Local Network Gateway 3 on VPN Gateway
+resource "azurerm_local_network_gateway" "aws_lgw3" {
+  name                = "ims-prd-conn-ne-lgw-aws-03"
+  location            = var.location
+  resource_group_name = var.vnet_resource_group
+  gateway_address     = "52.51.99.83"
+  address_space       = [
+    "10.0.0.0/14"
+  ]
+}
+
+# 5. Create Local Network Gateway 4 on VPN Gateway
+resource "azurerm_local_network_gateway" "aws_lgw4" {
+  name                = "ims-prd-conn-ne-lgw-aws-04"
+  location            = var.location
+  resource_group_name = var.vnet_resource_group
+  gateway_address     = "52.213.133.44"
+  address_space       = [
+    "10.0.0.0/14"
+  ]
+}
+
+# 6. Create Gateway Connection 1 on VPN Gateway
 
 resource "azurerm_virtual_network_gateway_connection" "s2s_connection1" {
   name                            = "ims-prd-conn-ne-vnc-01"
@@ -189,7 +214,7 @@ resource "azurerm_virtual_network_gateway_connection" "s2s_connection1" {
     DateCreated   = "2025-08-01"
 }
 }
-# 5. Create Gateway Connection 2 on VPN Gateway
+# 7. Create Gateway Connection 2 on VPN Gateway
 
 resource "azurerm_virtual_network_gateway_connection" "s2s_connection2" {
   name                            = "ims-prd-conn-ne-vnc-02"
