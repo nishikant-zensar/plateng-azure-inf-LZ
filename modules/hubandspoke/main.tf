@@ -346,6 +346,16 @@ resource "azurerm_subnet" "ims-prd-avd-ne-snet-pep" {
   address_prefixes     = ["192.168.11.128/26"]
 
 }
+
+# 4. Create "ims-prd-avd-ne-snet-mgmt" subnet for avd management traffic at avd vNet
+resource "azurerm_subnet" "ims-prd-avd-ne-snet-mgmt" {
+  provider             = azurerm.ims-prd-avd
+  resource_group_name  = azurerm_resource_group.avd.name
+  virtual_network_name = azurerm_virtual_network.avdvnet.name
+  name                 = "ims-prd-avd-ne-snet-mgmt"
+  address_prefixes     = ["192.168.10.0/24"]
+
+}
 ################################################################
 # Peering Between vNets
 ################################################################
@@ -371,6 +381,36 @@ resource "azurerm_virtual_network_peering" "hub_to_avd" {
   virtual_network_name      = "ims-prd-conn-ne-vnet-hub-01"
   remote_virtual_network_id = "/subscriptions/9da3ee14-3ae9-4be0-9ad2-b9a7c7b059ef/resourceGroups/ims-prd-avd-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-avd-ne-vnet-01"
   provider                  = azurerm.ims-prd-connectivity
+
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  allow_gateway_transit        = true
+  use_remote_gateways          = false
+
+}
+
+# Task 3: Peering between Mgmt and Hub vNet
+resource "azurerm_virtual_network_peering" "hub_to_mgmt" {
+  name                      = "ims-prd-mgmt-ne-vnet-01-TO-ims-prd-conn-ne-vnet-hub-01"
+  resource_group_name       = "ims-prd-mgmt-ne-rg-network"
+  virtual_network_name      = "ims-prd-mgmt-ne-vnet-01"
+  remote_virtual_network_id = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01"
+  provider                  = azurerm.ims-prd-management
+
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  allow_gateway_transit        = true
+  use_remote_gateways          = false
+
+}
+
+ Task 4: Peering between Avd and Hub vNet
+resource "azurerm_virtual_network_peering" "avd_to_mgmt" {
+  name                      = "ims-prd-avd-ne-vnet-01-TO-ims-prd-conn-ne-vnet-hub-01"
+  resource_group_name       = "ims-prd-avd-ne-rg-network"
+  virtual_network_name      = "ims-prd-avd-ne-vnet-01"
+  remote_virtual_network_id = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01"
+  provider                  = azurerm.ims-prd-avd
 
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
