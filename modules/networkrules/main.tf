@@ -265,7 +265,7 @@ terraform {
     protocol                      = "Udp"
     access                        = "Allow"
     priority                      = 3001
-    name                          = "hub-AllowDNS-TCP-Outbound"
+    name                          = "hub-AllowDNS-UDP-Outbound"
     description                   = "Allow access to DNS Private Resolver Inbound EP"
     }
     # depends_on = [
