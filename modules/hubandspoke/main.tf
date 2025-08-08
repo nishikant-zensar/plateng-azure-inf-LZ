@@ -404,7 +404,7 @@ resource "azurerm_virtual_network_peering" "mgmt_to_hub" {
 
 }
 
- Task 4: Peering between Avd and Hub vNet
+# Task 4: Peering between Avd and Hub vNet
 resource "azurerm_virtual_network_peering" "avd_to_hub" {
   name                      = "ims-prd-avd-ne-vnet-01-TO-ims-prd-conn-ne-vnet-hub-01"
   resource_group_name       = "ims-prd-avd-ne-rg-network"
