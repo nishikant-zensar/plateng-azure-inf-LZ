@@ -26,10 +26,17 @@ resource "azurerm_firewall_policy" "fw_policy" {
   resource_group_name = var.resource_group_name
   sku             = "Premium"
 
-  threat_intelligence_mode = var.enable_threat_intel
+   threat_intelligence_mode = "AlertAndDeny"
+
+  # IDPS configuration
   intrusion_detection {
-    mode = var.idps_mode
+    mode = "AlertAndDeny"
   }
+
+  # TLS inspection (Explicitly Disabled)
+  # tls_inspection {
+  #  enabled = false
+  # }
 }
 
 # 2. Create Azure Firewall
@@ -41,16 +48,6 @@ resource "azurerm_firewall" "fw" {
   sku_tier            = "Premium"
   firewall_policy_id  = azurerm_firewall_policy.fw_policy.id
   zones               = ["1"]
-  threat_intelligence_mode = "AlertAndDeny"
-  # IDPS configuration
-  intrusion_detection {
-    mode = "AlertAndDeny"
-  }
-
-  # TLS inspection (Explicitly Disabled)
-  tls_inspection {
-    enabled = false
-  }
 
   ip_configuration {
     name                 = "firewallipconfig"
