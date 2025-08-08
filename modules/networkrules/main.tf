@@ -251,7 +251,7 @@ terraform {
     destination_port_range        = "53"
     protocol                      = "Tcp"
     access                        = "Allow"
-    priority                      = 4095
+    priority                      = 3000
     name                          = "hub-AllowDNS-TCP-Outbound"
     description                   = "Allow access to DNS Private Resolver Inbound EP"
     }
@@ -264,7 +264,7 @@ terraform {
     destination_port_range        = "53"
     protocol                      = "Udp"
     access                        = "Allow"
-    priority                      = 4095
+    priority                      = 3001
     name                          = "hub-AllowDNS-TCP-Outbound"
     description                   = "Allow access to DNS Private Resolver Inbound EP"
     }
