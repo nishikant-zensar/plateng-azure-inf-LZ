@@ -249,7 +249,7 @@ terraform {
     source_port_range             = "*"
     destination_address_prefix    = "*"
     destination_port_range        = "53"
-    protocol                      = "TCP"
+    protocol                      = "Tcp"
     access                        = "Allow"
     priority                      = 4095
     name                          = "hub-AllowDNS-TCP-Outbound"
@@ -262,7 +262,7 @@ terraform {
     source_port_range             = "*"
     destination_address_prefix    = "*"
     destination_port_range        = "53"
-    protocol                      = "UPD"
+    protocol                      = "Udp"
     access                        = "Allow"
     priority                      = 4095
     name                          = "hub-AllowDNS-TCP-Outbound"
