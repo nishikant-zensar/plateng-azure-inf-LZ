@@ -38,7 +38,7 @@ resource "azurerm_public_ip" "pipvpng01" {
   # tier                = var.tier
   domain_name_label   = var.domain_name_label
   idle_timeout_in_minutes = var.idle_timeout_in_minutes
-  ip_protection_mode  = "Enabled"
+  # ip_protection_mode  = "Enabled"
 
   # Routing Preference (Internet, Microsoft), only valid for Standard SKU with IPv4
   # routing_preference = var.routing_preference
@@ -64,7 +64,7 @@ resource "azurerm_public_ip" "pipvpng02" {
   # tier                = var.tier
   domain_name_label   = var.domain_name_label
   idle_timeout_in_minutes = var.idle_timeout_in_minutes
-  ip_protection_mode = "Enabled"
+  # ip_protection_mode = "Enabled"
 
   # Routing Preference (Internet, Microsoft), only valid for Standard SKU with IPv4
   # routing_preference = var.routing_preference
@@ -91,7 +91,7 @@ resource "azurerm_public_ip" "pipafw01" {
   # tier                = var.tier
   domain_name_label   = var.domain_name_label
   idle_timeout_in_minutes = var.idle_timeout_in_minutes
-  ip_protection_mode = "Enabled"
+  # ip_protection_mode = "Enabled"
 
   # Routing Preference (Internet, Microsoft), only valid for Standard SKU with IPv4
   # routing_preference = var.routing_preference
