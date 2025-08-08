@@ -153,9 +153,7 @@ resource "azurerm_local_network_gateway" "aws_lgw1" {
   location            = var.location
   resource_group_name = var.vnet_resource_group
   gateway_address     = "34.247.16.167"
-  address_space       = [
-    "10.0.0.0/14"
-  ]
+  address_space       = ["10.0.0.0/14"]
 }
 
 # 3. Create Local Network Gateway 2 on VPN Gateway
@@ -164,9 +162,7 @@ resource "azurerm_local_network_gateway" "aws_lgw2" {
   location            = var.location
   resource_group_name = var.vnet_resource_group
   gateway_address     = "99.81.84.117"
-  address_space       = [
-    "10.0.0.0/14"
-  ]
+  address_space       = ["10.0.0.0/14"]
 }
 
 # 4. Create Local Network Gateway 3 on VPN Gateway
@@ -175,9 +171,7 @@ resource "azurerm_local_network_gateway" "aws_lgw3" {
   location            = var.location
   resource_group_name = var.vnet_resource_group
   gateway_address     = "52.51.99.83"
-  address_space       = [
-    "10.0.0.0/14"
-  ]
+  address_space       = ["10.0.0.0/14"]
 }
 
 # 5. Create Local Network Gateway 4 on VPN Gateway
@@ -186,9 +180,7 @@ resource "azurerm_local_network_gateway" "aws_lgw4" {
   location            = var.location
   resource_group_name = var.vnet_resource_group
   gateway_address     = "52.213.133.44"
-  address_space       = [
-    "10.0.0.0/14"
-  ]
+  address_space       = ["10.0.0.0/14"]
 }
 
 # 6. Create Gateway Connection 1 on VPN Gateway
