@@ -273,7 +273,7 @@ terraform {
     # ]
 
     tags = {
-      Name          = "ims-prd-conn-ne-nsg-dnsprout"
+      Name          = "ims-prd-conn-ne-nsg-pep"
       Environment   = "prd"
       DateCreated   = "2025-08-01"
       }
