@@ -27,16 +27,16 @@ resource "azurerm_firewall_policy" "fw_policy" {
   sku             = "Premium"
 
    threat_intelligence_mode = "AlertAndDeny"
-   
+
   # IDPS configuration
   intrusion_detection {
     mode = "AlertAndDeny"
   }
 
   # TLS inspection (Explicitly Disabled)
-  tls_inspection {
-    enabled = false
-  }
+  # tls_inspection {
+  #  enabled = false
+  # }
 }
 
 # 2. Create Azure Firewall
