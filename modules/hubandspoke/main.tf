@@ -186,7 +186,7 @@ resource "azurerm_subnet" "AzureFirewallSubnet" {
   name                 = "AzureFirewallSubnet"
   address_prefixes     = ["192.168.0.64/26"]
 
-  private_endpoint_network_policies_enabled = true
+  # private_endpoint_network_policies_enabled = true
 
 }
 
@@ -198,7 +198,7 @@ resource "azurerm_subnet" "AzureFirewallManagementSubnet" {
   name                 = "AzureFirewallManagementSubnet"
   address_prefixes     = ["192.168.1.64/26"]
 
-  private_endpoint_network_policies_enabled = true
+  # private_endpoint_network_policies_enabled = true
 
 }
 # 3. Create "GatewaySubnet" subnet for Gateway traffic at hub vNet
@@ -209,7 +209,7 @@ resource "azurerm_subnet" "GatewaySubnet" {
   name                 = "GatewaySubnet"
   address_prefixes     = ["192.168.0.0/26"]
 
-  private_endpoint_network_policies_enabled = true
+  # private_endpoint_network_policies_enabled = true
 
   }
   # 4. Create "ims-prd-conn-ne-snet-dnsprin" subnet for inbound DNS private resolution traffic at hub vNet
@@ -220,7 +220,7 @@ resource "azurerm_subnet" "ims-prd-conn-ne-snet-dnsprin" {
   name                 = "ims-prd-conn-ne-snet-dnsprin"
   address_prefixes     = ["192.168.0.128/26"]
 
-  private_endpoint_network_policies_enabled = true
+  # private_endpoint_network_policies_enabled = true
   private_link_service_network_policies_enabled = true
   
   delegation {
@@ -239,7 +239,7 @@ resource "azurerm_subnet" "ims-prd-conn-ne-snet-dnsprout" {
   name                 = "ims-prd-conn-ne-snet-dnsprout"
   address_prefixes     = ["192.168.0.192/26"]
 
-  private_endpoint_network_policies_enabled = true
+  # private_endpoint_network_policies_enabled = true
   private_link_service_network_policies_enabled = true
   
   delegation {
@@ -258,7 +258,7 @@ resource "azurerm_subnet" "ims-prd-conn-ne-snet-pep" {
   name                 = "ims-prd-conn-ne-snet-pep"
   address_prefixes     = ["192.168.1.0/26"]
 
-  private_endpoint_network_policies_enabled = true
+  # private_endpoint_network_policies_enabled = true
   private_link_service_network_policies_enabled = true
   
 }
@@ -295,7 +295,7 @@ resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-security" {
   name                 = "ims-prd-mgmt-ne-snet-security"
   address_prefixes     = ["192.168.4.0/26"]
 
-  private_endpoint_network_policies_enabled = true
+  # private_endpoint_network_policies_enabled = true
   private_link_service_network_policies_enabled = true
   
 }
@@ -307,7 +307,7 @@ resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-system" {
   name                 = "ims-prd-mgmt-ne-snet-system"
   address_prefixes     = ["192.168.4.64/26"]
 
-  private_endpoint_network_policies_enabled = true
+  # private_endpoint_network_policies_enabled = true
   private_link_service_network_policies_enabled = true
 
 }
@@ -319,7 +319,7 @@ resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-keyvault" {
   name                 = "ims-prd-mgmt-ne-snet-keyvault"
   address_prefixes     = ["192.168.4.128/26"]
   
-  private_endpoint_network_policies_enabled = true
+  # private_endpoint_network_policies_enabled = true
   private_link_service_network_policies_enabled = true
 
 }
@@ -331,7 +331,7 @@ resource "azurerm_subnet" "ims-prd-mgmt-ne-snet-pep" {
   name                 = "ims-prd-mgmt-ne-snet-pep"
   address_prefixes     = ["192.168.4.192/26"]
 
-  private_endpoint_network_policies_enabled = true
+  # private_endpoint_network_policies_enabled = true
   private_link_service_network_policies_enabled = true
 
 }
@@ -369,7 +369,7 @@ resource "azurerm_subnet" "ims-prd-avd-ne-snet-pool" {
   name                 = "ims-prd-avd-ne-snet-pool"
   address_prefixes     = ["192.168.8.0/24"]
 
-  private_endpoint_network_policies_enabled = true
+  # private_endpoint_network_policies_enabled = true
   private_link_service_network_policies_enabled = true
 
 }
@@ -382,7 +382,7 @@ resource "azurerm_subnet" "ims-prd-avd-ne-snet-personal" {
   name                 = "ims-prd-avd-ne-snet-personal"
   address_prefixes     = ["192.168.9.0/24"]
 
-  private_endpoint_network_policies_enabled = true
+  # private_endpoint_network_policies_enabled = true
   private_link_service_network_policies_enabled = true
 }
 
@@ -394,7 +394,7 @@ resource "azurerm_subnet" "ims-prd-avd-ne-snet-pep" {
   name                 = "ims-prd-avd-ne-snet-pep"
   address_prefixes     = ["192.168.11.128/26"]
 
-  private_endpoint_network_policies_enabled = true
+  # private_endpoint_network_policies_enabled = true
   private_link_service_network_policies_enabled = true
 
 }
@@ -407,7 +407,7 @@ resource "azurerm_subnet" "ims-prd-avd-ne-snet-mgmt" {
   name                 = "ims-prd-avd-ne-snet-mgmt"
   address_prefixes     = ["192.168.10.0/24"]
 
-  private_endpoint_network_policies_enabled = true
+  # private_endpoint_network_policies_enabled = true
   private_link_service_network_policies_enabled = true
 
 }
