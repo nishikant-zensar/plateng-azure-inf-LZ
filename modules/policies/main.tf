@@ -5982,9 +5982,9 @@ resource "azurerm_policy_definition" "denyaction_delete_resources" {
   description         = "This policy enables you to specify the resource and resource type that your organization can protect from accidentals deletion by blocking delete calls using the deny action effect."
   management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
 
-depends_on = [
-    azurerm_management_group.TescoIMSRootMG
-  ]
+#depends_on = [
+ #   azurerm_management_group.TescoIMSRootMG
+#  ]
 
   metadata = jsonencode({
     alzCloudEnvironments = [
@@ -6062,9 +6062,9 @@ resource "azurerm_policy_definition" "enforce_storage_encryption" {
   description         = "This policy enables you to specify the resource and resource type that your organization can protect from accidental deletion by blocking delete calls using the deny action effect."
   management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
 
-depends_on = [
-    azurerm_management_group.TescoIMSRootMG
-  ]
+#depends_on = [
+ #   azurerm_management_group.TescoIMSRootMG
+#  ]
   
   metadata = jsonencode({
     alzCloudEnvironments = [
@@ -6138,9 +6138,9 @@ resource "azurerm_policy_definition" "deny_storage_account_public_access" {
   description         = "Prevents enabling public (anonymous) access on Azure Storage accounts."
   management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
 
-depends_on = [
-    azurerm_management_group.TescoIMSRootMG
-  ]
+#depends_on = [
+ #   azurerm_management_group.TescoIMSRootMG
+#  ]
 
   metadata = jsonencode({
     version  = "1.0.0",
@@ -6174,9 +6174,9 @@ resource "azurerm_policy_definition" "deny_key_vault_public_access" {
   description         = "Ensures that public network access to Azure Key Vault is disabled."
   management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
 
-depends_on = [
-    azurerm_management_group.TescoIMSRootMG
-  ]
+#depends_on = [
+ #   azurerm_management_group.TescoIMSRootMG
+#  ]
 
   metadata = jsonencode({
     version  = "1.0.0",
@@ -8436,9 +8436,9 @@ resource "azurerm_policy_set_definition" "ims-builtin-prod-location-initiative" 
   management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
   
 
-depends_on = [
-    azurerm_management_group.TescoIMSRootMG
-  ]
+#depends_on = [
+ #   azurerm_management_group.TescoIMSRootMG
+#  ]
   
   policy_definition_reference {
     policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c"
@@ -8471,7 +8471,7 @@ resource "azurerm_policy_set_definition" "ims-custom-corp-initiative" {
   management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
 
 depends_on = [
-  azurerm_management_group.TescoIMSRootMG,
+  # azurerm_management_group.TescoIMSRootMG,
   azurerm_policy_definition.deploy_mysql_ssl_min_tls,
   azurerm_policy_definition.postgresql_min_tls_and_ssl,
   azurerm_policy_definition.deploy_storage_ssl_enforcement,
