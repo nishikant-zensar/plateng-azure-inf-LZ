@@ -26,11 +26,11 @@ resource "azurerm_firewall_policy" "fw_policy" {
   resource_group_name = var.resource_group_name
   sku             = "Premium"
 
-   threat_intelligence_mode = "AlertAndDeny"
+  threat_intelligence_mode = "Alert And Deny"
 
   # IDPS configuration
   intrusion_detection {
-    mode = "AlertAndDeny"
+    mode = "Alert And Deny"
   }
 
   # TLS inspection (Explicitly Disabled)
