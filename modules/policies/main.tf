@@ -8880,7 +8880,7 @@ resource "azurerm_policy_set_definition" "ims-custom-prod-initiative" {
   management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
 
 depends_on = [
-  azurerm_management_group.TescoIMSRootMG,
+  # azurerm_management_group.TescoIMSRootMG,
   azurerm_policy_definition.denyaction_activity_logs,
   azurerm_policy_definition.denyaction_diagnostic_logs,
   azurerm_policy_definition.deny_storageaccount_customdomain,
