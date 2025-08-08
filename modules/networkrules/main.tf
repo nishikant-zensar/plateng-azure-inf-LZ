@@ -245,7 +245,7 @@ terraform {
 
     security_rule {
     direction                     = "Outbound"
-    source_address_prefix         = ["192.168.1.0/26"]
+    source_address_prefix         = "192.168.1.0/26"
     source_port_range             = "*"
     destination_address_prefix    = "*"
     destination_port_range        = "53"
@@ -258,7 +258,7 @@ terraform {
 
     security_rule {
     direction                     = "Outbound"
-    source_address_prefix         = ["192.168.1.0/26"]
+    source_address_prefix         = "192.168.1.0/26"
     source_port_range             = "*"
     destination_address_prefix    = "*"
     destination_port_range        = "53"
@@ -1167,10 +1167,10 @@ resource "azurerm_network_security_group" "ims-prd-avd-ne-nsg-mgmt" {
     direction                  = "Outbound"
     access                     = "Allow"
     protocol                   = "TCP"
-    source_address_prefix      = ["192.168.10.0/24"]
+    source_address_prefix      = "192.168.10.0/24"
     source_port_range          = "*"
-    destination_address_prefix = ["192.168.0.68"]
-    destination_port_range     = ["443","1688","80"]
+    destination_address_prefix = "192.168.0.68"
+    destination_port_range     = ["443", "1688", "80"]
   }
 
   security_rule {
@@ -1179,10 +1179,10 @@ resource "azurerm_network_security_group" "ims-prd-avd-ne-nsg-mgmt" {
     direction                  = "Outbound"
     access                     = "Allow"
     protocol                   = "UDP"
-    source_address_prefix      = ["192.168.10.0/24"]
+    source_address_prefix      = "192.168.10.0/24"
     source_port_range          = "*"
-    destination_address_prefix = ["192.168.0.68"]
-    destination_port_range     = ["3390"]
+    destination_address_prefix = "192.168.0.68"
+    destination_port_range     = "3390"
   }
 
   security_rule {
