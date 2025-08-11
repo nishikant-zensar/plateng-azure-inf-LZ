@@ -6,10 +6,10 @@ resource "azurerm_policy_definition" "deploy_custom_route_table" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Deploys a route table with specific user defined routes when one does not exist. The route table deployed by the policy must be manually associated to subnet(s)"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -169,10 +169,10 @@ resource "azurerm_policy_definition" "deploy_ddos_network_protection" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Deploys an Azure DDoS Network Protection"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -328,10 +328,10 @@ resource "azurerm_policy_definition" "deploy_firewall_policy" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Deploys Azure Firewall Manager policy in subscription where the policy is assigned."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -504,10 +504,10 @@ resource "azurerm_policy_definition" "deploy_asc_security_contacts" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Deploy Microsoft Defender for Cloud Security Contacts"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -663,10 +663,10 @@ resource "azurerm_policy_definition" "private_dns_generic" {
   mode         = "All"
   display_name = "Deploy-Private-DNS-Generic"
   description  = "Configure private DNS zone group to override the DNS resolution for PaaS services private endpoint. See https://aka.ms/pepdnszones for information on values to provide to parameters in this policy."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
   
 metadata     = jsonencode({
@@ -826,10 +826,10 @@ resource "azurerm_policy_definition" "deploy_sql_vulnerability_assessments" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Deploy SQL Database Vulnerability Assessments when it does not exist in the deployment, and save results to the storage account specified in the parameters."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -962,10 +962,10 @@ resource "azurerm_policy_definition" "deploy_vnet_hubspoke" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy deploys virtual network and peer to the hub"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -1173,10 +1173,10 @@ resource "azurerm_policy_definition" "deploy_windows_domainjoin_extension_with_k
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Deploy Windows Domain Join Extension with keyvault configuration when the extension does not exist on a given Windows Virtual Machine"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -1438,10 +1438,10 @@ resource "azurerm_policy_definition" "modify_udr" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy enforces the configuration of User-Defined Routes (UDR) within a subnet."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -1549,10 +1549,10 @@ resource "azurerm_policy_definition" "custom_role_administer_resource_locks" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy ensures that a custom role with permissions to administer resource locks is assigned."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -1594,10 +1594,10 @@ resource "azurerm_policy_definition" "trusted_locations_defined" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy audits resources that are deployed outside of the specified trusted locations."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -1635,10 +1635,10 @@ resource "azurerm_policy_definition" "audit_subnet_without_penp" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy audits the subnet without Private Endpoint Network Policies enabled. This policy is intended for 'workload' subnets, not 'central infrastructure' (aka, 'hub') subnets."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -1741,11 +1741,11 @@ resource "azurerm_policy_definition" "deploy_mysql_ssl_min_tls" {
   policy_type  = "Custom"
   mode         = "Indexed"
   description  = "Deploy a specific min TLS version requirement and enforce SSL on Azure Database for MySQL server. Enforce the Server to client applications using minimum version of Tls to secure the connection between your database server and your client applications helps protect against 'man in the middle' attacks by encrypting the data stream between the server and your application. This configuration enforces that SSL is always enabled for accessing your database server."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
   
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
   
   metadata     = jsonencode({
@@ -1884,10 +1884,10 @@ resource "azurerm_policy_definition" "postgresql_min_tls_and_ssl" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Deploy a specific min TLS version requirement and enforce SSL on Azure Database for PostgreSQL server. Enforces that SSL is always enabled and a minimum TLS version is set to help protect against 'man in the middle' attacks."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -2026,10 +2026,10 @@ resource "azurerm_policy_definition" "deploy_storage_ssl_enforcement" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Deploy a specific min TLS version requirement and enforce SSL on Azure Storage. Enables secure server to client by enforce minimal Tls Version to secure the connection between your database server and your client applications helps protect against 'man in the middle' attacks by encrypting the data stream between the server and your application. This configuration enforces that SSL is always enabled for accessing your Azure Storage."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -2172,10 +2172,10 @@ resource "azurerm_policy_definition" "logic_apps_latest_tls" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Periodically, newer versions are released for TLS either due to security flaws, include additional functionality, and enhance speed. Upgrade to the latest TLS version for Logic Apps to take advantage of security fixes and new functionalities."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -2271,10 +2271,10 @@ resource "azurerm_policy_definition" "deploy_default_budget" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Deploy a default budget on all subscriptions under the assigned scope"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -2513,10 +2513,10 @@ resource "azurerm_policy_definition" "deploy_sql_database_auditing_settings" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Deploy auditing settings to SQL Database when it does not exist in the deployment."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -2637,10 +2637,10 @@ resource "azurerm_policy_definition" "deploy_sql_security_alert_policies" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Deploy the security Alert Policies configuration with email admin accounts when it does not exist in current configuration"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -2764,10 +2764,10 @@ resource "azurerm_policy_definition" "deploy_vm_auto_shutdown" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Deploys an auto shutdown schedule to a virtual machine"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -2970,10 +2970,10 @@ resource "azurerm_policy_definition" "enable_soft_delete_for_blobs" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensures that soft delete is enabled for blobs on all storage accounts."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3050,10 +3050,10 @@ resource "azurerm_policy_definition" "enable_soft_delete_for_containers" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensures that soft delete is enabled for containers on all storage accounts."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3130,10 +3130,10 @@ resource "azurerm_policy_definition" "enable_soft_delete_for_file_shares" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensures that soft delete is enabled for file shares on all storage accounts."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3210,10 +3210,10 @@ resource "azurerm_policy_definition" "modify_nsg" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy enforces the configuration of Network Security Groups (NSG)."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3343,10 +3343,10 @@ resource "azurerm_policy_definition" "managed_identity_used_for_azure_services" 
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "This policy ensures that resources like Virtual Machines, Container Instances, and App Services use Managed Identities for accessing other Azure resources."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3400,10 +3400,10 @@ resource "azurerm_policy_definition" "azure_bastion_host_exists" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Manual control: Ensure an Azure Bastion Host exists in the virtual network. This policy is for documentation and compliance tracking only."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3430,10 +3430,10 @@ resource "azurerm_policy_definition" "app_insights_configured" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "This policy audits Azure App Services that do not have Application Insights or any diagnostic extension configured. It ensures that telemetry collection is enabled."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3476,10 +3476,10 @@ resource "azurerm_policy_definition" "key_vaults_used_to_store_secrets" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Audits resources to ensure that secrets are stored in Azure Key Vault and not in other less secure locations."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3518,10 +3518,10 @@ resource "azurerm_policy_definition" "arm_delete_locks_storage_accounts" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure Azure Resource Manager Delete locks are applied to Azure Storage Accounts"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3568,10 +3568,10 @@ resource "azurerm_policy_definition" "readonly_locks_storage_accounts" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure Azure Resource Manager ReadOnly locks are considered for Azure Storage Accounts"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3618,10 +3618,10 @@ resource "azurerm_policy_definition" "fewer_than_5_global_admins" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure fewer than 5 users have global administrator assignments."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3647,10 +3647,10 @@ resource "azurerm_policy_definition" "locked_immutability_policy_blob" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure locked immutability policies are used for containers storing business-critical blob data"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3697,10 +3697,10 @@ resource "azurerm_policy_definition" "entra_authentication_enabled"  {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure 'Microsoft Entra Authentication' is 'Enabled'"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3747,10 +3747,10 @@ resource "azurerm_policy_definition" "mfa_required_risky_signins" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy audits to ensure Multi-factor Authentication is required for risky sign-ins (Manual)."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3784,10 +3784,10 @@ resource "azurerm_policy_definition" "mfa_required_admin_portals" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy audits if MFA is required for admin portals."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3821,10 +3821,10 @@ resource "azurerm_policy_definition" "mfa_enabled_identities_vm_access" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy audits role assignments made to user principals. It is recommended that these identities have MFA enforced via Conditional Access."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3859,10 +3859,10 @@ resource "azurerm_policy_definition" "security_defaults_enabled" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy ensures that Security Defaults are enabled on Microsoft Entra ID."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3900,10 +3900,10 @@ resource "azurerm_policy_definition" "audit_log_enabled_mysql" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy ensures that the server parameter 'audit_log_enabled' is set to 'ON' for MySQL Database Servers to capture auditing data."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -3950,10 +3950,10 @@ resource "azurerm_policy_definition" "audit_log_events_connection_mysql" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure server parameter 'audit_log_events' has 'CONNECTION' set for MySQL flexible server"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4000,10 +4000,10 @@ resource "azurerm_policy_definition" "logfiles_retention_days_postgresql" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Manual control: Ensure server parameter 'logfiles.retention_days' is greater than 3 days for PostgreSQL flexible server. No Azure Policy alias currently exists for this setting, so this policy is for documentation and compliance tracking only."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4030,10 +4030,10 @@ resource "azurerm_policy_definition" "require_secure_transport_mysql" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Manual control: Ensure 'require_secure_transport' is set to 'ON' for MySQL flexible servers. No Azure Policy alias currently exists for this setting, so this policy is for documentation and compliance tracking only."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4061,10 +4061,10 @@ resource "azurerm_policy_definition" "tls_version_mysql_flexible_server" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Enforces that the 'tls_version' parameter is set to 'TLSv1.2' or higher to ensure secure communication with the MySQL Flexible Server."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4135,10 +4135,10 @@ resource "azurerm_policy_definition" "smb_channel_encryption_aes256gcm" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Audit file services that do not use AES-256-GCM for SMB channel encryption."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4173,10 +4173,10 @@ resource "azurerm_policy_definition" "soft_delete_enabled_blob_storage" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Audits blob services under storage accounts that do not have soft delete enabled or configured properly."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4256,10 +4256,10 @@ resource "azurerm_policy_definition" "custom_bad_password_list_enforce" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy audits if the custom bad password list is not set to 'Enforce' in Microsoft Entra password protection settings. Manual remediation is required."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4293,10 +4293,10 @@ resource "azurerm_policy_definition" "diagnostic_setting_subscription_activity_l
   policy_type         = "Custom"
   mode                = "All"
   description         = "Audits subscriptions that do not have a diagnostic setting configured to export Activity Logs to Log Analytics, Event Hub, or Storage Account."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4338,10 +4338,10 @@ resource "azurerm_policy_definition" "mfa_policy_admin_groups" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensures that MFA is enabled for all administrative groups."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4378,10 +4378,10 @@ resource "azurerm_policy_definition" "account_lockout_duration_seconds" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy audits to ensure that account 'Lockout duration in seconds' is greater than or equal to '60' (Manual)."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4415,10 +4415,10 @@ resource "azurerm_policy_definition" "account_lockout_threshold" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy audits to ensure that account 'Lockout Threshold' is less than or equal to '10' (Manual)."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4452,10 +4452,10 @@ resource "azurerm_policy_definition" "agentless_scanning_for_machines" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure that 'Agentless scanning for machines' component status is set to 'On'"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4502,10 +4502,10 @@ resource "azurerm_policy_definition" "all_users_roles_set_to_owner" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure That 'All users with the following roles' is set to 'Owner'"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4552,10 +4552,10 @@ resource "azurerm_policy_definition" "enable_data_access_auth_mode" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "This policy audits Azure Key Vaults that are not using the RBAC permission model. It helps ensure access control is managed via Azure RBAC instead of access policies."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4589,10 +4589,10 @@ resource "azurerm_policy_definition" "enable_key_rotation_reminders" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "This policy ensures that 'Enable key rotation reminders' is enabled for all Storage Accounts."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4627,10 +4627,10 @@ resource "azurerm_policy_definition" "endpoint_protection_component_on" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure that 'Endpoint protection' component status is set to 'On'"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4677,10 +4677,10 @@ resource "azurerm_policy_definition" "file_integrity_monitoring_on" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure that 'File Integrity Monitoring' component status is set to 'On'"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4727,10 +4727,10 @@ resource "azurerm_policy_definition" "http_https_access_from_internet_restricted
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy audits NSG rules that allow inbound HTTP or HTTPS (TCP ports 80 or 443) traffic from the Internet."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4793,10 +4793,10 @@ resource "azurerm_policy_definition" "http_logs_enabled_appservice" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Audits App Services where HTTP Logging (web server logging) is not enabled. This ensures access logs are available for diagnostics and compliance."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4831,10 +4831,10 @@ resource "azurerm_policy_definition" "cloud_security_benchmark_not_disabled" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure that Microsoft Cloud Security Benchmark policies are not set to 'Disabled'"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4881,10 +4881,10 @@ resource "azurerm_policy_definition" "defender_easm_enabled" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure that Microsoft Defender External Attack Surface Monitoring (EASM) is enabled"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -4931,10 +4931,10 @@ resource "azurerm_policy_definition" "defender_cloud_apps_integration" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensures Microsoft Defender for Cloud Apps integration with Microsoft Defender for Cloud is enabled (CIS Microsoft Azure Foundations Benchmark v3.0.0 3.1.1.2)"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5014,10 +5014,10 @@ resource "azurerm_policy_definition" "defender_iot_hub_on" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensures Microsoft Defender for IoT Hub is enabled as per CIS Azure Foundations Benchmark v3.0.0"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5103,10 +5103,10 @@ resource "azurerm_policy_definition" "notify_admins_on_password_reset" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy ensures that the setting 'Notify all admins when other admins reset their password' is enabled."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5140,10 +5140,10 @@ resource "azurerm_policy_definition" "notify_users_on_password_resets" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy ensures that users are notified on password resets."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5177,10 +5177,10 @@ resource "azurerm_policy_definition" "number_of_days_reconfirm_auth" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy ensures that the number of days before users are asked to re-confirm their authentication information is not set to 0."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5218,10 +5218,10 @@ resource "azurerm_policy_definition" "number_of_methods_required_to_reset" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Manual control: Ensure that the number of methods required to reset is set to 2 for enhanced security. This policy is for documentation and tracking only, as there is no Azure Policy alias for this setting."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5248,10 +5248,10 @@ resource "azurerm_policy_definition" "public_ip_addresses_periodic_evaluation" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Audits all Public IP Addresses that are missing a required tag (e.g., 'reviewDate') to support periodic review of public exposure."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5295,10 +5295,10 @@ resource "azurerm_policy_definition" "register_with_aad_enabled_app_service" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "This policy audits deployments of App Services that do not contain an authSettings block, which is required to register with Azure AD."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5342,10 +5342,10 @@ resource "azurerm_policy_definition" "resource_locks_mission_critical" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Audits resources that are not tagged as mission-critical. Used to manually cross-check with resource locks."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5393,10 +5393,10 @@ resource "azurerm_policy_definition" "restrict_access_entra_admin_center" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy audits if access to the Microsoft Entra admin center is not restricted. Manual remediation is required."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5431,10 +5431,10 @@ resource "azurerm_policy_definition" "restrict_access_groups_features_access_pan
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy audits if user ability to access groups features in the Access Pane is not restricted. Manual remediation is required."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5468,10 +5468,10 @@ resource "azurerm_policy_definition" "sas_tokens_expire_within_hour" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy reminds users to set Shared Access Signature tokens to expire within one hour. Due to platform limitations, this must be enforced through manual review or custom automation."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5513,10 +5513,10 @@ resource "azurerm_policy_definition" "storage_account_access_keys_regenerated" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Audit Storage Accounts that do not have key expiration policy set. Enforcing key expiration helps ensure keys are regenerated periodically."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5560,10 +5560,10 @@ resource "azurerm_policy_definition" "system_assigned_managed_identity_on" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure that 'System Assigned Managed Identity' is set to 'On'"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5610,10 +5610,10 @@ resource "azurerm_policy_definition" "udp_access_from_internet_restricted" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy audits NSG rules that allow inbound UDP traffic from the Internet. UDP should be restricted unless explicitly required."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5668,10 +5668,10 @@ resource "azurerm_policy_definition" "vulnerability_assessment_for_machines" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure that 'Vulnerability assessment for machines' component status is set to 'On'"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5718,10 +5718,10 @@ resource "azurerm_policy_definition" "sql_managed_instance_min_tls" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Deploy a specific min TLS version requirement and enforce SSL on SQL managed instances. Enables secure server to client by enforcing minimal TLS Version to secure the connection between your database server and your client applications. This configuration enforces that SSL is always enabled for accessing your database server."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5847,10 +5847,10 @@ resource "azurerm_policy_definition" "deploy_sql_min_tls" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Deploys a specific min TLS version requirement and enforce SSL on SQL servers. Enables secure server to client by enforcing minimal TLS Version to secure the connection between your database server and your client applications. This configuration enforces that SSL is always enabled for accessing your database server."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -5980,10 +5980,10 @@ resource "azurerm_policy_definition" "denyaction_delete_resources" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy enables you to specify the resource and resource type that your organization can protect from accidentals deletion by blocking delete calls using the deny action effect."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
 #depends_on = [
- #   azurerm_management_group.TescoIMSRootMG
+ #   azurerm_management_group.IMS-Root
 #  ]
 
   metadata = jsonencode({
@@ -6060,10 +6060,10 @@ resource "azurerm_policy_definition" "enforce_storage_encryption" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy enables you to specify the resource and resource type that your organization can protect from accidental deletion by blocking delete calls using the deny action effect."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
 #depends_on = [
- #   azurerm_management_group.TescoIMSRootMG
+ #   azurerm_management_group.IMS-Root
 #  ]
   
   metadata = jsonencode({
@@ -6136,10 +6136,10 @@ resource "azurerm_policy_definition" "deny_storage_account_public_access" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Prevents enabling public (anonymous) access on Azure Storage accounts."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
 #depends_on = [
- #   azurerm_management_group.TescoIMSRootMG
+ #   azurerm_management_group.IMS-Root
 #  ]
 
   metadata = jsonencode({
@@ -6172,10 +6172,10 @@ resource "azurerm_policy_definition" "deny_key_vault_public_access" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensures that public network access to Azure Key Vault is disabled."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
 #depends_on = [
- #   azurerm_management_group.TescoIMSRootMG
+ #   azurerm_management_group.IMS-Root
 #  ]
 
   metadata = jsonencode({
@@ -6220,10 +6220,10 @@ resource "azurerm_policy_definition" "denyaction_activity_logs" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "This is a DenyAction implementation policy on Activity Logs."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6264,10 +6264,10 @@ resource "azurerm_policy_definition" "denyaction_diagnostic_logs" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "DenyAction implementation on Diagnostic Logs."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6308,10 +6308,10 @@ resource "azurerm_policy_definition" "enforce_ddos_protection_on_vnet" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy ensures that every Virtual Network has Azure DDoS Network Protection enabled."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6359,10 +6359,10 @@ resource "azurerm_policy_definition" "force_vnet_encryption" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy ensures that encryption is enabled on all Virtual Networks."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6410,10 +6410,10 @@ resource "azurerm_policy_definition" "deny_user_consent_for_applications" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensures that user consent for applications is set to 'Do not allow user consent'."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6451,10 +6451,10 @@ resource "azurerm_policy_definition" "cross_region_restore_enabled" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure 'Cross Region Restore' is set to 'Enabled' on Recovery Services vaults"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6501,10 +6501,10 @@ resource "azurerm_policy_definition" "deny_guest_user_access" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensures that guest user access is restricted to their own directory objects."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6538,10 +6538,10 @@ resource "azurerm_policy_definition" "require_mfa_for_azure_management_api" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy ensures that MFA is required for accessing the Azure Management API."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6567,10 +6567,10 @@ resource "azurerm_policy_definition" "private_vnet_for_container_instances" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy ensures that all container services like ACI or AKS are integrated with a private virtual network to enhance security and network isolation."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6621,10 +6621,10 @@ resource "azurerm_policy_definition" "public_network_access_disabled" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Deny storage accounts if public network access is not disabled."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
  
   metadata = jsonencode({
@@ -6659,10 +6659,10 @@ resource "azurerm_policy_definition" "deny_public_network_access_recovery_vaults
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure public network access on Recovery Services vaults is Disabled"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6709,10 +6709,10 @@ resource "azurerm_policy_definition" "smb_protocol_version_required" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure 'SMB protocol version' is set to 'SMB 3.1.1' or higher for SMB file shares"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6759,10 +6759,10 @@ resource "azurerm_policy_definition" "soft_delete_azure_file_shares" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure soft delete for Azure File Shares is Enabled"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6813,10 +6813,10 @@ resource "azurerm_policy_definition" "deny_users_can_register_applications" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensures that 'Users Can Register Applications' is set to 'No'."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6842,10 +6842,10 @@ resource "azurerm_policy_definition" "mfa_policy_for_all_users" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure that a Multi-factor Authentication Policy exists for all users."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6879,10 +6879,10 @@ resource "azurerm_policy_definition" "deny_remember_mfa_on_trusted_devices" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy ensures that the option to allow users to remember multi-factor authentication on devices they trust is disabled."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6908,10 +6908,10 @@ resource "azurerm_policy_definition" "minimum_tls_version_redis" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure that 'Minimum TLS version' is set to TLS v1.2 (or higher)"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6962,10 +6962,10 @@ resource "azurerm_policy_definition" "deny_owners_manage_group_membership_reques
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy ensures that 'Owners can manage group membership requests in My Groups' is set to 'No'."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -6999,10 +6999,10 @@ resource "azurerm_policy_definition" "public_network_access_disabled_redis" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure that 'Public Network Access' is 'Disabled'"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -7053,10 +7053,10 @@ resource "azurerm_policy_definition" "restrict_non_admin_tenant_creation" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure that only admin users can create tenants."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -7082,10 +7082,10 @@ resource "azurerm_policy_definition" "deny_basic_consumption_sku" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "Prevents deployment of resources using 'Basic' or 'Consumption' SKUs to ensure high availability and monitoring capabilities."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -7160,10 +7160,10 @@ resource "azurerm_policy_definition" "soft_delete_blobs_enabled" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure that soft delete for blobs on Azure Blob Storage storage accounts is Enabled"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -7210,10 +7210,10 @@ resource "azurerm_policy_definition" "restrict_subscription_movement" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure that subscription movement in and out of the Microsoft Entra tenant is restricted."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -7251,10 +7251,10 @@ resource "azurerm_policy_definition" "deny_users_create_m365_groups" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure that users cannot create Microsoft 365 groups in Azure portals, API, or PowerShell."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -7288,10 +7288,10 @@ resource "azurerm_policy_definition" "webapp_client_cert_required" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "This policy ensures that Web Apps require incoming client certificates for mutual TLS authentication."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -7326,10 +7326,10 @@ resource "azurerm_policy_definition" "blob_versioning_enabled" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "Ensure 'Versioning' is set to 'Enabled' on Azure Blob Storage storage accounts"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -7376,10 +7376,10 @@ resource "azurerm_policy_definition" "deny_storageaccount_customdomain" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy denies the creation of Storage Accounts with custom domains assigned as communication cannot be encrypted, and always uses HTTP."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -7446,10 +7446,10 @@ resource "azurerm_policy_definition" "deny_storage_sftp" {
   policy_type         = "Custom"
   mode                = "Indexed"
   description         = "This policy denies the creation of Storage Accounts with SFTP enabled for Blob Storage."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -7504,10 +7504,10 @@ resource "azurerm_policy_definition" "deny_subnet_without_nsg" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy denies the creation of a subnet without a Network Security Group. NSG help to protect traffic across subnet-level."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -7612,10 +7612,10 @@ resource "azurerm_policy_definition" "deny_subnet_without_udr" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy denies the creation of a subnet without a User Defined Route (UDR)."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -7718,10 +7718,10 @@ resource "azurerm_policy_definition" "deny_udr_with_specific_nexthop" {
   policy_type         = "Custom"
   mode                = "All"
   description         = "This policy denies the creation of a User Defined Route with 'Next Hop Type' set to 'Internet' or 'VirtualNetworkGateway'."
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   metadata = jsonencode({
@@ -8045,10 +8045,10 @@ resource "azurerm_policy_set_definition" "ims-builtin-corp-initiative" {
   name                = "ims-builtin-corp-initiative"
   display_name        = "ims-builtin-corp-initiative"
   policy_type         = "Custom"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   dynamic "policy_definition_reference" {
@@ -8239,10 +8239,10 @@ resource "azurerm_policy_set_definition" "ims-builtin-prod-initiative" {
   name                = "ims-builtin-prod-initiative"
   display_name        = "ims-builtin-prod-initiative"
   policy_type         = "Custom"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
  # depends_on = [
- # azurerm_management_group.TescoIMSRootMG
+ # azurerm_management_group.IMS-Root
  # ]
 
   dynamic "policy_definition_reference" {
@@ -8433,11 +8433,11 @@ resource "azurerm_policy_set_definition" "ims-builtin-prod-location-initiative" 
   name                = "ims-builtin-prod-location-initiative"
   display_name        = "ims-builtin-prod-location-initiative"
   policy_type         = "Custom"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
   
 
 #depends_on = [
- #   azurerm_management_group.TescoIMSRootMG
+ #   azurerm_management_group.IMS-Root
 #  ]
   
   policy_definition_reference {
@@ -8468,10 +8468,10 @@ resource "azurerm_policy_set_definition" "ims-custom-corp-initiative" {
   display_name        = "ims-custom-corp-initiative"
   description         = "Initiative including custom policies for corp"
   policy_type         = "Custom"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
 depends_on = [
-  # azurerm_management_group.TescoIMSRootMG,
+  # azurerm_management_group.IMS-Root,
   azurerm_policy_definition.deploy_mysql_ssl_min_tls,
   azurerm_policy_definition.postgresql_min_tls_and_ssl,
   azurerm_policy_definition.deploy_storage_ssl_enforcement,
@@ -8877,10 +8877,10 @@ resource "azurerm_policy_set_definition" "ims-custom-prod-initiative" {
   display_name        = "ims-custom-prod-initiative"
   description         = "Initiative including custom policies for prod"
   policy_type         = "Custom"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/TescoIMSRootMG"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
 depends_on = [
-  # azurerm_management_group.TescoIMSRootMG,
+  # azurerm_management_group.IMS-Root,
   azurerm_policy_definition.denyaction_activity_logs,
   azurerm_policy_definition.denyaction_diagnostic_logs,
   azurerm_policy_definition.deny_storageaccount_customdomain,
