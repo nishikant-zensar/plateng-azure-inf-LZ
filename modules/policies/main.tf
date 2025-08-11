@@ -7803,7 +7803,7 @@ resource "azurerm_policy_definition" "deny_udr_with_specific_nexthop" {
   })
 }
 #Initiative ims-builtin-corp-initiative-231
-# Create ims-builtin-corp-initiative with built-in definitions, assigned to IMS_Root MG
+# Create ims-builtin-corp-initiative-231 with built-in definitions, assigned to IMS_Root MG
 locals {
   ims_builtin_corp_policy_ids = [
 { id="b03bb370-5249-4ea4-9fce-2552e87e45fa", name="Disks and OS image should support TrustedLaunch"},
@@ -8041,9 +8041,9 @@ locals {
   ]
 }
 
-resource "azurerm_policy_set_definition" "ims-builtin-corp-initiative" {
-  name                = "ims-builtin-corp-initiative"
-  display_name        = "ims-builtin-corp-initiative"
+resource "azurerm_policy_set_definition" "ims-builtin-corp-initiative-231" {
+  name                = "ims-builtin-corp-initiative-231"
+  display_name        = "ims-builtin-corp-initiative-231"
   policy_type         = "Custom"
   management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
@@ -8235,9 +8235,9 @@ locals {
   ]
 }
 
-resource "azurerm_policy_set_definition" "ims-builtin-prod-initiative" {
-  name                = "ims-builtin-prod-initiative"
-  display_name        = "ims-builtin-prod-initiative"
+resource "azurerm_policy_set_definition" "ims-builtin-prod-initiative-190" {
+  name                = "ims-builtin-prod-initiative-190"
+  display_name        = "ims-builtin-prod-initiative-190"
   policy_type         = "Custom"
   management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
 
@@ -8428,10 +8428,10 @@ resource "azurerm_policy_set_definition" "ims-builtin-prod-initiative" {
 # Default option for 35f9c03a-cc27-418e-9c0c-539ff999d010, 88c0b9da-ce96-4b03-9635-f29a937e2900, 83a86a26-fd1f-447c-b59d-e51f44264114 is "deny"
 
 #Initiative ims-builtin-prod-location-initiative 2-169
-# Create ims-builtin-prod-location-initiative with built-in definitions, assigned to IMS_Root MG
-resource "azurerm_policy_set_definition" "ims-builtin-prod-location-initiative" {
-  name                = "ims-builtin-prod-location-initiative"
-  display_name        = "ims-builtin-prod-location-initiative"
+# Create ims-builtin-prod-initiative-logs-10 with built-in definitions, assigned to IMS_Root MG
+resource "azurerm_policy_set_definition" "ims-builtin-prod-initiative-logs-10" {
+  name                = "ims-builtin-prod-initiative-logs-10"
+  display_name        = "ims-builtin-prod-initiative-logs-10"
   policy_type         = "Custom"
   management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
   
@@ -8462,10 +8462,10 @@ resource "azurerm_policy_set_definition" "ims-builtin-prod-location-initiative" 
 }
 
 #Initiative ims-custom-corp-initiative-66-77
-# Create ims-custom-corp-initiative with custom definitions
-resource "azurerm_policy_set_definition" "ims-custom-corp-initiative" {
-  name                = "ims-custom-corp-initiative"
-  display_name        = "ims-custom-corp-initiative"
+# Create ims-custom-corp-initiative-66 with custom definitions
+resource "azurerm_policy_set_definition" "ims-custom-corp-initiative-66" {
+  name                = "ims-custom-corp-initiative-66"
+  display_name        = "ims-custom-corp-initiative-66"
   description         = "Initiative including custom policies for corp"
   policy_type         = "Custom"
   management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
@@ -8871,10 +8871,10 @@ policy_definition_reference {
 */
 }
 #Initiative ims-custom-prod-initiative-33-38
-# Create ims-custom-prod-initiative with custom definitions
-resource "azurerm_policy_set_definition" "ims-custom-prod-initiative" {
-  name                = "ims-custom-prod-initiative"
-  display_name        = "ims-custom-prod-initiative"
+# Create ims-custom-prod-initiative-36 with custom definitions
+resource "azurerm_policy_set_definition" "ims-custom-prod-initiative-36" {
+  name                = "ims-custom-prod-initiative-36"
+  display_name        = "ims-custom-prod-initiative-36"
   description         = "Initiative including custom policies for prod"
   policy_type         = "Custom"
   management_group_id = "/providers/Microsoft.Management/managementGroups/IMS-Root"
