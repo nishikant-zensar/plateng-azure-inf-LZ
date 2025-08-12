@@ -104,4 +104,9 @@ variable "idps_mode" {
   description = "IDPS mode (Off, Alert, Deny)"
   type        = string
   default     = "Alert"
+
+}
+variable "private_dns_zones" {
+  type    = list(string)
+  default = ["privatelink.sql.azuresynapse.net", "privatelink.servicebus.windows.net", "privatelink.analysis.windows.net", "privatelink.pbidedicated.windows.net" "privatelink.tip1.powerquery.microsoft.com", "privatelink.wvd.microsoft.com", "privatelink.wvd.microsoft.com", "privatelink-global.wvd.microsoft.com", "privatelink.database.windows.net" "privatelink.postgres.database.azure.com", "privatelink.redis.cache.windows.net", "privatelink.mysql.database.azure.com", "privatelink.servicebus.windows.net", "privatelink.vaultcore.azure.net", "privatelink.blob.core.windows.net", "privatelink.table.core.windows.net", "privatelink.queue.core.windows.net", "privatelink.file.core.windows.net", "privatelink.web.core.windows.net", "privatelink.dfs.core.windows.net"]
 }
