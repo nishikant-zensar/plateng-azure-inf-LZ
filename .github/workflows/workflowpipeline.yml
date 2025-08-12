@@ -368,6 +368,7 @@ jobs:
   DeployRules:
     if: ${{ github.event.inputs.jobToRun == 'DeployRules' }}
     runs-on: ubuntu-latest
+    environment: prod-approval
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -434,9 +435,11 @@ jobs:
 
       - name: Await manual approval before apply
         if: success()
-        environment:
-          name: prod-approval
-        run: echo "Waiting for environment approval..."
+        uses: actions/github-script@v7
+        environment: prod-approval
+        with:
+          script: |
+            console.log("Waiting for environment approval...")
 
       - name: Terraform Apply Network Rules
         env:
