@@ -483,6 +483,7 @@ jobs:
   
   DeployPolicies:
     if: ${{ github.event.inputs.jobToRun == 'DeployPolicies' }}
+    environment: prod-approval
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
