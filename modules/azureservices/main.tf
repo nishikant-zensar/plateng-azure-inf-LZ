@@ -353,8 +353,10 @@ resource "azurerm_log_analytics_workspace" "log_analytics" {
 #####################################################################
 # Create Private DNS Zones
 #####################################################################
-resource "azurerm_private_dns_zone" "dnszone" {
-  provider              = azurerm.ims-prd-management
-  name                = "privatelink.vaultcore.azure.net"
+resource "azurerm_private_dns_zone" "multi" {
+  provider            = azurerm.ims-prd-management  
+  for_each            = toset(var.private_dns_zones)
+  name                = each.value
   resource_group_name = data.azurerm_resource_group.mgmtsub2.name
 }
+
