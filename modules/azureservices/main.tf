@@ -120,14 +120,14 @@ resource "azurerm_firewall_policy_rule_collection_group" "coreplat_group" {
       description           = "Probably best creating an IP Group with these zscaler IPs, rather than adding them to this rule individually, as it's easier to manage if the IPs change in future."
     }
     
-# rule {
-#      name                  = "ims-prd-conn-ne-afwpr-mgmtst-out"
-#      source_addresses      = ["192.168.10.0/24"]
-#      destination_service_tags = ["WindowsVirtualDesktop, AzureMonitor, EventHub"]
-#      protocols             = ["TCP"]
-#      destination_ports     = ["443"]
-#      description           = "The AVD session hosts needs to access this list of FQDNs and endpoints for Azure Virtual Desktop. All entries are outbound, it is not required to open inbound ports for AVD"
-#    }
+ # rule {
+ #     name                  = "ims-prd-conn-ne-afwpr-mgmtst-out"
+ #     source_addresses      = ["192.168.10.0/24"]
+ #     destination_service_tags = ["WindowsVirtualDesktop", "AzureMonitor", "EventHub"]
+ #     protocols             = ["TCP"]
+ #     destination_ports     = ["443"]
+ #     description           = "The AVD session hosts needs to access this list of FQDNs and endpoints for Azure Virtual Desktop. All entries are outbound, it is not required to open inbound ports for AVD"
+ #   }
 
 rule {
       name                  = "ims-prd-conn-ne-afwpr-mgmtip-out"
@@ -399,6 +399,7 @@ resource "azurerm_private_dns_zone" "multi" {
   name                = each.value
   resource_group_name = data.azurerm_resource_group.connsub.name
 }
+
 
 
 
