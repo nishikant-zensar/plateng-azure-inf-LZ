@@ -391,7 +391,7 @@ jobs:
         run: |
           cd modules/azureservices
           terraform destroy -auto-approve    
-          
+
   DeployRules:
     if: ${{ github.event.inputs.jobToRun == 'DeployRules' }}
     runs-on: ubuntu-latest
@@ -469,7 +469,6 @@ jobs:
       #       console.log("Waiting for environment approval...")
 
       - name: Terraform Apply Network Rules
-        environment: prod-approval
         env:
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
