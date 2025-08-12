@@ -1,6 +1,6 @@
-# provider "azurerm" {
-#  features {}
-#}
+provider "azurerm" {
+ features {}
+}
 
 provider "azurerm" { 
   alias           = "ims-prd-connectivity"
@@ -8,5 +8,5 @@ provider "azurerm" {
   tenant_id       = "684d2402-0ea6-442d-9ad7-4ef26b925ec5"
   client_id       = "74925104-cd8b-47e5-b29a-83a75a2f4ca6"
   features{}
-
 }
+
