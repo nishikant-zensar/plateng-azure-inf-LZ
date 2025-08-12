@@ -432,6 +432,12 @@ jobs:
           name: tfplan-artifact
           path: modules/networkrules/tfplan
 
+      - name: Await manual approval before apply
+        if: success()
+        environment:
+          name: prod-approval
+        run: echo "Waiting for environment approval..."
+
       - name: Terraform Apply Network Rules
         env:
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
