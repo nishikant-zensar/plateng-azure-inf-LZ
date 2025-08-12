@@ -236,6 +236,10 @@ provider "azurerm" {
 #  provider = azurerm.ims-prd-management
 #}
 
+data "azurerm_resource_group" "connsub" {
+  name     = "ims-prd-conn-ne-rg-network"
+  provider = azurerm.ims-prd-connectivity
+}
 data "azurerm_resource_group" "mgmtsub" {
   name     = "ims-prd-mgmt-ne-rg-keyvault"
   provider = azurerm.ims-prd-management
@@ -357,8 +361,9 @@ resource "azurerm_private_dns_zone" "multi" {
   provider            = azurerm.ims-prd-connectivity
   for_each            = toset(var.private_dns_zones)
   name                = each.value
-  resource_group_name = data.azurerm_resource_group.mgmtsub.name
+  resource_group_name = data.azurerm_resource_group.connsub.name
 }
+
 
 
 
