@@ -26,11 +26,11 @@ resource "azurerm_firewall_policy" "fw_policy" {
   resource_group_name = var.resource_group_name
   sku             = "Premium"
 
-  threat_intelligence_mode = "Alert And Deny"
+  threat_intelligence_mode = "Alert"
 
   # IDPS configuration
   intrusion_detection {
-    mode = "Alert And Deny"
+    mode = "Alert"
   }
 
   # TLS inspection (Explicitly Disabled)
@@ -359,4 +359,5 @@ resource "azurerm_private_dns_zone" "multi" {
   name                = each.value
   resource_group_name = data.azurerm_resource_group.mgmtsub2.name
 }
+
 
