@@ -139,15 +139,15 @@ rule {
     }
   }
    
-application_rule_collection {
+ application_rule_collection {
     name     = "ims-prd-conn-ne-afwprc-coreplat-app"
     priority = 300
     action   = "Allow"
 
-  rule {
+   rule {
       name                  = "ims-prd-conn-ne-afwpr-mgmtfqdn-out"
       source_addresses      = ["192.168.10.0/24"]
-      destination_fqdns     = ["login.microsoftonline.com,*.wvd.microsoft.com,catalogartifact.azureedge.net,*.prod.warm.ingest.monitor.core.windows.net,gcs.prod.monitoring.core.windows.net,azkms.core.windows.net,mrsglobalsteus2prod.blob.core.windows.net,wvdportalstorageblob.blob.core.windows.net,oneocsp.microsoft.com,www.microsoft.com,aka.ms,login.windows.net,*.events.data.microsoft.com,www.msftconnecttest.com,*.prod.do.dsp.mp.microsoft.com,*.sfx.ms,*.digicert.com,*.azure-dns.com,*.azure-dns.net,*eh.servicebus.windows.net"]
+      destination_fqdns     = ["login.microsoftonline.com","*.wvd.microsoft.com,catalogartifact.azureedge.net","*.prod.warm.ingest.monitor.core.windows.net","gcs.prod.monitoring.core.windows.net","azkms.core.windows.net","mrsglobalsteus2prod.blob.core.windows.net","wvdportalstorageblob.blob.core.windows.net","oneocsp.microsoft.com","www.microsoft.com","aka.ms,login.windows.net","*.events.data.microsoft.com","www.msftconnecttest.com","*.prod.do.dsp.mp.microsoft.com","*.sfx.ms,*.digicert.com","*.azure-dns.com","*.azure-dns.net","*eh.servicebus.windows.net"]
       protocols {
         type = "Http"
         port = 80
@@ -160,7 +160,7 @@ application_rule_collection {
       # destination_ports     = ["80","443","1688"]
       description           = "The AVD session hosts needs to access these FQDNs and endpoints for Azure Virtual Desktop. All entries are outbound, it is not required to open inbound ports for AVD."
     }
-   }
+    }
 }
 
 #####################################################################
@@ -399,6 +399,7 @@ resource "azurerm_private_dns_zone" "multi" {
   name                = each.value
   resource_group_name = data.azurerm_resource_group.connsub.name
 }
+
 
 
 
