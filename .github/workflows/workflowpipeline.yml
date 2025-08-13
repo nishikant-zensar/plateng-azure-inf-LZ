@@ -481,6 +481,16 @@ jobs:
       #     script: |
       #       console.log("Waiting for environment approval...")
 
+      - name: Await manual approval before apply
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ secrets.GITHUB_TOKEN }}
+          approvers: your-github-username
+          minimum-approvals: 1
+          issue-title: "Manual approval required for Network Rules apply"
+          issue-body: "Please approve to proceed with Terraform apply for Network Rules."
+          exclude-workflow-initiator-as-approver: false
+      
       - name: Terraform Apply Network Rules
         env:
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
