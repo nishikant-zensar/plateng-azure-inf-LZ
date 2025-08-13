@@ -485,7 +485,7 @@ jobs:
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ secrets.GITHUB_TOKEN }}
-          approvers: your-github-username
+          approvers: nishikant-zensar,nitin-zensar
           minimum-approvals: 1
           issue-title: "Manual approval required for Network Rules apply"
           issue-body: "Please approve to proceed with Terraform apply for Network Rules."
