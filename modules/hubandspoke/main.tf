@@ -411,6 +411,30 @@ resource "azurerm_subnet" "ims-prd-avd-ne-snet-mgmt" {
   private_link_service_network_policies_enabled = true
 
 }
+# 5. Create "ims-prd-avd-ne-snet-str" subnet for storage at avd vNet
+resource "azurerm_subnet" "ims-prd-avd-ne-snet-str" {
+  provider             = azurerm.ims-prd-avd
+  resource_group_name  = azurerm_resource_group.avd.name
+  virtual_network_name = azurerm_virtual_network.avdvnet.name
+  name                 = "ims-prd-avd-ne-snet-str"
+  address_prefixes     = ["192.168.11.192/27"]
+
+  # private_endpoint_network_policies_enabled = true
+  private_link_service_network_policies_enabled = true
+
+}
+# 6. Create "ims-prd-avd-ne-snet-kv" subnet for keyvault at avd vNet
+resource "azurerm_subnet" "ims-prd-avd-ne-snet-kv" {
+  provider             = azurerm.ims-prd-avd
+  resource_group_name  = azurerm_resource_group.avd.name
+  virtual_network_name = azurerm_virtual_network.avdvnet.name
+  name                 = "ims-prd-avd-ne-snet-kv"
+  address_prefixes     = ["192.168.11.224/27"]
+
+  # private_endpoint_network_policies_enabled = true
+  private_link_service_network_policies_enabled = true
+
+}
 ################################################################
 # Peering Between vNets
 ################################################################
