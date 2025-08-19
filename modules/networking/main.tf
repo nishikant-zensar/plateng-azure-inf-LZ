@@ -33,7 +33,6 @@ resource "azurerm_public_ip" "pipvpng01" {
   location            = var.location
   sku                 = var.sku
   allocation_method   = var.allocation_method
-  ip_address          = "72.145.45.147"
   ip_version          = var.ip_version
   zones               = ["1"]
   # tier                = var.tier
@@ -60,7 +59,6 @@ resource "azurerm_public_ip" "pipvpng02" {
   location            = var.location
   sku                 = var.sku
   allocation_method   = var.allocation_method
-  ip_address          = "132.164.227.81"
   ip_version          = var.ip_version
   zones               = ["1"]
   # tier                = var.tier
@@ -146,14 +144,14 @@ resource "azurerm_virtual_network_gateway" "vpn_gw" {
     peering_addresses {
       ip_configuration_name   = "vpng-ipconfig1"
       apipa_addresses         = ["169.254.21.22", "169.254.21.6"]
-      default_bgp_ip_addresses = ["192.168.0.4"]
+      # default_bgp_ip_addresses = ["192.168.0.4"]
       tunnel_ip_addresses      = []
     }
 
     peering_addresses {
       ip_configuration_name   = "vpng-ipconfig2"
       apipa_addresses         = ["169.254.22.22", "169.254.22.6"]
-      default_bgp_ip_addresses = ["192.168.0.5"]
+      # default_bgp_ip_addresses = ["192.168.0.5"]
       tunnel_ip_addresses      = []
     }
   }
