@@ -315,3 +315,98 @@ resource "azurerm_local_network_gateway" "aws_lgw4" {
 #    DateCreated   = "2025-08-01"
 #}
 # }
+
+#########################
+# Create IP Groups
+#########################
+# 1. Create IP Group for Zscaller IP Groups at Londeon 3
+resource "azurerm_ip_group" "ims-prd-conn-ne-ZscallerIPg-L3" {
+  provider            = azurerm.ims-prd-connectivity
+  name                = "ims-prd-conn-ne-ZscallerIPg-L3"
+  resource_group_name = "ims-prd-conn-ne-rg-network"
+  location            = "northeurope"
+
+  cidrs = [
+    "147.161.224.0/23", "170.85.58.0/23", "165.225.80.0/22", "147.161.166.0/23"
+  ]
+
+  depends_on = [
+    azurerm_resource_group.ims-prd-conn-ne-rg-network
+  ]
+
+  tags = {
+    name          = "ims-prd-conn-ne-ZscallerIPg-L3"
+    environment   = "prd"
+    function      = "ipgroup"
+    data_creation = "2025-07-21"
+  }
+}
+
+# 2. Create IP Group for Zscaller IP Groups at Londeon 5
+resource "azurerm_ip_group" "ims-prd-conn-ne-ZscallerIPg-L5" {
+  provider            = azurerm.ims-prd-connectivity
+  name                = "ims-prd-conn-ne-ZscallerIPg-L5"
+  resource_group_name = "ims-prd-conn-ne-rg-network"
+  location            = "northeurope"
+
+  cidrs = [
+    "136.226.166.0/23", "136.226.168.0/23", "147.161.140.0/23", "147.161.142.0/23", "147.161.144.0/23"
+  ]
+
+  depends_on = [
+    azurerm_resource_group.ims-prd-conn-ne-rg-network
+  ]
+  
+  tags = {
+    name          = "ims-prd-conn-ne-ZscallerIPg-L5"
+    environment   = "prd"
+    function      = "ipgroup"
+    data_creation = "2025-07-21"
+  }
+}
+
+# 3. Create IP Group for Zscaller IP Groups at Manchester 1
+resource "azurerm_ip_group" "ims-prd-conn-ne-ZscallerIPg-M1" {
+  provider            = azurerm.ims-prd-connectivity
+  name                = "ims-prd-conn-ne-ZscallerIPg-M1"
+  resource_group_name = "ims-prd-conn-ne-rg-network"
+  location            = "northeurope"
+
+  cidrs = [
+    "136.226.190.0/23", "147.161.236.0/23", "165.225.196.0/23", "165.255.198.0/23", "170.85.84.0/23"
+  ]
+
+  depends_on = [
+    azurerm_resource_group.ims-prd-conn-ne-rg-network
+  ]
+
+  tags = {
+    name          = "ims-prd-conn-ne-ZscallerIPg-M1"
+    environment   = "prd"
+    function      = "ipgroup"
+    data_creation = "2025-07-21"
+  }
+  
+}
+# 4. Create IP Group for Zscaller IP Groups at Manchester 2
+resource "azurerm_ip_group" "ims-prd-conn-ne-ZscallerIPg-M2" {
+  provider            = azurerm.ims-prd-connectivity
+  name                = "ims-prd-conn-ne-ZscallerIPg-M2"
+  resource_group_name = "ims-prd-conn-ne-rg-network"
+  location            = "northeurope"
+
+  cidrs = [
+    "194.9.122.0/23", "194.9.106.0/23", "194.9.108.0/23", "194.9.110.0/23", "194.9.114.0/23"
+  ]
+
+  depends_on = [
+    azurerm_resource_group.ims-prd-conn-ne-rg-network
+  ]
+
+  tags = {
+    name          = "ims-prd-conn-ne-ZscallerIPg-M2"
+    environment   = "prd"
+    function      = "ipgroup"
+    data_creation = "2025-07-21"
+  }
+}
