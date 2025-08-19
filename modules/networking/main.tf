@@ -145,14 +145,14 @@ resource "azurerm_virtual_network_gateway" "vpn_gw" {
       ip_configuration_name   = "vpng-ipconfig1"
       apipa_addresses         = ["169.254.21.22", "169.254.21.6"]
       # default_bgp_ip_addresses = ["192.168.0.4"]
-      tunnel_ip_addresses      = []
+      # tunnel_ip_addresses      = []
     }
 
     peering_addresses {
       ip_configuration_name   = "vpng-ipconfig2"
       apipa_addresses         = ["169.254.22.22", "169.254.22.6"]
       # default_bgp_ip_addresses = ["192.168.0.5"]
-      tunnel_ip_addresses      = []
+      # tunnel_ip_addresses      = []
     }
   }
 
