@@ -137,7 +137,7 @@ resource "azurerm_virtual_network_gateway" "vpn_gw" {
     subnet_id                     = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01/subnets/GatewaySubnet"
   }
 
-  enable_bgp = false
+  enable_bgp    = false
   # Key Vault Access, Managed Identity, and Authentication Information (preview) not enabled.
   
   tags = {
