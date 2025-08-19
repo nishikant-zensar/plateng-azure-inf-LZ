@@ -33,6 +33,7 @@ resource "azurerm_public_ip" "pipvpng01" {
   location            = var.location
   sku                 = var.sku
   allocation_method   = var.allocation_method
+  ip_address          = "72.145.45.147"
   ip_version          = var.ip_version
   zones               = ["1"]
   # tier                = var.tier
@@ -59,6 +60,7 @@ resource "azurerm_public_ip" "pipvpng02" {
   location            = var.location
   sku                 = var.sku
   allocation_method   = var.allocation_method
+  ip_address          = "132.164.227.81"
   ip_version          = var.ip_version
   zones               = ["1"]
   # tier                = var.tier
@@ -137,7 +139,25 @@ resource "azurerm_virtual_network_gateway" "vpn_gw" {
     subnet_id                     = "/subscriptions/ecd60543-12a0-4899-9e5f-21ec01592207/resourceGroups/ims-prd-conn-ne-rg-network/providers/Microsoft.Network/virtualNetworks/ims-prd-conn-ne-vnet-hub-01/subnets/GatewaySubnet"
   }
 
-  enable_bgp    = false
+  enable_bgp    = true
+  bgp_settings {
+    asn = 65515
+
+    peering_addresses {
+      ip_configuration_name   = "vpng-ipconfig1"
+      apipa_addresses         = ["169.254.21.22", "169.254.21.6"]
+      default_bgp_ip_addresses = ["192.168.0.4"]
+      tunnel_ip_addresses      = []
+    }
+
+    peering_addresses {
+      ip_configuration_name   = "vpng-ipconfig2"
+      apipa_addresses         = ["169.254.22.22", "169.254.22.6"]
+      default_bgp_ip_addresses = ["192.168.0.5"]
+      tunnel_ip_addresses      = []
+    }
+  }
+
   # Key Vault Access, Managed Identity, and Authentication Information (preview) not enabled.
   
   tags = {
@@ -154,6 +174,11 @@ resource "azurerm_local_network_gateway" "aws_lgw1" {
   resource_group_name = var.vnet_resource_group
   gateway_address     = "34.247.16.167"
   address_space       = ["10.0.0.0/14"]
+  bgp_settings {
+    asn           = 64512
+    bgp_peering_address = "169.254.21.21"
+    peer_weight   = 0
+  }
 }
 
 # 3. Create Local Network Gateway 2 on VPN Gateway
@@ -163,6 +188,11 @@ resource "azurerm_local_network_gateway" "aws_lgw2" {
   resource_group_name = var.vnet_resource_group
   gateway_address     = "99.81.84.117"
   address_space       = ["10.0.0.0/14"]
+  bgp_settings {
+    asn           = 64512
+    bgp_peering_address = "169.254.22.21"
+    peer_weight   = 0
+  }
 }
 
 # 4. Create Local Network Gateway 3 on VPN Gateway
@@ -172,6 +202,11 @@ resource "azurerm_local_network_gateway" "aws_lgw3" {
   resource_group_name = var.vnet_resource_group
   gateway_address     = "52.51.99.83"
   address_space       = ["10.0.0.0/14"]
+  bgp_settings {
+    asn           = 64512
+    bgp_peering_address = "169.254.21.5"
+    peer_weight   = 0
+  }
 }
 
 # 5. Create Local Network Gateway 4 on VPN Gateway
@@ -181,6 +216,11 @@ resource "azurerm_local_network_gateway" "aws_lgw4" {
   resource_group_name = var.vnet_resource_group
   gateway_address     = "52.213.133.44"
   address_space       = ["10.0.0.0/14"]
+  bgp_settings {
+    asn           = 64512
+    bgp_peering_address = "169.254.22.5"
+    peer_weight   = 0
+  }
 }
 
 # 6. Create Gateway Connection 1 on VPN Gateway
